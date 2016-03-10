@@ -1,0 +1,36 @@
+
+#
+# Copyright (C) 2016 University of Southern California.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+#
+#!/usr/bin/expect
+
+
+set host [lindex $argv 0]
+set neighbor [lindex $argv 1]
+set asn [lindex $argv 2]
+set weight [lindex $argv 3]
+set host_address "$host.airtel.senss.isi.deterlab.net"
+
+spawn "telnet" "$host_address" " 2605"
+expect "Password:" { send "en\r"} 
+expect ">" { send "enable\r" }
+expect "Password:" {send "en\r"}
+expect "#" {send "config terminal\r"}
+expect "#" {send "router bgp $asn\r"}
+expect "#" {send "neighbor $neighbor weight $weight\r"}
+expect "#" {send "exit\r"}
+expect "#" {send "exit\r"}
+expect "#" {send "clear ip bgp *\r"}
