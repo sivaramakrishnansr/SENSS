@@ -8,7 +8,7 @@ Script is used to convert GraphML file into a mininet topology file. Topology Zo
 
 **2) mininet_to_deter.py**
 
-Script is used to convert the mininet file obtained in the previous version to NS file. Deterlab accepts this NS file.
+Script is used to convert the mininet file obtained in the previous version to NS file. Deterlab accepts this NS file. This also creates a file named quagga_input which should be copied to the /proj/ folder in DETER. 
 
 **3) list_of_cities**
 
