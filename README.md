@@ -64,7 +64,7 @@ ssh controller.experiment_name.project_name
 `ssh user_name@users.deterlab.net -L 8118:controller.experiment_name.project_name.isi.deterlab.net:80`
 
 To access the Server GUI:-
-`http://localhost:8181/index.php`
+`http://localhost:8118/index.php`
 
 <h3>Login</h3> 
 
@@ -125,7 +125,7 @@ Views all the customers
 
 <h3>Client GUI</h3>
 
-Can be accessed at `http://localhost:8080/direct_floods_form.php`
+Can be accessed at `http://localhost:8118/direct_floods_form.php`
 
 Client GUI can be used to handle direct floods without signature attacks. These are attacks which do not have any signature associated with them, and can be handled by SENSS constantly monitoring its traffic, and blocking traffic when a certain anamoly is detected.
 
