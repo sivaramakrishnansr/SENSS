@@ -24,6 +24,10 @@ Each link between ASNs contains an OpenVSwitch which is used for the traffic_que
 
 where city_1_number < city_2_number (These numbers are accesed using the list_of_cities file)
 
+**4) Topo/generate_cities_relation.py**
+
+Maps city from Topology to city_id . Used for reference
+
 **4)connectivity_check.py**
 
 This script is used to check if all the nodes which are setup in the experiment are available. Deterlab takes a few minutes to set up containerised experiments.
