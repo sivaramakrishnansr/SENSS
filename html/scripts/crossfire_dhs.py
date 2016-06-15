@@ -16,7 +16,7 @@ def process(ip_dict):
 	cur.execute("USE SENSS")
 	while True:
 	 db.commit()
-	 cur.execute("SELECT * FROM DIRECT_FLOODS")
+	 cur.execute("SELECT * FROM CROSSFIRE")
 	 for item in cur.fetchall():
 		request_id=int(item[0])
 		request_city=item[1]
@@ -35,7 +35,7 @@ def process(ip_dict):
 
 			node_dict={}
 			node_dict[request_city]=pydot.Node(request_city, style="filled", fillcolor="red")
-			cur.execute("SELECT RESULT FROM DIRECT_FLOODS WHERE ID="+str(request_id))
+			cur.execute("SELECT RESULT FROM CROSSFIRE WHERE ID="+str(request_id))
 			for r in cur.fetchall():
 				if r[0] is None:
 					dict={}
@@ -155,7 +155,7 @@ def process(ip_dict):
 
 
 			result=json.dumps(dict)
-			cmd="UPDATE DIRECT_FLOODS SET RESULT='"+result+"' WHERE ID="+str(request_id)
+			cmd="UPDATE CROSSFIRE SET RESULT='"+result+"' WHERE ID="+str(request_id)
 			#print cmd
 			cur.execute(cmd)
 			db.commit()
