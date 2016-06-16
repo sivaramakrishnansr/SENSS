@@ -50,16 +50,6 @@
 
 			<select class="form-control" name="isp">
 			<option value="AT&T">AT&T</option>
-			//Commenting out for the purpose of DHS
-		        <?php
-				//$command='python /var/www/html/scripts/get_cities.py '.' 2>&1';
-                                //$output=trim(shell_exec($command));
-				//$output_array = explode(" ",$output);
-                		//foreach($output_array as $item){
-                        	//	$switch_name=$item;
-				//	echo '<option value="'.$switch_name.'">'.$switch_name.'</option>';
-                		//}
-		        ?>
 			</select>
 			<br />
                         <input type="submit" class="btn" name="formSubmit" value="Submit"/>
