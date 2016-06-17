@@ -19,7 +19,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>Crossfire</title>
+          <title>Reflector</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -62,6 +62,13 @@
 
 				$match_list[$key]=$value;
 				echo $key." ".$value."\n";
+				//if($key=="tcp_src" || $key=="tcp_dst"){
+				//	$match_list["ip_proto"]=6;
+				//}
+				//if($key=="udp_src" || $key=="udp_dst"){
+				//	$match_list["ip_proto"]=17;
+				//}
+
 			}
 		}
 
@@ -75,54 +82,43 @@
 	        $result = curl_exec($ch);
                 curl_close($ch);
 
-		//Adding flow from 1 to 2
-		$data_to_send=array();
-		$data_to_send["dpid"]=$dpid;
-		$match_list["in_port"]=1;
-		$match_list["dl_type"]=2048;
-		$data_to_send["match"]=$match_list;
-                $temp_array=array();
-                $temp_array["type"]="OUTPUT";
-                $temp_array["port"]=2;
-                $data_to_send["actions"]=array($temp_array);
-		$data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/add';
-                $ch=curl_init($url);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: application/json',
-                        'Content-Length: ' . strlen($data_string))
-                );
-                $result = curl_exec($ch);
-                curl_close($ch);
-		echo "Flow1".$result."\n";
 
-		//Adding flow from 2 to 1
+                /*
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+  		  	'Content-Type: application/json',
+    			'Content-Length: ' . strlen($data_string))
+		);
+	        $result = curl_exec($ch);
+                curl_close($ch);
+
+
 		$data_to_send=array();
 		$data_to_send["dpid"]=$dpid;
 		$data_to_send["priority"]=100;
+
 		$match_list["in_port"]=2;
-		$match_list["eth_type"]=2048;
+		//$match_list["eth_type"]=2048;
 		$data_to_send["match"]=$match_list;
-                $temp_array=array();
-                $temp_array["type"]="OUTPUT";
-                $temp_array["port"]=1;
-                $data_to_send["actions"]=array($temp_array);
-                $data_string = json_encode($data_to_send);
-		$url='http://192.168.0.125:8080/stats/flowentry/add';
+		$data_to_send["actions"]="";
+                $ip_filter = $_POST['ip_filter'];
+		$dpid = $_POST['dpid'];
+		$data_string = json_encode($data_to_send);
+                $url='http://192.168.0.96:8080/stats/flowentry/add';
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                        'Content-Type: application/json',
-                        'Content-Length: ' . strlen($data_string))
-                );
-                $result = curl_exec($ch);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+  		  	'Content-Type: application/json',
+    			'Content-Length: ' . strlen($data_string))
+		);
+	        $result = curl_exec($ch);
                 curl_close($ch);
-		echo "Flow2".$result."\n";
+
+		*/
 
                 $json_output = json_decode($result,true);
 		$results_to_store=$dpid;
@@ -135,7 +131,7 @@
                 if ($conn->connect_error) {
                         die("Connection failed: " . $conn->connect_error);
                 }
-		$sql ="SELECT * FROM CROSSFIRE WHERE ID='$request_id'";
+		$sql ="SELECT * FROM DIRECT_FLOODS WHERE ID='$request_id'";
                 $result = $conn->query($sql);
 		 while($row = $result->fetch_assoc()) {
 			if (strlen($row["FILTER"])!=0){
@@ -150,14 +146,16 @@
 		}else{
 			$filter=$results_to_store;
 		}
-		$sql="UPDATE CROSSFIRE SET FILTER='$filter' WHERE ID='$request_id'";
+		$sql="UPDATE DIRECT_FLOODS SET FILTER='$filter' WHERE ID='$request_id'";
 		echo $sql;
                 $result = $conn->query($sql);
 		echo '<br />';
 		echo '<h1>Flow Added-'.$dpid.'</h1>';
-		header("Location: http://localhost:8118/crossfire_view.php"); 
+		header("Location: http://localhost:8118/direct_floods_view.php"); 
 		exit();
-	}
+		//Connect to the database and add the flow
+
+        }
   ?>
 </table>
 

@@ -20,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>My Form</title>
+          <title>Direct Floods</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -37,10 +37,9 @@
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
-                                        <li><a href="add_filter_form.php">Add Filter</a></li>
-                                        <li><a href="get_flows_form.php">Flow Stats</a></li>
-                                        <li><a href="get_routes_form.php">Route Stats</a></li>
-                                        <li><a href="pic.php">View</a></li>
+                                        <li><a href="direct_floods_form.php">Direct Floods</a></li>
+                                        <li><a href="crossfire_form.php">Crossfire</a></li>
+                                        <li><a href="reflector_form.php">Reflector</a></li>
                                 </ul>
                         </div>
                 </div>
