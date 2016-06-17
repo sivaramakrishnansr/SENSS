@@ -62,12 +62,6 @@
 
 				$match_list[$key]=$value;
 				echo $key." ".$value."\n";
-				//if($key=="tcp_src" || $key=="tcp_dst"){
-				//	$match_list["ip_proto"]=6;
-				//}
-				//if($key=="udp_src" || $key=="udp_dst"){
-				//	$match_list["ip_proto"]=17;
-				//}
 
 			}
 		}
@@ -81,79 +75,6 @@
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	        $result = curl_exec($ch);
                 curl_close($ch);
-
-
-                /*
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-  		  	'Content-Type: application/json',
-    			'Content-Length: ' . strlen($data_string))
-		);
-	        $result = curl_exec($ch);
-                curl_close($ch);
-
-
-		$data_to_send=array();
-		$data_to_send["dpid"]=$dpid;
-		$data_to_send["priority"]=100;
-
-		$match_list["in_port"]=2;
-		//$match_list["eth_type"]=2048;
-		$data_to_send["match"]=$match_list;
-		$data_to_send["actions"]="";
-                $ip_filter = $_POST['ip_filter'];
-		$dpid = $_POST['dpid'];
-		$data_string = json_encode($data_to_send);
-                $url='http://192.168.0.96:8080/stats/flowentry/add';
-                $ch=curl_init($url);
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-  		  	'Content-Type: application/json',
-    			'Content-Length: ' . strlen($data_string))
-		);
-	        $result = curl_exec($ch);
-                curl_close($ch);
-
-		*/
-
-                $json_output = json_decode($result,true);
-		$results_to_store=$dpid;
-                $servername = "localhost";
-                $username = "root";
-                $password = "usc558l";
-                $dbname = "SENSS";
-                $conn = new mysqli($servername, $username, $password, $dbname);
-		$request_id=$_POST["request_id"];
-                if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
-                }
-		$sql ="SELECT * FROM DIRECT_FLOODS WHERE ID='$request_id'";
-                $result = $conn->query($sql);
-		 while($row = $result->fetch_assoc()) {
-			if (strlen($row["FILTER"])!=0){
-				$filter=$row["FILTER"];
-			}
-			else{
-				$filter="";
-			}
-		}
-		if (strlen(filter)!=0){
-			$filter=$filter.",".$results_to_store;
-		}else{
-			$filter=$results_to_store;
-		}
-		$sql="UPDATE DIRECT_FLOODS SET FILTER='$filter' WHERE ID='$request_id'";
-		echo $sql;
-                $result = $conn->query($sql);
-		echo '<br />';
-		echo '<h1>Flow Added-'.$dpid.'</h1>';
-		header("Location: http://localhost:8118/direct_floods_view.php"); 
-		exit();
-		//Connect to the database and add the flow
 
         }
   ?>
