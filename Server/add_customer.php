@@ -1,4 +1,5 @@
 <!--
+
 #
 # Copyright (C) 2016 University of Southern California.
 #
@@ -19,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>SENSS</title>
+          <title>SENSS - Add Customer</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -31,7 +32,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS-ISP</a>
+                                <div class="navbar-brand">SENSS-SERVER</div>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
@@ -39,6 +40,9 @@
                                         <li><a href="get_switch.php">List Switches</a></li>
                                         <li><a href="remove_switch_form.php">Remove Switch</a></li>
                                         <li><a href="logs.php">Logs</a></li>
+                                        <li><a href="add_customer_form.php">Add Customer</a></li>
+                                        <li><a href="view_customer.php">View Customer</a></li>
+                                        <li><a href="http://localhost/index.php">Log Out</a></li>
                                 </ul>
                         </div>
                 </div>
@@ -58,7 +62,7 @@
 		}
 		$servername = "localhost";
 	        $username = "root";
-        	$password = "";
+        	$password = "usc558l";
         	$dbname = "SENSS";
 
         	$conn = new mysqli($servername, $username, $password, $dbname);
@@ -71,9 +75,8 @@
         	}
         	$conn->close();
 		echo "<h1>Added Customer</h1>";
-                header("Location: http://localhost:8118/view_customer.php"); /* Redirect browser */
-                exit();
-
+		header("Location: http://localhost:8118/server/view_customer.php");
+        	exit();
 	}
 	?>
 </body>

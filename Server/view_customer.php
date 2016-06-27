@@ -20,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>SENSS</title>
+          <title>SENSS - View Customer</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -32,7 +32,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS</a>
+                                <div class="navbar-brand">SENSS-SERVER</div>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
@@ -50,7 +50,7 @@
 	<?php
 	        $servername = "localhost";
         	$username = "root";
-        	$password = "";
+        	$password = "usc558l";
         	$dbname = "SENSS";
 	        $conn = new mysqli($servername, $username, $password, $dbname);
        	 	if ($conn->connect_error) {

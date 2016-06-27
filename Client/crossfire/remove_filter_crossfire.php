@@ -19,11 +19,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>Crossfire</title>
+          <title>SENSS - Crossfire</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
-   <style>
+          <style>
                 .panel { width:300px; margin:auto; padding: 30px;}
                 .panel-offset-senss { margin:auto;}
           </style> 
@@ -33,14 +33,15 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS</a>
+                                <a class="navbar-brand" href="direct_floods_form.php">SENSS-CLIENT</a>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
                                         <li><a href="direct_floods_form.php">Direct Floods</a></li>
                                         <li><a href="crossfire_form.php">Crossfire</a></li>
-                                        <li><a href="reflector_form.php">Reflector</a></li>
+                                        <li><a href="reflector_view.php">Reflector</a></li>
                                 </ul>
+                                </a>
                         </div>
                 </div>
         </nav>
@@ -74,7 +75,7 @@
                 $ip_filter = $_POST['ip_filter'];
                 $dpid = $_POST['dpid'];
                 $data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/clear/'.$dpid;
+                $url='http://controller.dhs.senss:8080/stats/flowentry/clear/'.$dpid;
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -97,7 +98,7 @@
                 $ip_filter = $_POST['ip_filter'];
                 $dpid = $_POST['dpid'];
                 $data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/add';
+                $url='http://controller.dhs.senss:8080/stats/flowentry/add';
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -123,7 +124,7 @@
                 $ip_filter = $_POST['ip_filter'];
                 $dpid = $_POST['dpid'];
                 $data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/add';
+                $url='http://controller.dhs.senss:8080/stats/flowentry/add';
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -151,7 +152,7 @@
                 if ($conn->connect_error) {
                         die("Connection failed: " . $conn->connect_error);
                 }
-		$sql ="SELECT * FROM CROSSFIRE WHERE ID='$request_id'";
+		$sql ="SELECT * FROM DIRECT_FLOODS WHERE ID='$request_id'";
                 $result = $conn->query($sql);
 		 while($row = $result->fetch_assoc()) {
 			if (strlen($row["FILTER"])!=0){
@@ -164,13 +165,17 @@
 		$filter=explode(",",$filter);
 		$filter=array_diff($filter,array($dpid));
 		$filter=implode(",",$filter);
-		$sql="UPDATE CROSSFIRE SET FILTER='$filter' WHERE ID='$request_id'";
+		$sql="UPDATE DIRECT_FLOODS SET FILTER='$filter' WHERE ID='$request_id'";
 		echo $sql;
                 $result = $conn->query($sql);
 		echo '<br />';
 		echo '<h1>Filter Removed-'.$dpid.'</h1>';
+                $date=new DateTime();
+                $date_time = $date->format('Y-m-d H:i:s');
+                $sql="INSERT INTO SENSS_LOGS(REQUEST_TYPE,REQUEST_FROM,TIME,RESPONSE) VALUES ('remove_traffic_filter','Winston','$date_time','Filter Removed')";
+                $result = $conn->query($sql);
 
-                header("Location: http://localhost:8118/crossfire_view.php"); 
+                header("Location: http://localhost:8118/client/crossfire_view.php"); 
                 exit();
 		//Connect to the database and add the flow
 

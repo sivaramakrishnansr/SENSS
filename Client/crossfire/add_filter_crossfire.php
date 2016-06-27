@@ -19,11 +19,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>Crossfire</title>
+          <title>SENSS - Crossfire</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
-   <style>
+   	  <style>
                 .panel { width:300px; margin:auto; padding: 30px;}
                 .panel-offset-senss { margin:auto;}
           </style> 
@@ -33,14 +33,15 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS</a>
+                                <a class="navbar-brand" href="direct_floods_form.php">SENSS-CLIENT</a>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
                                         <li><a href="direct_floods_form.php">Direct Floods</a></li>
                                         <li><a href="crossfire_form.php">Crossfire</a></li>
-                                        <li><a href="reflector_form.php">Reflector</a></li>
+                                        <li><a href="reflector_view.php">Reflector</a></li>
                                 </ul>
+                                </a>
                         </div>
                 </div>
         </nav>
@@ -62,13 +63,20 @@
 
 				$match_list[$key]=$value;
 				echo $key." ".$value."\n";
+				//if($key=="tcp_src" || $key=="tcp_dst"){
+				//	$match_list["ip_proto"]=6;
+				//}
+				//if($key=="udp_src" || $key=="udp_dst"){
+				//	$match_list["ip_proto"]=17;
+				//}
+
 			}
 		}
 
                 $ip_filter = $_POST['ip_filter'];
 		$dpid = $_POST['dpid'];
 		$data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/clear/'.$dpid;
+                $url='http://controller.dhs.senss:8080/stats/flowentry/clear/'.$dpid;
                 $ch=curl_init($url);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -78,6 +86,7 @@
 		//Adding flow from 1 to 2
 		$data_to_send=array();
 		$data_to_send["dpid"]=$dpid;
+		//$data_to_send["priority"]=100;
 		$match_list["in_port"]=1;
 		$match_list["dl_type"]=2048;
 		$data_to_send["match"]=$match_list;
@@ -86,7 +95,7 @@
                 $temp_array["port"]=2;
                 $data_to_send["actions"]=array($temp_array);
 		$data_string = json_encode($data_to_send);
-                $url='http://192.168.0.125:8080/stats/flowentry/add';
+                $url='http://controller.dhs.senss:8080/stats/flowentry/add';
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -111,7 +120,7 @@
                 $temp_array["port"]=1;
                 $data_to_send["actions"]=array($temp_array);
                 $data_string = json_encode($data_to_send);
-		$url='http://192.168.0.125:8080/stats/flowentry/add';
+		$url='http://controller.dhs.senss:8080/stats/flowentry/add';
                 $ch=curl_init($url);
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -124,6 +133,43 @@
                 curl_close($ch);
 		echo "Flow2".$result."\n";
 
+                /*
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+  		  	'Content-Type: application/json',
+    			'Content-Length: ' . strlen($data_string))
+		);
+	        $result = curl_exec($ch);
+                curl_close($ch);
+
+
+		$data_to_send=array();
+		$data_to_send["dpid"]=$dpid;
+		$data_to_send["priority"]=100;
+
+		$match_list["in_port"]=2;
+		//$match_list["eth_type"]=2048;
+		$data_to_send["match"]=$match_list;
+		$data_to_send["actions"]="";
+                $ip_filter = $_POST['ip_filter'];
+		$dpid = $_POST['dpid'];
+		$data_string = json_encode($data_to_send);
+                $url='http://controller.dhs.senss:8080/stats/flowentry/add';
+                $ch=curl_init($url);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+  		  	'Content-Type: application/json',
+    			'Content-Length: ' . strlen($data_string))
+		);
+	        $result = curl_exec($ch);
+                curl_close($ch);
+
+		*/
+
                 $json_output = json_decode($result,true);
 		$results_to_store=$dpid;
                 $servername = "localhost";
@@ -135,7 +181,7 @@
                 if ($conn->connect_error) {
                         die("Connection failed: " . $conn->connect_error);
                 }
-		$sql ="SELECT * FROM CROSSFIRE WHERE ID='$request_id'";
+		$sql ="SELECT * FROM DIRECT_FLOODS WHERE ID='$request_id'";
                 $result = $conn->query($sql);
 		 while($row = $result->fetch_assoc()) {
 			if (strlen($row["FILTER"])!=0){
@@ -150,14 +196,21 @@
 		}else{
 			$filter=$results_to_store;
 		}
-		$sql="UPDATE CROSSFIRE SET FILTER='$filter' WHERE ID='$request_id'";
+		$sql="UPDATE DIRECT_FLOODS SET FILTER='$filter' WHERE ID='$request_id'";
 		echo $sql;
                 $result = $conn->query($sql);
 		echo '<br />';
 		echo '<h1>Flow Added-'.$dpid.'</h1>';
-		header("Location: http://localhost:8118/crossfire_view.php"); 
+                $date=new DateTime();
+                $date_time = $date->format('Y-m-d H:i:s');
+                $sql="INSERT INTO SENSS_LOGS(REQUEST_TYPE,REQUEST_FROM,TIME,RESPONSE) VALUES ('add_traffic_filter','Winston','$date_time','Filter Added')";
+                $result = $conn->query($sql);
+
+		header("Location: http://localhost:8118/client/crossfire_view.php"); 
 		exit();
-	}
+		//Connect to the database and add the flow
+
+        }
   ?>
 </table>
 

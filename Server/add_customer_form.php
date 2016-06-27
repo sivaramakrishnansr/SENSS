@@ -20,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>SENSS</title>
+          <title>SENSS - Add Customer</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -34,7 +34,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS-ISP</a>
+                                <div class="navbar-brand">SENSS-SERVER</div>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
@@ -50,7 +50,7 @@
                 </div>
         </nav>
         <div class="panel panel-default panel-offset-senss">
-	        <form action="add_customer.php" method="post">
+        <form action="add_customer.php" method="post">
                         <div class="form-group">
                                 <input type="text" style="width:200px;" class="form-control" name="customer_name" id="customer_name" maxlength="50"  placeholder="Customer Name" />
                         </div>
@@ -66,7 +66,9 @@
 				RPKI Validation
 			</div>
                         <input type="submit" name="formSubmit" class="btn" value="Submit" />
-        	</form>
+        </form>
         </div>
+
+
 </body>
 </html>

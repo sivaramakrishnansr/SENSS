@@ -19,11 +19,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>Crossfire</title>
+          <title>SENSS - Crossfire</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
-   <style>
+   	  <style>
                 .panel { width:300px; margin:auto; padding: 30px;}
                 .panel-offset-senss { margin:auto;}
           </style> 
@@ -34,18 +34,18 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="direct_floods_form.php">SENSS</a>
+                                <a class="navbar-brand" href="direct_floods_form.php">SENSS-CLIENT</a>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
-					<li><a href="direct_floods_form.php">Direct Floods</a></li>
-                                        <li><a href="direct_floods_view.php">View</a></li>
+                                        <li><a href="direct_floods_form.php">Direct Floods</a></li>
                                         <li><a href="crossfire_form.php">Crossfire</a></li>
+                                        <li><a href="reflector_view.php">Reflector</a></li>
                                 </ul>
+                                </a>
                         </div>
                 </div>
         </nav>
-
 
 <div class="panel panel-default">
         <div class="panel-offset-senss">
@@ -68,6 +68,16 @@
 
 			<select class="form-control" name="isp">
 			<option value="AT&T">AT&T</option>
+			//Commenting out for the purpose of DHS
+		        <?php
+				//$command='python /var/www/html/scripts/get_cities.py '.' 2>&1';
+                                //$output=trim(shell_exec($command));
+				//$output_array = explode(" ",$output);
+                		//foreach($output_array as $item){
+                        	//	$switch_name=$item;
+				//	echo '<option value="'.$switch_name.'">'.$switch_name.'</option>';
+                		//}
+		        ?>
 			</select>
 			<br />
                         <input type="submit" class="btn" name="formSubmit" value="Submit"/>

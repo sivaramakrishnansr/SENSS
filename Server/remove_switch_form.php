@@ -20,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-	  <title>SENSS</title>
+	  <title>SENSS - Remove Switch</title>
 	  <link rel="stylesheet" href="css/bootstrap.min.css">
   	  <script src="css/jquery.min.js"></script>
   	  <script src="css/bootstrap.min.js"></script>
@@ -34,7 +34,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS-ISP</a>
+                                <div class="navbar-brand">SENSS-SERVER</div>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
@@ -52,7 +52,7 @@
 	<div class="panel panel-default panel-offset-senss">
 	<form action="remove_switch.php" method="post">
 			<div class="form-group">
-                                <input type="text" style="width:200px;" class="form-control" name="switch_name" id="switch_name" maxlength="50"  placeholder="Name of Switch" />
+                                <input type="text" style="width:200px;" class="form-control" name="switch_ip" id="switch_ip" maxlength="50"  placeholder="IP Address of Switch" />
                         </div>
 			<div class="form-group">
                                 <input type="text" style="width:200px;" class="form-control" name="switch_username" id="switch_username" maxlength="50"  placeholder="Switch Username" />

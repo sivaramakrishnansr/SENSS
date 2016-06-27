@@ -20,7 +20,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>SENSS</title>
+          <title>SENSS - Remove Switch</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -32,7 +32,7 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS</a>
+                                <div class="navbar-brand">SENSS-SERVER</div>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
@@ -50,18 +50,15 @@
 	<?php
 	if($_POST['formSubmit'] == "Submit")
 	{
-        	$switch_ip = $_POST['switch_name'];
+        	$switch_ip = $_POST['switch_ip'];
 		$switch_username=$_POST['switch_username'];
 		$switch_password=$_POST['switch_password'];
 		include('Net/SSH2.php');
-		$switch_ip=$switch_ip.".dhs.senss";
-		echo $switch_ip;
 		$ssh = new Net_SSH2($switch_ip);
 		if (!$ssh->login($switch_username, $switch_password)) {
-			echo "Login Failed";
     			exit('Login Failed');
 		}
-		$command_to_exec='sudo python /proj/SENSS/remove_switch.py &';
+		$command_to_exec='sudo python /proj/SENSS/remove_switch.py';
 		$ssh->exec($command_to_exec);
 		echo "<h1>Removed Switch</h1>";
 	}

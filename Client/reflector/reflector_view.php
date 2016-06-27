@@ -19,7 +19,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> 
 <html>
 <head>
-          <title>Reflector</title>
+          <title>SENSS - Reflector</title>
           <link rel="stylesheet" href="css/bootstrap.min.css">
           <script src="css/jquery.min.js"></script>
           <script src="css/bootstrap.min.js"></script>
@@ -33,14 +33,15 @@
         <nav class="navbar navbar-inverse navbar-static-top">
                 <div class="container-fluid">
                         <div class="navbar-header">
-                                <a class="navbar-brand" href="index.php">SENSS</a>
+                                <a class="navbar-brand" href="direct_floods_form.php">SENSS-CLIENT</a>
                         </div>
                         <div>
                                 <ul class="nav navbar-nav">
-					<li><a href="direct_floods_form.php">Direct Floods</a></li>
-					<li><a href="crossfire_form.php">Crossfire</a></li>
-					<li><a href="reflector_form.php">Reflector</a></li>
+                                        <li><a href="direct_floods_form.php">Direct Floods</a></li>
+                                        <li><a href="crossfire_form.php">Crossfire</a></li>
+                                        <li><a href="reflector_view.php">Reflector</a></li>
                                 </ul>
+                                </a>
                         </div>
                 </div>
         </nav>
@@ -53,7 +54,7 @@
 	</div>
 
 	<?php
-		$dpid_of_switch=23;
+		$dpid_of_switch=148;
  		echo '<div id="Add-Filter" class="modal fade" role="dialog">';
 			   echo '<div class="modal-dialog">';
 			 	echo '<div class="modal-content">';
@@ -66,7 +67,7 @@
                                                			echo '<input type="text" style="width:200px;" class="form-control" name="dpid" id="dpid" maxlength="50"  readonly="readonly" value="'.$dpid_of_switch.'" />';
                                             		echo '</div>';
                                                 	echo '<div class="form-group">';
-                                                			echo '<input type="text" style="width:200px;" class="form-control" name="in_port" id="in_port" maxlength="50"  placeholder="In Port" />';
+                                                			echo '<input type="text" style="width:200px;" class="form-control" name="tp_src" id="tp_src" maxlength="50"  placeholder="In Port" />';
                                                 	echo '</div>';
                                                 	echo '<input type="submit" class="btn" name="formSubmit" value="Submit"/> ';
                                                  echo '</form> ';
