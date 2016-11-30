@@ -7,7 +7,7 @@ import flowtools
 import pygtrie as t
 from bitarray import bitarray
 
-WELL_KNOWN_PORTS = [19, 22, 23, 25, 80, 443]
+WELL_KNOWN_PORTS = [19, 22, 23, 25, 53, 80, 443]
 SYN_ACK_PSH = bitarray('011010')
 SYN_ACK_PSH_FIN = bitarray('000010')
 SYN_ACK_FIN = bitarray('010011')
@@ -15,21 +15,50 @@ SYN_ACK_URG = bitarray('110010')
 SYN_ACK_URG_FIN = bitarray('110011')
 ACK_PSH = bitarray('011000')
 ACK_FIN = bitarray('010001')
+PERIOD = 60
+alpha = 0.8
 
 class DestInfo():
     def __init__(self, ls, sc, uc, mb, dur):
         self.last_seen = ls
         self.successful_cnxns = sc
         self.unsuccessful_cnxns = uc
-        self.mega_bytes = mb
+        self.successful_lvl = 0
+        self.unsuccessful_lvl = 0
+        self.mega_bytes = mb    
         self.duration = dur
+        self.rate = 0
+        self.rate_lvl = 0
         #self.state = st
 
+def printFlows(trie):        
+    for dst in trie:
+        if (trie[dst].unsuccessful_cnxns + trie[dst].successful_cnxns == 0):
+            continue;
+        percent_uc = float(trie[dst].unsuccessful_cnxns)/float(trie[dst].unsuccessful_cnxns + trie[dst].successful_cnxns)
+        rate = 100*float(trie[dst].mega_bytes)/float(trie[dst].duration);
+        conns = trie[dst].successful_cnxns + trie[dst].unsuccessful_cnxns
+        if (percent_uc > trie[dst].unsuccessful_lvl*1.5 and trie[dst].successful_lvl > trie[dst].successful_cnxns*2 and trie[dst].rate_lvl*2 < rate and conns > 100):
+            print "Destination Address: " + dst + "\t Successful Connections " + str(trie[dst].successful_cnxns) \
+                + " historically " + str(trie[dst].successful_lvl) + " Unsuccessful Connections: " + str(trie[dst].unsuccessful_cnxns) + "\t Percentage Unsuccessful "+str(percent_uc*100) + " historically " + str(trie[dst].unsuccessful_lvl) + " %\t Bytes per second: " + str(100*float(trie[dst].mega_bytes)/float(trie[dst].duration)) + " historically " +  str(trie[dst].rate_lvl) 
+        trie[dst].successful_lvl =  trie[dst].successful_lvl*alpha + trie[dst].successful_cnxns*(1-alpha)
+        trie[dst].unsuccessful_lvl =  trie[dst].unsuccessful_lvl*alpha + percent_uc*100*(1-alpha)
+        trie[dst].rate_lvl =  trie[dst].rate_lvl*alpha + 100*float(trie[dst].mega_bytes)/float(trie[dst].duration)*(1-alpha)
+        trie[dst].successful_cnxns = 0;
+        trie[dst].unsuccessful_cnxns = 0;
+        trie[dst].mega_bytes = 0
+        trie[dst].duration = 0
 
 def buildFlowToolsTrie(infile, trie):
     flows = flowtools.FlowSet(infile)
-
+    laststat = 0;
+    
     for flow in flows:
+        if (laststat == 0):
+            laststat = flow.first;
+        if (flow.first - laststat > PERIOD):
+            printFlows(trie);
+            laststat = flow.first;
         if flow.prot!=6 or flow.dstport not in WELL_KNOWN_PORTS:
             continue
         if flow.last - flow.first < 15:
@@ -60,10 +89,8 @@ def buildFlowToolsTrie(infile, trie):
             trie[dst].unsuccessful_cnxns += uc
             trie[dst].mega_bytes += float(flow.dOctets)/1000000
             trie[dst].duration +=float(flow.last-flow.first)
-            percent_uc = float(trie[dst].unsuccessful_cnxns)/float(trie[dst].unsuccessful_cnxns + trie[dst].successful_cnxns)
-            if (trie[dst].unsuccessful_cnxns + trie[dst].successful_cnxns) > 100 and percent_uc > 0.1:
-                print "Destination Address: " + dst + "\t Successful Connections " + str(trie[dst].successful_cnxns) \
-                      + " Unsuccessful Connections: " + str(trie[dst].unsuccessful_cnxns) + "\t Percentage Unsuccessful "+str(percent_uc*100) + " %" #" \t Bytes per second: " + str(float(trie[dst].mega_bytes)/float(trie[dst].duration))
+
+            
 
 def main():
 
