@@ -23,11 +23,12 @@ for $time (sort {$a<=>$b} keys %hash)
     $i = 0;
     $start = 0;
     %fds=();
-    for $file (keys %{$hash{$time}})
-    {
-	system("python reader.py -f flow-tools $file &");
+    #for $file (keys %{$hash{$time}})
+    #{
+#	system("python reader.py -f flow-tools $file &");
+	print "python reader.py -f flow-tools $file &";
 	# wait here for all 29 to finish
-    }
+    #}
 }
 
 sub printStats
