@@ -6,7 +6,7 @@ our %flows=();
 our %hash=();
 sub wanted {
     if (-f) {
-	if ($File::Find::name =~ /\/ft/)
+	if ($File::Find::name =~ /\/flows/)
 	{
 	    $hash{$File::Find::name} = 1;
 	}
@@ -14,8 +14,8 @@ sub wanted {
 }
 
 find(\&wanted, $ARGV[0]);
+$d=scalar(keys %hash);
 for $file (keys %hash)
 {
     print "$file\n";
-    system("flow-print -f 5 < $file | grep 207.75.112.0 | grep  31.222.168.0    | grep 56933");
 }
