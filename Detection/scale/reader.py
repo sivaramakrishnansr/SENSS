@@ -107,7 +107,7 @@ def getFlows(infile):
                 stop = avg
             #stash this
             continue
-        elif (time1 - start > 1):
+        elif (time1 - start > 1): #reporting interval, currently 1 sec
             mes=json.dumps(dsts)
             mes = mes + "\n"
             try:

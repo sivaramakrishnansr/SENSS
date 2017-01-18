@@ -25,34 +25,8 @@ for $time (sort {$a<=>$b} keys %hash)
     %fds=();
     for $file (keys %{$hash{$time}})
     {
-	open(PS,"python extract_flows.py -f flow-tools $file |") || die "Failed: $!\n";
-	while (<PS> )
-	{
-	    #Always go with end time and save the out of order flows
-	    #for future processing
-	    #1453431579.95 1453431583.02 151.20.216.0:60834 -> 35.8.192.0:23 2 120 0
-	    print "$_";
-	    my @items = split /\s/, $_;
-	    if ($start == 0) 
-	    {
-		$start = $items[2];
-	    }
-	    if ($items[2] - $last > 1)
-	    {
-#		push(@{$saved{$items[2]}}, $_);
-		next;
-	    }
-	    else
-	    {
-		$last = $items[2];
-	    }
-	    if ($items[2] - $start > 1)
-	    {
-		printStats($items[2]);
-		$start = $items[2];
-		last;
-	    }
-	}
+	system("python reader.py -f flow-tools $file &");
+	# wait here for all 29 to finish
     }
 }
 
