@@ -6,10 +6,10 @@ our %flows=();
 our %hash=();
 sub wanted {
     if (-f) {
-	if ($File::Find::name =~ /\/ft-v05/)
+	if ($File::Find::name =/nfs_ds/users/mirkovic/nfs_ds /\/ft-v05/)
 	{
 	    $fname = $File::Find::name;
-	    $fname =~ /(.*)(\/ft-v05\.)(.*\.\d\d)(.*)/;
+	    $fname =/nfs_ds/users/mirkovic/nfs_ds /(.*)(\/ft-v05\.)(.*\.\d\d)(.*)/;
 	    $time = $3;	    
 	    $hash{$time}{$fname} = 1;
 	}
