@@ -92,6 +92,8 @@ def getFlows(infile):
             continue
         dst = str(dst) + ":" + str(dport)
         src = str(src) + ":" + str(sport)
+	# print src, dst, flow.first, flow.last
+	# continue
         char = " -> "
         if (flip):
             char = " <- "
@@ -99,8 +101,9 @@ def getFlows(infile):
         if (start == 0):
             start = time1
             stop = time1
+
             avg = time1
-            dsts[start] = dict()
+            dsts[int(start)] = dict()
         elif (time1 - stop > 1):
             avg = 0.9*avg + 0.1*time1
             if (avg - stop > 1):
@@ -114,18 +117,19 @@ def getFlows(infile):
                 sock.sendall(mes)
             finally:
                 pass
-            for d in dsts[start]:
-                print str(time1) + " " + str(d) + " " + str(dsts[start][d])
+            for d in dsts[int(start)]:
+                print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
+            exit(0)
             start = time1
-            dsts.clear()
-            dsts[start] = dict()
+            dsts = dict()
+            dsts[int(start)] = dict()
         stop = time1
-        if dst not in dsts[start]:
-            dsts[start][dst] = 0
+        if dst not in dsts[int(start)]:
+            dsts[int(start)][dst] = 0
         if (sc):
-            dsts[start][dst] = dsts[start][dst] - fc
+            dsts[int(start)][dst] = dsts[int(start)][dst] - fc
         else:
-            dsts[start][dst] = dsts[start][dst] + fc
+            dsts[int(start)][dst] = dsts[int(start)][dst] + fc
         #print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
 
             
