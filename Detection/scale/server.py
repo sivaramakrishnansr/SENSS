@@ -5,8 +5,8 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-#   - Redistributions of source code must retain the above copyright notice,
-#     this list of conditions and the following disclaimer.
+# - Redistributions of source code must retain the above copyright notice,
+# this list of conditions and the following disclaimer.
 #   - Redistributions in binary form must reproduce the above copyright notice,
 #     this list of conditions and the following disclaimer in the documentation
 #     and/or other materials provided with the distribution.
@@ -34,13 +34,16 @@ curtime = 0
 lasttime = 0
 
 DETINT = 10
+reports_count = 29
 
+'''
+# Old Detection Module
 def detect():
     global stats, curtime, lasttime
-    
+
     while True:
-        diff=curtime-lasttime
-        print "curtime " + str(curtime) + " lasttime " + str(lasttime)+ " diff" + str(diff)
+        diff = curtime - lasttime
+        print "curtime " + str(curtime) + " lasttime " + str(lasttime) + " diff" + str(diff)
         if (int(curtime - lasttime) > DETINT):
             print "Will detect "
             ot = curtime
@@ -55,9 +58,22 @@ def detect():
                 lasttime = ot
         sleep(1)
 
+'''
+
+
+def detect():
+    global stats, curtime, lasttime
+    for t in stats:
+        for destination in stats[t]['destinations']:
+            if stats[t]['destinations'][destination] > 0:
+                print "attack on " + str(destination) + " at time " + str(t) + " count " + str(
+                    stats[t]['destinations'][destination])
+    stats = dict()
+
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     allow_reuse_address = True
+
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
@@ -66,24 +82,42 @@ class Handler(SocketServer.StreamRequestHandler):
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
-            data=json.loads(mes)
+            data = json.loads(mes)
             for d in data:
-                t = int(float(d))
+                t = int(d)
                 if t > curtime:
-                    stats[t]=dict()
+                    stats[t] = dict()
+                    stats[t]['destinations'] = dict()
+                    stats[t]['reports'] = 1
+                    # if first time data received, set curtime and lasttime
+                    if curtime == 0 and lasttime == 0:
+                        curtime = t
+                        lasttime = t
                     curtime = t
+                else:
+                    stats[t]['reports'] += 1
                 for dst in data[d]:
-                    if dst not in stats[t]:
-                        stats[t][dst] = 0
-                    stats[t][dst] = stats[t][dst] + data[d][dst]
+                    if dst not in stats[t]['destinations']:
+                        stats[t]['destinations'][dst] = 0
+                    stats[t]['destinations'][dst] += data[d][dst]
+                # check if all reports obtained
+                if stats[t]['reports'] == reports_count:
+                    lasttime = t
+                    # all reports obtained. Run the detection module
+                    detect()
+                elif t - lasttime >= DETINT:
+                    lasttime = t
+                    # limit exceeded. Run the detection module
+                    detect()
 
-                    
+
 stats = dict()
-                    
+
+
 def main():
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
-        thread = Thread(target = detect)
+        thread = Thread()
         thread.start()
         server.serve_forever()
         thread.join()
@@ -91,6 +125,7 @@ def main():
 
     except KeyboardInterrupt:
         pass
-    
+
+
 if __name__ == "__main__":
     main()
