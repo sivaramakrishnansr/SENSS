@@ -120,9 +120,9 @@ def getFlows(infile):
             finally:
                 pass
             sock.recv(1024) # blocking call
-            for d in dsts[int(start)]:
-                print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
-            exit(0)
+            #for d in dsts[int(start)]:
+            #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
+            #exit(0)
             start = time1
             dsts = dict()
             dsts[int(start)] = dict()

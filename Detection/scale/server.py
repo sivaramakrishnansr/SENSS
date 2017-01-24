@@ -65,7 +65,7 @@ def detect():
     global stats, curtime, lasttime
     for t in stats:
         for destination in stats[t]['destinations']:
-            if stats[t]['destinations'][destination] > 0:
+            if stats[t]['destinations'][destination] > 20:
                 print "attack on " + str(destination) + " at time " + str(t) + " count " + str(
                     stats[t]['destinations'][destination])
     stats = dict()
@@ -95,21 +95,27 @@ class Handler(SocketServer.StreamRequestHandler):
                         lasttime = t
                     curtime = t
                 else:
-                    stats[t]['reports'] += 1
-                for dst in data[d]:
-                    if dst not in stats[t]['destinations']:
-                        stats[t]['destinations'][dst] = 0
-                    stats[t]['destinations'][dst] += data[d][dst]
-                # check if all reports obtained
-                if stats[t]['reports'] == reports_count:
-                    lasttime = t
-                    # all reports obtained. Run the detection module
-                    detect()
-                elif t - lasttime >= DETINT:
-                    lasttime = t
-                    # limit exceeded. Run the detection module
-                    detect()
-            # send OK to client
+                    try:
+		    	stats[t]['reports'] += 1
+		    except KeyError as e:
+			print "curtime: " + str(curtime) + " t: " + str(t)
+                try:
+		    for dst in data[d]:
+                    	if dst not in stats[t]['destinations']:
+                        	stats[t]['destinations'][dst] = 0
+                    	stats[t]['destinations'][dst] += data[d][dst]
+                    # check if all reports obtained
+                    if stats[t]['reports'] == reports_count:
+                    	lasttime = t
+                    	# all reports obtained. Run the detection module
+                    	detect()
+                    elif t - lasttime >= DETINT:
+                    	lasttime = t
+                    	# limit exceeded. Run the detection module
+                    	# detect()
+            	except:
+		    pass
+	    # send OK to client
             self.wfile.write("OK")
 
 
