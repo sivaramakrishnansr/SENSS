@@ -109,6 +109,8 @@ class Handler(SocketServer.StreamRequestHandler):
                     lasttime = t
                     # limit exceeded. Run the detection module
                     detect()
+            # send OK to client
+            self.wfile.write("OK")
 
 
 stats = dict()
