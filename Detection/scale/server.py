@@ -7,7 +7,7 @@
 # modification, are permitted provided that the following conditions are met:
 # - Redistributions of source code must retain the above copyright notice,
 # this list of conditions and the following disclaimer.
-#   - Redistributions in binary form must reproduce the above copyright notice,
+# - Redistributions in binary form must reproduce the above copyright notice,
 #     this list of conditions and the following disclaimer in the documentation
 #     and/or other materials provided with the distribution.
 #   - Neither the name of the StumbleUpon nor the names of its contributors
@@ -96,26 +96,26 @@ class Handler(SocketServer.StreamRequestHandler):
                     curtime = t
                 else:
                     try:
-		    	stats[t]['reports'] += 1
-		    except KeyError as e:
-			print "curtime: " + str(curtime) + " t: " + str(t)
+                        stats[t]['reports'] += 1
+                    except KeyError as e:
+                        print "curtime: " + str(curtime) + " t: " + str(t)
                 try:
-		    for dst in data[d]:
-                    	if dst not in stats[t]['destinations']:
-                        	stats[t]['destinations'][dst] = 0
-                    	stats[t]['destinations'][dst] += data[d][dst]
+                    for dst in data[d]:
+                        if dst not in stats[t]['destinations']:
+                            stats[t]['destinations'][dst] = 0
+                        stats[t]['destinations'][dst] += data[d][dst]
                     # check if all reports obtained
                     if stats[t]['reports'] == reports_count:
-                    	lasttime = t
-                    	# all reports obtained. Run the detection module
-                    	detect()
+                        lasttime = t
+                        # all reports obtained. Run the detection module
+                        detect()
                     elif t - lasttime >= DETINT:
-                    	lasttime = t
-                    	# limit exceeded. Run the detection module
-                    	# detect()
-            	except:
-		    pass
-	    # send OK to client
+                        lasttime = t
+                    # limit exceeded. Run the detection module
+                    # detect()
+                except:
+                    pass
+            # send OK to client
             self.wfile.write("OK")
 
 
