@@ -27,11 +27,15 @@
 
 import SocketServer
 import json
+import pickle
 from threading import Thread
 from time import sleep
+from collections import defaultdict
 
 curtime = 0
 lasttime = 0
+dict_t_count = 0
+file_count = 0
 
 DETINT = 10
 reports_count = 29
@@ -77,7 +81,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime
+        global stats, curtime, lasttime, dict_t_count, file_count
         while True:
             mes = self.rfile.readline()
             if not mes:  # EOF
@@ -85,6 +89,22 @@ class Handler(SocketServer.StreamRequestHandler):
             data = json.loads(mes)
             for d in data:
                 t = int(d)
+                if 'destinations' in stats[t]:
+                    stats[t]['reports'] += 1
+                else:
+                    if len(stats) >= 100000:
+                        file_name = "dump-" + file_count + ".pickle"
+                        file_count += 1
+                        with open(file_name, 'wb') as handle:
+                            pickle.dump(stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                        stats = defaultdict(dict)
+                    stats[t]['destinations'] = defaultdict(int)
+                    stats[t]['reports'] = 1
+
+                for dst in data[d]:
+                    stats[t]['destinations'][dst] += data[d][dst]
+
+                """
                 if t > curtime:
                     stats[t] = dict()
                     stats[t]['destinations'] = dict()
@@ -115,11 +135,12 @@ class Handler(SocketServer.StreamRequestHandler):
                     # detect()
                 except:
                     pass
+                """
             # send OK to client
-            self.wfile.write("OK")
+            # self.wfile.write("OK")
 
 
-stats = dict()
+stats = defaultdict(dict)
 
 
 def main():
