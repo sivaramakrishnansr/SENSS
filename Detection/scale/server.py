@@ -28,14 +28,15 @@
 import SocketServer
 import json
 import pickle
-from threading import Thread
-from time import sleep
+from threading import Thread, Timer
+import time
 from collections import defaultdict
 
 curtime = 0
 lasttime = 0
 dict_t_count = 0
 file_count = 0
+prev_dict_save = 0
 
 DETINT = 10
 reports_count = 29
@@ -81,8 +82,9 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, dict_t_count, file_count
+        global stats, curtime, lasttime, file_count, prev_dict_save
         while True:
+	    prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
@@ -93,11 +95,12 @@ class Handler(SocketServer.StreamRequestHandler):
                     stats[t]['reports'] += 1
                 else:
                     if len(stats) >= 100000:
-                        file_name = "dump-" + file_count + ".pickle"
+                        file_name = "dump-" + str(file_count) + ".pickle"
                         file_count += 1
                         with open(file_name, 'wb') as handle:
                             pickle.dump(stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
                         stats = defaultdict(dict)
+			print "saved"
                     stats[t]['destinations'] = defaultdict(int)
                     stats[t]['reports'] = 1
 
@@ -140,10 +143,24 @@ class Handler(SocketServer.StreamRequestHandler):
             # self.wfile.write("OK")
 
 
+def save_dict():
+	global stats, prev_dict_save, file_count
+	Timer(10.0, save_dict).start()
+	if len(stats) > 0 and int(time.time()) - prev_dict_save > 10:
+		prev_dict_save = int(time.time())
+		file_name = "dump-" + str(file_count) + ".pickle"
+                file_count += 1
+                with open(file_name, 'wb') as handle:
+                	pickle.dump(stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                stats = defaultdict(dict)
+		print "saved"
+
+
 stats = defaultdict(dict)
 
 
 def main():
+    save_dict()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
         thread = Thread()

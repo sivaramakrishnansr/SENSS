@@ -40,7 +40,8 @@ for $time (sort {$a<=>$b} keys %hash)
     for my $pid (@pids) {
     	waitpid $pid, 0;
     }
-    print "-------"
+    print "-------";
+    exit;
 }
 
 sub printStats

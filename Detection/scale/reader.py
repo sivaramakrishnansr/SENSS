@@ -119,7 +119,7 @@ def getFlows(infile):
                 sock.sendall(mes)
             finally:
                 pass
-            sock.recv(1024) # blocking call
+            # sock.recv(1024) # blocking call
             #for d in dsts[int(start)]:
             #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
             #exit(0)
