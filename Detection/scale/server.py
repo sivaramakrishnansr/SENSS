@@ -8,7 +8,7 @@
 # - Redistributions of source code must retain the above copyright notice,
 # this list of conditions and the following disclaimer.
 # - Redistributions in binary form must reproduce the above copyright notice,
-#     this list of conditions and the following disclaimer in the documentation
+# this list of conditions and the following disclaimer in the documentation
 #     and/or other materials provided with the distribution.
 #   - Neither the name of the StumbleUpon nor the names of its contributors
 #     may be used to endorse or promote products derived from this software
@@ -84,28 +84,27 @@ class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
         global stats, curtime, lasttime, file_count, prev_dict_save
         while True:
-	    prev_dict_save = int(time.time())
+            prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
             data = json.loads(mes)
             for d in data:
                 t = int(d)
-                if 'destinations' in stats[t]:
-                    stats[t]['reports'] += 1
+                if 'destinations' in stats[file_count][t]:
+                    stats[file_count][t]['reports'] += 1
                 else:
-                    if len(stats) >= 100000:
+                    if len(stats[file_count]) >= 100000:
                         file_name = "dump-" + str(file_count) + ".pickle"
+                        dump_dictionary(file_name, file_count)
                         file_count += 1
-                        with open(file_name, 'wb') as handle:
-                            pickle.dump(stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
-                        stats = defaultdict(dict)
-			print "saved"
-                    stats[t]['destinations'] = defaultdict(int)
-                    stats[t]['reports'] = 1
+                        stats[file_count] = defaultdict(dict)
+                        print "saved"
+                    stats[file_count][t]['destinations'] = defaultdict(int)
+                    stats[file_count][t]['reports'] = 1
 
                 for dst in data[d]:
-                    stats[t]['destinations'][dst] += data[d][dst]
+                    stats[file_count][t]['destinations'][dst] += data[d][dst]
 
                 """
                 if t > curtime:
@@ -139,24 +138,31 @@ class Handler(SocketServer.StreamRequestHandler):
                 except:
                     pass
                 """
-            # send OK to client
-            # self.wfile.write("OK")
+                # send OK to client
+                # self.wfile.write("OK")
+
+
+def dump_dictionary(file_name, index):
+    global stats
+    with open(file_name, 'wb') as handle:
+        pickle.dump(stats[index], handle)
+        stats[index].clear()
 
 
 def save_dict():
-	global stats, prev_dict_save, file_count
-	Timer(10.0, save_dict).start()
-	if len(stats) > 0 and int(time.time()) - prev_dict_save > 10:
-		prev_dict_save = int(time.time())
-		file_name = "dump-" + str(file_count) + ".pickle"
-                file_count += 1
-                with open(file_name, 'wb') as handle:
-                	pickle.dump(stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
-                stats = defaultdict(dict)
-		print "saved"
+    global stats, prev_dict_save, file_count
+    Timer(10.0, save_dict).start()
+    if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
+        prev_dict_save = int(time.time())
+        file_name = "dump-" + str(file_count) + ".pickle"
+        dump_dictionary(file_name, file_count)
+        file_count += 1
+        stats[file_count] = defaultdict(dict)
+        print "saved"
 
 
-stats = defaultdict(dict)
+stats = []
+stats[file_count] = defaultdict(dict)
 
 
 def main():
