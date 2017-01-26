@@ -31,6 +31,8 @@ import pickle
 from threading import Thread, Timer
 import time
 from collections import defaultdict
+import gc
+
 
 curtime = 0
 lasttime = 0
@@ -94,11 +96,11 @@ class Handler(SocketServer.StreamRequestHandler):
                 if 'destinations' in stats[file_count][t]:
                     stats[file_count][t]['reports'] += 1
                 else:
-                    if len(stats[file_count]) >= 100000:
+                    if len(stats[file_count]) >= 3300:
+			file_count += 1
+			stats.append(defaultdict(dict))
                         file_name = "dump-" + str(file_count) + ".pickle"
-                        dump_dictionary(file_name, file_count)
-                        file_count += 1
-                        stats[file_count] = defaultdict(dict)
+                        dump_dictionary(file_name, file_count - 1)
                         print "saved"
                     stats[file_count][t]['destinations'] = defaultdict(int)
                     stats[file_count][t]['reports'] = 1
@@ -146,23 +148,25 @@ def dump_dictionary(file_name, index):
     global stats
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
-        stats[index].clear()
+        stats[index] = False
+	print "gc = " + str(gc.collect())
 
 
 def save_dict():
     global stats, prev_dict_save, file_count
     Timer(10.0, save_dict).start()
+    print len(stats[file_count])
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
         dump_dictionary(file_name, file_count)
         file_count += 1
-        stats[file_count] = defaultdict(dict)
+        stats.append(defaultdict(dict))
         print "saved"
 
 
 stats = []
-stats[file_count] = defaultdict(dict)
+stats.append(defaultdict(dict))
 
 
 def main():
