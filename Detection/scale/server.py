@@ -9,7 +9,7 @@
 # this list of conditions and the following disclaimer.
 # - Redistributions in binary form must reproduce the above copyright notice,
 # this list of conditions and the following disclaimer in the documentation
-#     and/or other materials provided with the distribution.
+# and/or other materials provided with the distribution.
 #   - Neither the name of the StumbleUpon nor the names of its contributors
 #     may be used to endorse or promote products derived from this software
 #     without specific prior written permission.
@@ -36,7 +36,7 @@ import gc
 
 curtime = 0
 lasttime = 0
-dict_t_count = 0
+dict_dst_count = 0
 file_count = 0
 prev_dict_save = 0
 
@@ -84,7 +84,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
@@ -96,17 +96,22 @@ class Handler(SocketServer.StreamRequestHandler):
                 if 'destinations' in stats[file_count][t]:
                     stats[file_count][t]['reports'] += 1
                 else:
-                    if len(stats[file_count]) >= 3300:
-			file_count += 1
-			stats.append(defaultdict(dict))
+                    if len(dict_dst_count) >= 100000:
+                        dict_dst_count = 0
+                        file_count += 1
+                        stats.append(defaultdict(dict))
                         file_name = "dump-" + str(file_count) + ".pickle"
                         dump_dictionary(file_name, file_count - 1)
                         print "saved"
-                    stats[file_count][t]['destinations'] = defaultdict(int)
+                    stats[file_count][t]['destinations'] = dict()
                     stats[file_count][t]['reports'] = 1
 
                 for dst in data[d]:
-                    stats[file_count][t]['destinations'][dst] += data[d][dst]
+                    if dst in stats[file_count][t]['destinations']:
+                        stats[file_count][t]['destinations'][dst] += data[d][dst]
+                    else:
+                        stats[file_count][t]['destinations'][dst] = data[d][dst]
+                        dict_dst_count += 1
 
                 """
                 if t > curtime:
@@ -148,8 +153,8 @@ def dump_dictionary(file_name, index):
     global stats
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
-        stats[index] = False
-	print "gc = " + str(gc.collect())
+        stats[index].clear()
+        print "gc = " + str(gc.collect())
 
 
 def save_dict():
@@ -165,8 +170,7 @@ def save_dict():
         print "saved"
 
 
-stats = []
-stats.append(defaultdict(dict))
+stats = [defaultdict(dict)]
 
 
 def main():
