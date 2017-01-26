@@ -39,6 +39,7 @@ lasttime = 0
 dict_dst_count = 0
 file_count = 0
 prev_dict_save = 0
+client_arr = []
 
 DETINT = 10
 reports_count = 29
@@ -86,7 +87,7 @@ class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
         global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count
         while True:
-            prev_dict_save = int(time.time())
+	    prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
@@ -94,9 +95,12 @@ class Handler(SocketServer.StreamRequestHandler):
             for d in data:
                 t = int(d)
                 if 'destinations' in stats[file_count][t]:
-                    stats[file_count][t]['reports'] += 1
+		    # print "append"
+		    if self.client_address[1] not in stats[file_count][t]['clients']:
+			stats[file_count][t]['clients'].append(self.client_address[1])
+                    # stats[file_count][t]['reports'] += 1
                 else:
-                    if len(dict_dst_count) >= 100000:
+                    if dict_dst_count >= 10000:
                         dict_dst_count = 0
                         file_count += 1
                         stats.append(defaultdict(dict))
@@ -104,7 +108,7 @@ class Handler(SocketServer.StreamRequestHandler):
                         dump_dictionary(file_name, file_count - 1)
                         print "saved"
                     stats[file_count][t]['destinations'] = dict()
-                    stats[file_count][t]['reports'] = 1
+                    stats[file_count][t]['clients'] = [self.client_address[1]]
 
                 for dst in data[d]:
                     if dst in stats[file_count][t]['destinations']:
@@ -151,6 +155,10 @@ class Handler(SocketServer.StreamRequestHandler):
 
 def dump_dictionary(file_name, index):
     global stats
+    for t in stats[index]:
+	print t
+	stats[index][t]['reports'] = len(stats[index][t]['clients'])
+	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
         stats[index].clear()
@@ -158,9 +166,10 @@ def dump_dictionary(file_name, index):
 
 
 def save_dict():
-    global stats, prev_dict_save, file_count
+    global stats, prev_dict_save, file_count, client_arr
     Timer(10.0, save_dict).start()
     print len(stats[file_count])
+    # print "arr: " + str(len(client_arr))
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
