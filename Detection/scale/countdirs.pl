@@ -23,7 +23,7 @@ for $time (sort {$a<=>$b} keys %hash)
     $i = 0;
     $start = 0;
     %fds=();
-    my @pids;
+    my @pids = ();
     for $file (keys %{$hash{$time}})
     {
 	die "could not fork" unless defined(my $pid = fork);
