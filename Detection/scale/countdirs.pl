@@ -28,20 +28,22 @@ for $time (sort {$a<=>$b} keys %hash)
     {
 	die "could not fork" unless defined(my $pid = fork);
     	unless ($pid) { #child execs
-        	exec "python reader.py -f flow-tools $file";
-		#exec "python tempsleep.py";
+        	print "python reader.py -f flow-tools $file\n";
+		#print $file, "\n";
+		exec "python tempsleep.py";
         	die "exec failed";
     	}
 	push @pids, $pid; #parent stores children's pids
 	# system("python reader.py -f flow-tools $file &");
-	print +(split '/', $file )[6], "\n";
+	#print +(split '/', $file )[6], "\n";
     }
     #wait for all children to finish
     for my $pid (@pids) {
     	waitpid $pid, 0;
     }
-    print "-------";
-    exit;
+    #print "$i";
+    print "\n-------\n";
+    #exit;
 }
 
 sub printStats

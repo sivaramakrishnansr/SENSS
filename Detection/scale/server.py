@@ -100,7 +100,7 @@ class Handler(SocketServer.StreamRequestHandler):
                         stats[file_count][t]['clients'].append(self.client_address[1])
                         # stats[file_count][t]['reports'] += 1
                 else:
-                    if dict_dst_count >= 10000:
+                    if dict_dst_count >= 5000000:
                         dict_dst_count = 0
                         file_count += 1
                         stats.append(defaultdict(dict))
@@ -155,10 +155,10 @@ class Handler(SocketServer.StreamRequestHandler):
 
 def dump_dictionary(file_name, index):
     global stats
-    for t in stats[index]:
-        stats[index][t]['reports'] = len(stats[index][t]['clients'])
-    for t in stats[index]:
-        del stats[index][t]['clients']
+    #for t in stats[index]:
+	#if 'clients' in stats[index][t]:
+	#        stats[index][t]['reports'] = len(stats[index][t]['clients'])
+	#	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
         stats[index].clear()
@@ -173,9 +173,10 @@ def save_dict():
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
+	file_count += 1
+	stats.append(defaultdict(dict))
         dump_dictionary(file_name, file_count)
-        file_count += 1
-        stats.append(defaultdict(dict))
+        #stats.append(defaultdict(dict))
         print "saved"
 
 

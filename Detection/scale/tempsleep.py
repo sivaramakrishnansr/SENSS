@@ -1,5 +1,5 @@
 import time
 
 
-print "a"
-time.sleep(10)
+#print "a"
+#time.sleep(1)
