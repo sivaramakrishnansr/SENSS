@@ -52,8 +52,14 @@ def getFlows(infile):
     start = 0
     stop = 0
     avg = 0
+    count = 0
 
     for flow in flows:
+	print str(flow.first) + " " + str(flow.last)
+	count += 1
+	if count >= 100:
+		exit(0)
+	continue
         flip = 0
         if (laststat == 0):
             laststat = flow.last

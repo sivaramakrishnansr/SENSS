@@ -85,14 +85,20 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, client_arr
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
             data = json.loads(mes)
+	    temp_count = 0
+	    if self.client_address[1] not in client_arr:
+		client_arr.append(self.client_address[1])
             for d in data:
+		temp_count += len(data[d])
+	    print "timestamp: " + str(d) + "client: " + str(self.client_address[1]) + " destinations: " + str(temp_count)
+	    """
                 t = int(d)
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
@@ -116,8 +122,9 @@ class Handler(SocketServer.StreamRequestHandler):
                     else:
                         stats[file_count][t]['destinations'][dst] = data[d][dst]
                         dict_dst_count += 1
+	    """
 
-                """
+            """
                 if t > curtime:
                     stats[t] = dict()
                     stats[t]['destinations'] = dict()
@@ -148,7 +155,7 @@ class Handler(SocketServer.StreamRequestHandler):
                     # detect()
                 except:
                     pass
-                """
+            """
                 # send OK to client
                 # self.wfile.write("OK")
 
@@ -168,8 +175,8 @@ def dump_dictionary(file_name, index):
 def save_dict():
     global stats, prev_dict_save, file_count, client_arr
     Timer(10.0, save_dict).start()
-    print len(stats[file_count])
-    # print "arr: " + str(len(client_arr))
+    #print len(stats[file_count])
+    print "arr: " + str(len(client_arr))
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
