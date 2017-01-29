@@ -11,8 +11,8 @@
 # this list of conditions and the following disclaimer in the documentation
 # and/or other materials provided with the distribution.
 # - Neither the name of the StumbleUpon nor the names of its contributors
-#     may be used to endorse or promote products derived from this software
-#     without specific prior written permission.
+# may be used to endorse or promote products derived from this software
+# without specific prior written permission.
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 # IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -40,6 +40,7 @@ dict_dst_count = 0
 file_count = 0
 prev_dict_save = 0
 client_arr = []
+timestamps = [defaultdict(dict)]
 
 DETINT = 10
 reports_count = 29
@@ -85,20 +86,19 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, client_arr
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, client_arr, timestamps
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
             data = json.loads(mes)
-	    temp_count = 0
-	    if self.client_address[1] not in client_arr:
-		client_arr.append(self.client_address[1])
+            """
+            temp_count = 0
+            if self.client_address[1] not in client_arr:
+                client_arr.append(self.client_address[1])
+            """
             for d in data:
-		temp_count += len(data[d])
-	    print "timestamp: " + str(d) + "client: " + str(self.client_address[1]) + " destinations: " + str(temp_count)
-	    """
                 t = int(d)
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
@@ -118,11 +118,13 @@ class Handler(SocketServer.StreamRequestHandler):
 
                 for dst in data[d]:
                     if dst in stats[file_count][t]['destinations']:
+                        timestamps[file_count][t][dst][1] = time.time()
                         stats[file_count][t]['destinations'][dst] += data[d][dst]
                     else:
+                        current_time = time.time()
+                        timestamps[file_count][t][dst] = [current_time, current_time]
                         stats[file_count][t]['destinations'][dst] = data[d][dst]
                         dict_dst_count += 1
-	    """
 
             """
                 if t > curtime:
@@ -156,20 +158,22 @@ class Handler(SocketServer.StreamRequestHandler):
                 except:
                     pass
             """
-                # send OK to client
-                # self.wfile.write("OK")
+            # send OK to client
+            # self.wfile.write("OK")
 
 
 def dump_dictionary(file_name, index):
-    global stats
+    global stats, timestamps
     #for t in stats[index]:
-	#if 'clients' in stats[index][t]:
-	#        stats[index][t]['reports'] = len(stats[index][t]['clients'])
-	#	del stats[index][t]['clients']
+    #if 'clients' in stats[index][t]:
+    #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
+    #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
         stats[index].clear()
         print "gc = " + str(gc.collect())
+    with open('t-' + file_name, 'wb') as handle:
+        pickle.dump(timestamps[index], handle)
 
 
 def save_dict():
@@ -180,8 +184,8 @@ def save_dict():
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
-	file_count += 1
-	stats.append(defaultdict(dict))
+        file_count += 1
+        stats.append(defaultdict(dict))
         dump_dictionary(file_name, file_count)
         #stats.append(defaultdict(dict))
         print "saved"

@@ -52,14 +52,8 @@ def getFlows(infile):
     start = 0
     stop = 0
     avg = 0
-    count = 0
 
     for flow in flows:
-	print str(flow.first) + " " + str(flow.last)
-	count += 1
-	if count >= 100:
-		exit(0)
-	continue
         flip = 0
         if (laststat == 0):
             laststat = flow.last
@@ -107,7 +101,7 @@ def getFlows(infile):
             char = " <- "
         # 1453395538.07 1453395578.14 164.76.136.0:51601 <- 54.230.88.0:80 5 260 0
         if (start == 0):
-            start = time1
+            start = time2
             stop = time1
 
             avg = time1
@@ -118,7 +112,7 @@ def getFlows(infile):
                 stop = avg
             #stash this
             continue
-        elif (time1 - start > 1):  #reporting interval, currently 1 sec
+        elif (time2 - start > 1):  #reporting interval, currently 1 sec
             mes = json.dumps(dsts)
             mes = mes + "\n"
             try:
@@ -129,7 +123,7 @@ def getFlows(infile):
             #for d in dsts[int(start)]:
             #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
             #exit(0)
-            start = time1
+            start = time2
             dsts = dict()
             dsts[int(start)] = dict()
         stop = time1
