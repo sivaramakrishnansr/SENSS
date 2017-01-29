@@ -106,10 +106,11 @@ class Handler(SocketServer.StreamRequestHandler):
                         stats[file_count][t]['clients'].append(self.client_address[1])
                         # stats[file_count][t]['reports'] += 1
                 else:
-                    if dict_dst_count >= 5000000:
+                    if dict_dst_count >= 1000000:
                         dict_dst_count = 0
                         file_count += 1
                         stats.append(defaultdict(dict))
+                        timestamps.append(defaultdict(dict))
                         file_name = "dump-" + str(file_count) + ".pickle"
                         dump_dictionary(file_name, file_count - 1)
                         print "saved"
