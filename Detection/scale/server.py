@@ -41,6 +41,7 @@ file_count = 0
 prev_dict_save = 0
 client_arr = []
 timestamps = [defaultdict(dict)]
+continue_flag = False
 
 DETINT = 10
 reports_count = 29
@@ -86,7 +87,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, client_arr, timestamps
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, client_arr, timestamps, continue_flag
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
@@ -99,6 +100,8 @@ class Handler(SocketServer.StreamRequestHandler):
                 client_arr.append(self.client_address[1])
             """
             for d in data:
+                if continue_flag:
+                    continue
                 t = int(d)
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
@@ -107,11 +110,12 @@ class Handler(SocketServer.StreamRequestHandler):
                         # stats[file_count][t]['reports'] += 1
                 else:
                     if dict_dst_count >= 1000000:
+                        continue_flag = True
                         dict_dst_count = 0
                         file_count += 1
                         stats.append(defaultdict(dict))
                         timestamps.append(defaultdict(dict))
-                        file_name = "dump-" + str(file_count) + ".pickle"
+                        file_name = "dump-" + str(file_count - 1) + ".pickle"
                         dump_dictionary(file_name, file_count - 1)
                         print "saved"
                     stats[file_count][t]['destinations'] = dict()
