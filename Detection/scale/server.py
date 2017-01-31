@@ -43,8 +43,9 @@ client_arr = []
 timestamp_queue = []
 attacks = []
 last_timestamp_recd = 0
+timestamps = defaultdict(set)
 
-DETINT = 10
+DETINT = 100
 reports_count = 29
 
 '''
@@ -88,7 +89,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, timestamps
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
@@ -104,6 +105,7 @@ class Handler(SocketServer.StreamRequestHandler):
                 t = int(d)
                 last_timestamp_recd = t
                 timestamp_flag = False
+                timestamps[t].add(self.client_address[1])
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
                     if self.client_address[1] not in stats[file_count][t]['clients']:
@@ -178,7 +180,7 @@ def dump_dictionary(file_name, index):
     #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
-        pickle.dump(attacks, handle)
+        pickle.dump(timestamps, handle)
         print "gc = " + str(gc.collect())
     """
     with open(file_name, 'wb') as handle:
@@ -252,7 +254,7 @@ stats = [defaultdict(dict)]
 def main():
     save_dict()
     consume_completed_timestamps()
-    consume_time_exceed_timestamps()
+    # consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
         thread = Thread()
