@@ -222,7 +222,7 @@ def consume_completed_timestamps():
     len_t = len(timestamp_queue)
     for i in range(len_t):
         t = timestamp_queue[i]
-        for dst in stats[file_count][t]:
+        for dst in stats[file_count][t]['destinations']:
             if stats[file_count][t][dst] >= 10:
                 attacks.append({"timestamp": t, "dst": dst})
         dict_dst_count -= len(stats[file_count][t])
@@ -237,7 +237,7 @@ def consume_time_exceed_timestamps():
     stats_t = sorted(stats_t)
     for t in stats_t:
         if last_timestamp_recd - t >= DETINT:
-            for dst in stats[file_count][t]:
+            for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t][dst] >= 10:
                     attacks.append({"timestamp": t, "dst": dst})
             dict_dst_count -= len(stats[file_count][t])
