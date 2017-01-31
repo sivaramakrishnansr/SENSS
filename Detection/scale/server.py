@@ -172,24 +172,38 @@ class Handler(SocketServer.StreamRequestHandler):
 
 
 def dump_dictionary(file_name, index):
-    global stats, timestamps
+    global stats, timestamps, attacks
     #for t in stats[index]:
     #if 'clients' in stats[index][t]:
     #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
+        pickle.dump(attacks, handle)
+        print "gc = " + str(gc.collect())
+    """
+    with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
         stats[index].clear()
         print "gc = " + str(gc.collect())
+    """
     # with open('t-' + file_name, 'wb') as handle:
     #     pickle.dump(timestamps[index], handle)
 
 
 def save_dict():
-    global stats, prev_dict_save, file_count, client_arr
+    global stats, prev_dict_save, file_count, client_arr, attacks
     Timer(10.0, save_dict).start()
     print len(stats[file_count])
     # print "arr: " + str(len(client_arr))
+    if len(attacks) > 0 and int(time.time()) - prev_dict_save > 10:
+        prev_dict_save = int(time.time())
+        file_name = "attack-dump-" + str(file_count) + ".pickle"
+        file_count += 1
+        stats.append(defaultdict(dict))
+        dump_dictionary(file_name, None)
+        #stats.append(defaultdict(dict))
+        print "saved"
+    """
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
         file_name = "dump-" + str(file_count) + ".pickle"
@@ -198,6 +212,7 @@ def save_dict():
         dump_dictionary(file_name, file_count)
         #stats.append(defaultdict(dict))
         print "saved"
+    """
 
 
 def consume_completed_timestamps():
