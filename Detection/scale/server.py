@@ -223,9 +223,9 @@ def consume_completed_timestamps():
     for i in range(len_t):
         t = timestamp_queue[i]
         for dst in stats[file_count][t]['destinations']:
-            if stats[file_count][t][dst] >= 10:
+            if stats[file_count][t]['destinations'][dst] >= 10:
                 attacks.append({"timestamp": t, "dst": dst})
-        dict_dst_count -= len(stats[file_count][t])
+        dict_dst_count -= len(stats[file_count][t]['destinations'])
         del stats[file_count][t]
     del timestamp_queue[0: len_t]
 
@@ -238,9 +238,9 @@ def consume_time_exceed_timestamps():
     for t in stats_t:
         if last_timestamp_recd - t >= DETINT:
             for dst in stats[file_count][t]['destinations']:
-                if stats[file_count][t][dst] >= 10:
+                if stats[file_count][t]['destinations'][dst] >= 10:
                     attacks.append({"timestamp": t, "dst": dst})
-            dict_dst_count -= len(stats[file_count][t])
+            dict_dst_count -= len(stats[file_count][t]['destinations'])
             del stats[file_count][t]
         else:
             break
@@ -250,7 +250,7 @@ stats = [defaultdict(dict)]
 
 
 def main():
-    # save_dict()
+    save_dict()
     consume_completed_timestamps()
     consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
