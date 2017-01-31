@@ -42,6 +42,7 @@ prev_dict_save = 0
 client_arr = []
 timestamp_queue = []
 attacks = []
+last_timestamp_recd = 0
 
 DETINT = 10
 reports_count = 29
@@ -87,7 +88,7 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd
         while True:
             prev_dict_save = int(time.time())
             mes = self.rfile.readline()
@@ -101,17 +102,17 @@ class Handler(SocketServer.StreamRequestHandler):
             """
             for d in data:
                 t = int(d)
-                print t
+                last_timestamp_recd = t
+                timestamp_flag = False
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
                     if self.client_address[1] not in stats[file_count][t]['clients']:
                         stats[file_count][t]['clients'].append(self.client_address[1])
                         if len(stats[file_count][t]['clients']) >= 29:
-                            timestamp_queue.append(t)
+                            timestamp_flag = True
                         # stats[file_count][t]['reports'] += 1
                 else:
                     if dict_dst_count >= 5000000:
-                        continue_flag = True
                         dict_dst_count = 0
                         file_count += 1
                         stats.append(defaultdict(dict))
@@ -131,6 +132,8 @@ class Handler(SocketServer.StreamRequestHandler):
                         # timestamps[file_count][t][dst] = [current_time, current_time]
                         stats[file_count][t]['destinations'][dst] = data[d][dst]
                         dict_dst_count += 1
+                if timestamp_flag:
+                    timestamp_queue.append(t)
 
             """
                 if t > curtime:
@@ -213,7 +216,19 @@ def consume_completed_timestamps():
 
 
 def consume_time_exceed_timestamps():
-    pass
+    global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count
+    Timer(10.0, consume_time_exceed_timestamps).start()
+    stats_t = stats[file_count].iterkeys()
+    stats_t = sorted(stats_t)
+    for t in stats_t:
+        if last_timestamp_recd - t >= DETINT:
+            for dst in stats[file_count][t]:
+                if stats[file_count][t][dst] >= 10:
+                    attacks.append({"timestamp": t, "dst": dst})
+            dict_dst_count -= len(stats[file_count][t])
+            del stats[file_count][t]
+        else:
+            break
 
 
 stats = [defaultdict(dict)]
