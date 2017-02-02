@@ -37,7 +37,6 @@ class DestInfo():
 
 def getFlows(infile):
     flow_dir = infile.split("/")[6]
-    timestamps = set()
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -56,7 +55,6 @@ def getFlows(infile):
     avg = 0
 
     for flow in flows:
-        timestamps.add(int(flow.last))
         flip = 0
         if (laststat == 0):
             laststat = flow.last
@@ -116,9 +114,9 @@ def getFlows(infile):
             #stash this
             continue
         elif (time2 - start > 1):  #reporting interval, currently 1 sec
+            """
             mes = json.dumps(dsts)
             mes = mes + "\n"
-            """
             try:
                 sock.sendall(mes)
             finally:
@@ -129,7 +127,7 @@ def getFlows(infile):
             #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
             #exit(0)
             start = time2
-            dsts = dict()
+            # dsts = dict()
             dsts[int(start)] = dict()
         stop = time1
         if dst not in dsts[int(start)]:
@@ -139,11 +137,13 @@ def getFlows(infile):
         else:
             dsts[int(start)][dst] = dsts[int(start)][dst] + fc
             #print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
-        if len(timestamps) >= 1000:
-            with open("3/" + flow_dir + ".txt", "w") as file_handler:
-                for t in timestamps:
-                    file_handler.write(str(t) + "\n")
-            break
+    for t in sorted(dsts.iterkeys()):
+        mes = json.dumps({t: dsts[t]})
+        mes = mes + "\n"
+        try:
+            sock.sendall(mes)
+        finally:
+            pass
 
 
 def main():

@@ -45,7 +45,7 @@ attacks = []
 last_timestamp_recd = 0
 timestamps = defaultdict(set)
 
-DETINT = 100
+DETINT = 1000
 reports_count = 29
 
 '''
@@ -254,7 +254,7 @@ stats = [defaultdict(dict)]
 def main():
     save_dict()
     consume_completed_timestamps()
-    # consume_time_exceed_timestamps()
+    consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
         thread = Thread()
