@@ -106,6 +106,7 @@ class Handler(SocketServer.StreamRequestHandler):
                 last_timestamp_recd = t
                 timestamp_flag = False
                 timestamps[t].add(self.client_address[1])
+                """
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
                     if self.client_address[1] not in stats[file_count][t]['clients']:
@@ -136,6 +137,7 @@ class Handler(SocketServer.StreamRequestHandler):
                         dict_dst_count += 1
                 if timestamp_flag:
                     timestamp_queue.append(t)
+                """
 
             """
                 if t > curtime:
@@ -182,7 +184,7 @@ def dump_dictionary(file_name, index):
     with open(file_name, 'wb') as handle:
         pickle.dump(timestamps, handle)
         print "gc = " + str(gc.collect())
-    """
+    """cd
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
         stats[index].clear()
@@ -253,8 +255,8 @@ stats = [defaultdict(dict)]
 
 def main():
     save_dict()
-    consume_completed_timestamps()
-    consume_time_exceed_timestamps()
+    # consume_completed_/timestamps()
+    # consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
         thread = Thread()
