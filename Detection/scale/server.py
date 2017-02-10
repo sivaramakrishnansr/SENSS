@@ -184,7 +184,7 @@ class Handler(SocketServer.StreamRequestHandler):
 def dump_dictionary(file_name, index):
     global stats, timestamps, attacks
     # for t in stats[index]:
-    #if 'clients' in stats[index][t]:
+    # if 'clients' in stats[index][t]:
     #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
@@ -214,6 +214,7 @@ def save_dict():
         stats.append(defaultdict(dict))
         dump_dictionary(file_name, None)
         # stats.append(defaultdict(dict))
+        stats = [defaultdict(dict)]
         print "saved"
     """
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
@@ -251,7 +252,8 @@ def consume_time_exceed_timestamps():
         if last_timestamp_recd - t >= DETINT:
             for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t]['destinations'][dst] >= 10:
-                    attacks.append({"timestamp": t, "dst": dst})
+                    attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[file_count][t]['destinations'][dst],
+                                    "clients": len(stats[file_count][t]['clients'])})
             # dict_dst_count -= len(stats[file_count][t]['destinations'])
             del stats[file_count][t]
         else:
