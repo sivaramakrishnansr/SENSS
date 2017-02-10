@@ -91,18 +91,22 @@ class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
         global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, timestamps
         while True:
-            #prev_dict_save = int(time.time())
+            # prev_dict_save = int(time.time())
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
             data = json.loads(mes)
+            if data == "OK":
+                print data
+                save_dict()
+                break
             """
             temp_count = 0
             if self.client_address[1] not in client_arr:
                 client_arr.append(self.client_address[1])
             """
             for d in data:
-		prev_dict_save = int(time.time())
+                prev_dict_save = int(time.time())
                 t = int(d)
                 last_timestamp_recd = t
                 timestamp_flag = False
@@ -113,18 +117,18 @@ class Handler(SocketServer.StreamRequestHandler):
                         stats[file_count][t]['clients'].append(self.client_address[1])
                         if len(stats[file_count][t]['clients']) >= 29:
                             timestamp_flag = True
-                        # stats[file_count][t]['reports'] += 1
+                            # stats[file_count][t]['reports'] += 1
                 else:
-		    """
-                    if dict_dst_count >= 5000000:
-                        dict_dst_count = 0
-                        file_count += 1
-                        stats.append(defaultdict(dict))
-                        # timestamps.append(defaultdict(dict))
-                        file_name = "dump-" + str(file_count - 1) + ".pickle"
-                        dump_dictionary(file_name, file_count - 1)
-                        print "saved"
-		    """
+                    """
+                            if dict_dst_count >= 5000000:
+                                dict_dst_count = 0
+                                file_count += 1
+                                stats.append(defaultdict(dict))
+                                # timestamps.append(defaultdict(dict))
+                                file_name = "dump-" + str(file_count - 1) + ".pickle"
+                                dump_dictionary(file_name, file_count - 1)
+                                print "saved"
+                    """
                     stats[file_count][t]['destinations'] = dict()
                     stats[file_count][t]['clients'] = [self.client_address[1]]
 
@@ -178,7 +182,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
 def dump_dictionary(file_name, index):
     global stats, timestamps, attacks
-    #for t in stats[index]:
+    # for t in stats[index]:
     #if 'clients' in stats[index][t]:
     #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
@@ -202,13 +206,13 @@ def save_dict():
     print len(attacks)
     # print "arr: " + str(len(client_arr))
     if len(attacks) > 0 and (int(time.time()) - prev_dict_save) > 10:
-	print "inside"
+        print "inside"
         prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count) + ".pickle"
         file_count += 1
         stats.append(defaultdict(dict))
         dump_dictionary(file_name, None)
-        #stats.append(defaultdict(dict))
+        # stats.append(defaultdict(dict))
         print "saved"
     """
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
@@ -257,7 +261,7 @@ stats = [defaultdict(dict)]
 
 
 def main():
-    save_dict()
+    # save_dict()
     consume_completed_timestamps()
     consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
