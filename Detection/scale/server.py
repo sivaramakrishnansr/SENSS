@@ -95,9 +95,10 @@ class Handler(SocketServer.StreamRequestHandler):
             mes = self.rfile.readline()
             if not mes:  # EOF
                 break
-            data = json.loads(mes)
-            if data == "OK":
-                print data
+            try:
+                data = json.loads(mes)
+            except:
+                print mes
                 save_dict()
                 break
             """
