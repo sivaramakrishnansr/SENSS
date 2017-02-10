@@ -43,7 +43,7 @@ for $time (sort {$a cmp $b} keys %hash)
     }
     #print "$i";
     print "\n-------\n";
-    #exit;
+    exit;
 }
 
 sub printStats
