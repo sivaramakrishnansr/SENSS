@@ -45,7 +45,7 @@ attacks = []
 last_timestamp_recd = 0
 timestamps = defaultdict(set)
 
-DETINT = 1000
+DETINT = 10000
 reports_count = 29
 
 '''
@@ -106,7 +106,6 @@ class Handler(SocketServer.StreamRequestHandler):
                 last_timestamp_recd = t
                 timestamp_flag = False
                 timestamps[t].add(self.client_address[1])
-                """
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
                     if self.client_address[1] not in stats[file_count][t]['clients']:
@@ -134,10 +133,9 @@ class Handler(SocketServer.StreamRequestHandler):
                         # current_time = time.time()
                         # timestamps[file_count][t][dst] = [current_time, current_time]
                         stats[file_count][t]['destinations'][dst] = data[d][dst]
-                        dict_dst_count += 1
+                        # dict_dst_count += 1
                 if timestamp_flag:
                     timestamp_queue.append(t)
-                """
 
             """
                 if t > curtime:
@@ -182,8 +180,9 @@ def dump_dictionary(file_name, index):
     #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
-        pickle.dump(timestamps, handle)
+        pickle.dump(attacks, handle)
         print "gc = " + str(gc.collect())
+        attacks = []
     """cd
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
@@ -195,7 +194,7 @@ def dump_dictionary(file_name, index):
 
 
 def save_dict():
-    global stats, prev_dict_save, file_count, client_arr, attacks
+    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps
     Timer(10.0, save_dict).start()
     print len(stats[file_count])
     # print "arr: " + str(len(client_arr))
@@ -244,7 +243,7 @@ def consume_time_exceed_timestamps():
             for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t]['destinations'][dst] >= 10:
                     attacks.append({"timestamp": t, "dst": dst})
-            dict_dst_count -= len(stats[file_count][t]['destinations'])
+            # dict_dst_count -= len(stats[file_count][t]['destinations'])
             del stats[file_count][t]
         else:
             break
@@ -255,8 +254,8 @@ stats = [defaultdict(dict)]
 
 def main():
     save_dict()
-    # consume_completed_/timestamps()
-    # consume_time_exceed_timestamps()
+    consume_completed_timestamps()
+    consume_time_exceed_timestamps()
     server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
     try:
         thread = Thread()
