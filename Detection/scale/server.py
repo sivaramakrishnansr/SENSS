@@ -203,10 +203,10 @@ def dump_dictionary(file_name, index):
 
 def save_dict():
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps
-    Timer(10.0, save_dict).start()
+    # Timer(10.0, save_dict).start()
     print len(attacks)
     # print "arr: " + str(len(client_arr))
-    if len(attacks) > 0 and (int(time.time()) - prev_dict_save) > 10:
+    if len(attacks) > 0:
         print "inside"
         prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count) + ".pickle"
