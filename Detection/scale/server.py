@@ -100,6 +100,7 @@ class Handler(SocketServer.StreamRequestHandler):
             except:
                 print mes
                 save_dict()
+                self.wfile.write("OK")
                 break
             """
             temp_count = 0
@@ -185,11 +186,12 @@ def dump_dictionary(file_name, index):
     global stats, timestamps, attacks
     # for t in stats[index]:
     # if 'clients' in stats[index][t]:
-    #        stats[index][t]['reports'] = len(stats[index][t]['clients'])
+    # stats[index][t]['reports'] = len(stats[index][t]['clients'])
     #	del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
         pickle.dump(attacks, handle)
-        print "gc = " + str(gc.collect())
+        del attacks
+        gc.collect()
         attacks = []
     """cd
     with open(file_name, 'wb') as handle:
@@ -210,10 +212,11 @@ def save_dict():
         print "inside"
         prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count) + ".pickle"
-        file_count += 1
         stats.append(defaultdict(dict))
         dump_dictionary(file_name, None)
         # stats.append(defaultdict(dict))
+        del stats
+        gc.collect()
         stats = [defaultdict(dict)]
         print "saved"
     """

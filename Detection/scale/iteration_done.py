@@ -10,3 +10,4 @@ finally:
     pass
 
 sock.sendall("OK")
+sock.recv(1024)
