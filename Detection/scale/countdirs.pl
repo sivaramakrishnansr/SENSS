@@ -43,8 +43,9 @@ for $time (sort {$a cmp $b} keys %hash)
     }
     #print "$i";
     print "\n-------\n";
-    exec "python iteration_done.py";
-    exit;
+    system("python iteration_done.py");
+    sleep(20)
+    #exit;
 }
 
 sub printStats

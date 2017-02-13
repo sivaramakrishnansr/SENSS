@@ -101,6 +101,7 @@ class Handler(SocketServer.StreamRequestHandler):
                 print mes
                 save_dict()
                 self.wfile.write("OK")
+		print "done"
                 break
             """
             temp_count = 0
@@ -112,7 +113,7 @@ class Handler(SocketServer.StreamRequestHandler):
                 t = int(d)
                 last_timestamp_recd = t
                 timestamp_flag = False
-                timestamps[t].add(self.client_address[1])
+                #timestamps[t].add(self.client_address[1])
                 if 'destinations' in stats[file_count][t]:
                     # print "append"
                     if self.client_address[1] not in stats[file_count][t]['clients']:
