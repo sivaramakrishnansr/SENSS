@@ -44,7 +44,7 @@ timestamp_queue = []
 attacks = []
 last_timestamp_recd = defaultdict(int)
 timestamps = defaultdict(set)
-min_timestamp = time.time()
+min_timestamp = int(time.time())
 
 DETINT = 100
 reports_count = 29
@@ -122,7 +122,8 @@ class Handler(SocketServer.StreamRequestHandler):
             prev_dict_save = int(time.time())
             t = int(data['time'])
             last_timestamp_recd[data['reader']] = max(last_timestamp_recd[data['reader']], t)
-            min_timestamp = min(last_timestamp_recd, key=last_timestamp_recd.get)
+            min_timestamp_key = min(last_timestamp_recd, key=last_timestamp_recd.get)
+            min_timestamp = last_timestamp_recd[min_timestamp_key]
             timestamp_flag = False
             # timestamps[t].add(self.client_address[1])
             if 'destinations' in stats[file_count][t]:
