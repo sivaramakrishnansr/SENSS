@@ -138,7 +138,7 @@ def getFlows(infile):
             dsts[int(start)][dst] = dsts[int(start)][dst] + fc
             #print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
     for t in sorted(dsts.iterkeys()):
-        mes = json.dumps({t: dsts[t]})
+        mes = json.dumps({'reader': infile.split('/')[6], t: dsts[t]})
         mes = mes + "\n"
         try:
             sock.sendall(mes)

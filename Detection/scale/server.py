@@ -42,7 +42,7 @@ prev_dict_save = 0
 client_arr = []
 timestamp_queue = []
 attacks = []
-last_timestamp_recd = 0
+last_timestamp_recd = []
 timestamps = defaultdict(set)
 
 DETINT = 1000
