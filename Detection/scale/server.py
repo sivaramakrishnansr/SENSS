@@ -45,8 +45,9 @@ attacks = []
 last_timestamp_recd = 0
 timestamps = defaultdict(set)
 
-DETINT = 1000
+DETINT = 300
 reports_count = 29
+new_start = False
 
 '''
 # Old Detection Module
@@ -93,6 +94,12 @@ class Handler(SocketServer.StreamRequestHandler):
         while True:
             # prev_dict_save = int(time.time())
             mes = self.rfile.readline()
+	    try:
+		if new_start:
+			print "new"
+	    except:
+		pass
+	    #new_start = False
             if not mes:  # EOF
                 break
             try:
@@ -100,8 +107,9 @@ class Handler(SocketServer.StreamRequestHandler):
             except:
                 print mes
                 save_dict()
-                self.wfile.write("OK")
+                #self.wfile.write("OK")
                 print "done"
+		new_start = True
                 break
             """
             temp_count = 0
