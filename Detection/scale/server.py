@@ -42,10 +42,11 @@ prev_dict_save = 0
 client_arr = []
 timestamp_queue = []
 attacks = []
-last_timestamp_recd = []
+last_timestamp_recd = defaultdict(int)
 timestamps = defaultdict(set)
+min_timestamp = time.time()
 
-DETINT = 300
+DETINT = 100
 reports_count = 29
 new_start = False
 
@@ -90,16 +91,18 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, timestamps
+        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, \
+            last_timestamp_recd, timestamps, new_start, min_timestamp
         while True:
             # prev_dict_save = int(time.time())
             mes = self.rfile.readline()
-	    try:
-		if new_start:
-			print "new"
-	    except:
-		pass
-	    #new_start = False
+            try:
+                if new_start:
+                    print "new"
+                    new_start = False
+            except:
+                pass
+            # new_start = False
             if not mes:  # EOF
                 break
             try:
@@ -107,59 +110,60 @@ class Handler(SocketServer.StreamRequestHandler):
             except:
                 print mes
                 save_dict()
-                #self.wfile.write("OK")
+                # self.wfile.write("OK")
                 print "done"
-		new_start = True
+                new_start = True
                 break
             """
             temp_count = 0
             if self.client_address[1] not in client_arr:
                 client_arr.append(self.client_address[1])
             """
-            for d in data:
-                prev_dict_save = int(time.time())
-                t = int(d)
-                last_timestamp_recd = t
-                timestamp_flag = False
-                # timestamps[t].add(self.client_address[1])
-                if 'destinations' in stats[file_count][t]:
-                    # print "append"
-                    if self.client_address[1] not in stats[file_count][t]['clients']:
-                        stats[file_count][t]['clients'].append(self.client_address[1])
-                        if len(stats[file_count][t]['clients']) >= 29:
-                            timestamp_flag = True
-                            # stats[file_count][t]['reports'] += 1
-                else:
-                    """
-                            if dict_dst_count >= 5000000:
-                                dict_dst_count = 0
-                                file_count += 1
-                                stats.append(defaultdict(dict))
-                                # timestamps.append(defaultdict(dict))
-                                file_name = "dump-" + str(file_count - 1) + ".pickle"
-                                dump_dictionary(file_name, file_count - 1)
-                                print "saved"
-                    """
-                    stats[file_count][t]['destinations'] = dict()
-                    stats[file_count][t]['clients'] = [self.client_address[1]]
+            prev_dict_save = int(time.time())
+            t = int(data['time'])
+            if last_timestamp_recd[data['reader']] < t:
+                last_timestamp_recd[data['reader']] = t
+                min_timestamp = min(min_timestamp, t)
+            timestamp_flag = False
+            # timestamps[t].add(self.client_address[1])
+            if 'destinations' in stats[file_count][t]:
+                # print "append"
+                if self.client_address[1] not in stats[file_count][t]['clients']:
+                    stats[file_count][t]['clients'].append(self.client_address[1])
+                    if len(stats[file_count][t]['clients']) >= 29:
+                        timestamp_flag = True
+                        # stats[file_count][t]['reports'] += 1
+            else:
+                """
+                        if dict_dst_count >= 5000000:
+                            dict_dst_count = 0
+                            file_count += 1
+                            stats.append(defaultdict(dict))
+                            # timestamps.append(defaultdict(dict))
+                            file_name = "dump-" + str(file_count - 1) + ".pickle"
+                            dump_dictionary(file_name, file_count - 1)
+                            print "saved"
+                """
+                stats[file_count][t]['destinations'] = dict()
+                stats[file_count][t]['clients'] = [self.client_address[1]]
 
-                for dst in data[d]:
-                    if dst in stats[file_count][t]['destinations']:
-                        # timestamps[file_count][t][dst][1] = time.time()
-                        stats[file_count][t]['destinations'][dst] += data[d][dst]
-                    else:
-                        # current_time = time.time()
-                        # timestamps[file_count][t][dst] = [current_time, current_time]
-                        stats[file_count][t]['destinations'][dst] = data[d][dst]
-                        # dict_dst_count += 1
-                if timestamp_flag:
-                    timestamp_queue.append(t)
+            for dst in data['destinations']:
+                if dst in stats[file_count][t]['destinations']:
+                    # timestamps[file_count][t][dst][1] = time.time()
+                    stats[file_count][t]['destinations'][dst] += data['destinations'][dst]
+                else:
+                    # current_time = time.time()
+                    # timestamps[file_count][t][dst] = [current_time, current_time]
+                    stats[file_count][t]['destinations'][dst] = data['destinations'][dst]
+                    # dict_dst_count += 1
+            if timestamp_flag:
+                timestamp_queue.append(t)
 
             """
                 if t > curtime:
                     stats[t] = dict()
                     stats[t]['destinations'] = dict()
-                    stats[t]['reports'] = 1
+                    stats[t]['rep   orts'] = 1
                     # if first time data received, set curtime and lasttime
                     if curtime == 0 and lasttime == 0:
                         curtime = t
@@ -209,11 +213,11 @@ def dump_dictionary(file_name, index):
         print "gc = " + str(gc.collect())
     """
     # with open('t-' + file_name, 'wb') as handle:
-    #     pickle.dump(timestamps[index], handle)
+    # pickle.dump(timestamps[index], handle)
 
 
 def save_dict():
-    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps
+    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd
     # Timer(10.0, save_dict).start()
     print len(attacks)
     # print "arr: " + str(len(client_arr))
@@ -227,6 +231,9 @@ def save_dict():
         del stats
         gc.collect()
         stats = [defaultdict(dict)]
+        min_timestamp = time.time()
+        del last_timestamp_recd
+        last_timestamp_recd = defaultdict(int)
         print "saved"
     """
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
@@ -261,7 +268,7 @@ def consume_time_exceed_timestamps():
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     for t in stats_t:
-        if last_timestamp_recd - t >= DETINT:
+        if min_timestamp - t >= DETINT:
             for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t]['destinations'][dst] >= 10:
                     attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[file_count][t]['destinations'][dst],
