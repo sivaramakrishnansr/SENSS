@@ -121,9 +121,8 @@ class Handler(SocketServer.StreamRequestHandler):
             """
             prev_dict_save = int(time.time())
             t = int(data['time'])
-            if last_timestamp_recd[data['reader']] < t:
-                last_timestamp_recd[data['reader']] = t
-                min_timestamp = min(min_timestamp, t)
+            last_timestamp_recd[data['reader']] = max(last_timestamp_recd[data['reader']], t)
+            min_timestamp = min(last_timestamp_recd, key=last_timestamp_recd.get)
             timestamp_flag = False
             # timestamps[t].add(self.client_address[1])
             if 'destinations' in stats[file_count][t]:
@@ -250,7 +249,7 @@ def save_dict():
 def consume_completed_timestamps():
     global stats, timestamp_queue, file_count, attacks, dict_dst_count
     Timer(5.0, consume_completed_timestamps).start()
-    print "Timestamp queue: " + str(len(timestamp_queue))
+    # print "Timestamp queue: " + str(len(timestamp_queue))
     len_t = len(timestamp_queue)
     for i in range(len_t):
         t = timestamp_queue[i]
@@ -268,6 +267,8 @@ def consume_time_exceed_timestamps():
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     for t in stats_t:
+        if t % 50 == 0:
+            print min_timestamp - t
         if min_timestamp - t >= DETINT:
             for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t]['destinations'][dst] >= 10:
