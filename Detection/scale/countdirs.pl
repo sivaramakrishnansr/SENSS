@@ -44,7 +44,7 @@ for $time (sort {$a cmp $b} keys %hash)
     #print "$i";
     print "\n-------\n";
     system("python iteration_done.py");
-    sleep(20)
+    #sleep(20)
     #exit;
 }
 

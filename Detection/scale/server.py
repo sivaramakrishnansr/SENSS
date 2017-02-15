@@ -122,7 +122,9 @@ class Handler(SocketServer.StreamRequestHandler):
             prev_dict_save = int(time.time())
             t = int(data['time'])
             last_timestamp_recd[data['reader']] = max(last_timestamp_recd[data['reader']], t)
+	    print len(last_timestamp_recd)
             if len(last_timestamp_recd) >= 29:
+		print "update min_timestamp"
                 min_timestamp_key = min(last_timestamp_recd, key=last_timestamp_recd.get)
                 min_timestamp = last_timestamp_recd[min_timestamp_key]
             timestamp_flag = False
@@ -269,6 +271,7 @@ def consume_time_exceed_timestamps():
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     print len(stats[file_count])
+    print min_timestamp
     for t in stats_t:
         if min_timestamp - t >= DETINT:
             for dst in stats[file_count][t]['destinations']:

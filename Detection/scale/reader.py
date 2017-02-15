@@ -114,14 +114,12 @@ def getFlows(infile):
             #stash this
             continue
         elif (time2 - start > 1):  #reporting interval, currently 1 sec
-            """
-            mes = json.dumps(dsts)
+            mes = json.dumps({'reader': infile.split('/')[6], 'time': t, 'destinations': dsts[t]})
             mes = mes + "\n"
             try:
                 sock.sendall(mes)
             finally:
                 pass
-            """
             # sock.recv(1024) # blocking call
             #for d in dsts[int(start)]:
             #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
@@ -137,13 +135,16 @@ def getFlows(infile):
         else:
             dsts[int(start)][dst] = dsts[int(start)][dst] + fc
             #print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
+    """
     for t in sorted(dsts.iterkeys()):
         mes = json.dumps({'reader': infile.split('/')[6], 'time': t, 'destinations': dsts[t]})
         mes = mes + "\n"
         try:
+	    print "send " + str(infile.split("/")[6])
             sock.sendall(mes)
         finally:
             pass
+    """
 
 
 def main():
