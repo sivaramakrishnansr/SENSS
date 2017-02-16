@@ -89,7 +89,7 @@ def detect():
 
 def store_attacks():
     save_dict()
-    #time.sleep(5)
+    # time.sleep(5)
     return True
 
 
@@ -118,7 +118,7 @@ class Handler(SocketServer.StreamRequestHandler):
             except:
                 print mes
                 save_dict()
-                #self.wfile.write("OK")
+                # self.wfile.write("OK")
                 print "done"
                 new_start = True
                 break
@@ -238,9 +238,9 @@ def save_dict():
         prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count1) + ".pickle"
         dump_dictionary(file_name, None)
-	file_count1 += 1
+        file_count1 += 1
         # stats.append(defaultdict(dict))
-        #stats[file_count].clear()
+        # stats[file_count].clear()
         #del stats
         #gc.collect()
         #stats = [defaultdict(dict)]
@@ -265,7 +265,7 @@ def consume_completed_timestamps():
     global stats, timestamp_queue, file_count, attacks, dict_dst_count, save_lock
     Timer(5.0, consume_completed_timestamps).start()
     if save_lock:
-	return True
+        return True
     # print "Timestamp queue: " + str(len(timestamp_queue))
     len_t = len(timestamp_queue)
     for i in range(len_t):
@@ -282,13 +282,16 @@ def consume_time_exceed_timestamps():
     global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count, save_lock
     Timer(10.0, consume_time_exceed_timestamps).start()
     if save_lock:
-	return True
+        return True
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     print len(stats[file_count])
     print min_timestamp
     for t in stats_t:
         if min_timestamp - t >= DETINT:
+            if 'destinations' not in stats[file_count][t]:
+                del stats[file_count][t]
+                continue
             for dst in stats[file_count][t]['destinations']:
                 if stats[file_count][t]['destinations'][dst] >= 10:
                     attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[file_count][t]['destinations'][dst],
