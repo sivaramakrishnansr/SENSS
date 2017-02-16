@@ -1,9 +1,8 @@
 import socket
-import server
+#import server
 
-server.store_attacks()
+#server.save_dict()
 
-"""
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect the socket to the port where the server is listening
 server_address = ('localhost', 4242)
@@ -15,6 +14,6 @@ finally:
 
 sock.send("OK")
 print "sent"
-"""
-#msg = sock.recv(1)
+
+#msg = sock.recv(1024)
 #print msg

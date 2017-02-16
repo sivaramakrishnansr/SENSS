@@ -45,6 +45,8 @@ attacks = []
 last_timestamp_recd = defaultdict(int)
 timestamps = defaultdict(set)
 min_timestamp = 0
+save_lock = False
+file_count1 = 0
 
 DETINT = 100
 reports_count = 29
@@ -87,6 +89,7 @@ def detect():
 
 def store_attacks():
     save_dict()
+    #time.sleep(5)
     return True
 
 
@@ -115,7 +118,7 @@ class Handler(SocketServer.StreamRequestHandler):
             except:
                 print mes
                 save_dict()
-                # self.wfile.write("OK")
+                #self.wfile.write("OK")
                 print "done"
                 new_start = True
                 break
@@ -225,24 +228,27 @@ def dump_dictionary(file_name, index):
 
 
 def save_dict():
-    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd
+    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
     # Timer(10.0, save_dict).start()
+    save_lock = True
     print len(attacks)
     # print "arr: " + str(len(client_arr))
     if len(attacks) > 0:
         print "inside"
         prev_dict_save = int(time.time())
-        file_name = "attack-dump-" + str(file_count) + ".pickle"
+        file_name = "attack-dump-" + str(file_count1) + ".pickle"
         dump_dictionary(file_name, None)
+	file_count1 += 1
         # stats.append(defaultdict(dict))
-        stats[file_count].clear()
-        del stats
-        gc.collect()
-        stats = [defaultdict(dict)]
-        min_timestamp = time.time()
+        #stats[file_count].clear()
+        #del stats
+        #gc.collect()
+        #stats = [defaultdict(dict)]
+        min_timestamp = 0
         del last_timestamp_recd
         last_timestamp_recd = defaultdict(int)
         print "saved"
+    save_lock = False
     """
     if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
         prev_dict_save = int(time.time())
@@ -256,8 +262,10 @@ def save_dict():
 
 
 def consume_completed_timestamps():
-    global stats, timestamp_queue, file_count, attacks, dict_dst_count
+    global stats, timestamp_queue, file_count, attacks, dict_dst_count, save_lock
     Timer(5.0, consume_completed_timestamps).start()
+    if save_lock:
+	return True
     # print "Timestamp queue: " + str(len(timestamp_queue))
     len_t = len(timestamp_queue)
     for i in range(len_t):
@@ -271,8 +279,10 @@ def consume_completed_timestamps():
 
 
 def consume_time_exceed_timestamps():
-    global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count
+    global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count, save_lock
     Timer(10.0, consume_time_exceed_timestamps).start()
+    if save_lock:
+	return True
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     print len(stats[file_count])
