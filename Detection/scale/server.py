@@ -117,6 +117,10 @@ class Handler(SocketServer.StreamRequestHandler):
                 data = json.loads(mes)
             except:
                 print mes
+                if mes == "Done":
+                    print "all done"
+                    min_timestamp = int(time.time())
+                    consume_time_exceed_timestamps()
                 save_dict()
                 # self.wfile.write("OK")
                 print "done"

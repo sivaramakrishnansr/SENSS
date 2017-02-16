@@ -47,6 +47,7 @@ for $time (sort {$a cmp $b} keys %hash)
     sleep(100)
     #exit;
 }
+system("python all_done.py ")
 
 sub printStats
 {
