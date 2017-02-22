@@ -25,7 +25,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-import SocketServer
+import asyncore
+import socket
 import json
 import pickle
 from threading import Thread, Timer
@@ -37,7 +38,7 @@ import gc
 curtime = 0
 lasttime = 0
 dict_dst_count = 0
-file_count = 0
+# file_count = 0
 prev_dict_save = 0
 client_arr = []
 timestamp_queue = []
@@ -93,17 +94,13 @@ def store_attacks():
     return True
 
 
-class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
-    allow_reuse_address = True
-
-
-class Handler(SocketServer.StreamRequestHandler):
-    def handle(self):
-        global stats, curtime, lasttime, file_count, prev_dict_save, dict_dst_count, timestamp_queue, \
+class EchoHandler(asyncore.dispatcher_with_send):
+    def handle_read(self):
+        global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, \
             last_timestamp_recd, timestamps, new_start, min_timestamp
         while True:
             # prev_dict_save = int(time.time())
-            mes = self.rfile.readline()
+            mes = self.recv(1000000)
             try:
                 if new_start:
                     print "new"
@@ -141,11 +138,11 @@ class Handler(SocketServer.StreamRequestHandler):
                 min_timestamp = last_timestamp_recd[min_timestamp_key]
             timestamp_flag = False
             # timestamps[t].add(self.client_address[1])
-            if 'destinations' in stats[file_count][t]:
+            if 'destinations' in stats[t]:
                 # print "append"
-                if self.client_address[1] not in stats[file_count][t]['clients']:
-                    stats[file_count][t]['clients'].append(self.client_address[1])
-                    if len(stats[file_count][t]['clients']) >= 29:
+                if self.addr not in stats[t]['clients']:
+                    stats[t]['clients'].append(self.addr)
+                    if len(stats[t]['clients']) >= 29:
                         timestamp_flag = True
                         # stats[file_count][t]['reports'] += 1
             else:
@@ -159,17 +156,17 @@ class Handler(SocketServer.StreamRequestHandler):
                             dump_dictionary(file_name, file_count - 1)
                             print "saved"
                 """
-                stats[file_count][t]['destinations'] = dict()
-                stats[file_count][t]['clients'] = [self.client_address[1]]
+                stats[t]['destinations'] = dict()
+                stats[t]['clients'] = [self.addr]
 
             for dst in data['destinations']:
-                if dst in stats[file_count][t]['destinations']:
+                if dst in stats[t]['destinations']:
                     # timestamps[file_count][t][dst][1] = time.time()
-                    stats[file_count][t]['destinations'][dst] += data['destinations'][dst]
+                    stats[t]['destinations'][dst] += data['destinations'][dst]
                 else:
                     # current_time = time.time()
                     # timestamps[file_count][t][dst] = [current_time, current_time]
-                    stats[file_count][t]['destinations'][dst] = data['destinations'][dst]
+                    stats[t]['destinations'][dst] = data['destinations'][dst]
                     # dict_dst_count += 1
             if timestamp_flag:
                 timestamp_queue.append(t)
@@ -211,7 +208,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
 
 def dump_dictionary(file_name, index):
-    global stats, timestamps, attacks, file_count
+    global stats, timestamps, attacks
     # for t in stats[index]:
     # if 'clients' in stats[index][t]:
     # stats[index][t]['reports'] = len(stats[index][t]['clients'])
@@ -221,8 +218,8 @@ def dump_dictionary(file_name, index):
         del attacks
         gc.collect()
         attacks = []
-    with open("stats_dump.pickle", "wb") as handle:
-	pickle.dump(stats[file_count], handle)
+    # with open("stats_dump.pickle", "wb") as handle:
+    #     pickle.dump(stats[file_count], handle)
 
     """cd
     with open(file_name, 'wb') as handle:
@@ -235,7 +232,7 @@ def dump_dictionary(file_name, index):
 
 
 def save_dict(erase=True):
-    global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
+    global stats, prev_dict_save, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
     # Timer(10.0, save_dict).start()
     save_lock = True
     print len(attacks)
@@ -248,13 +245,13 @@ def save_dict(erase=True):
         file_count1 += 1
         # stats.append(defaultdict(dict))
         # stats[file_count].clear()
-        #del stats
+        # del stats
         #gc.collect()
         #stats = [defaultdict(dict)]
-	if erase:
-        	min_timestamp = 0
-        	del last_timestamp_recd
-        	last_timestamp_recd = defaultdict(int)
+        if erase:
+            min_timestamp = 0
+            del last_timestamp_recd
+            last_timestamp_recd = defaultdict(int)
         print "saved"
     save_lock = False
     """
@@ -270,7 +267,7 @@ def save_dict(erase=True):
 
 
 def consume_completed_timestamps():
-    global stats, timestamp_queue, file_count, attacks, dict_dst_count, save_lock
+    global stats, timestamp_queue, attacks, dict_dst_count, save_lock
     Timer(5.0, consume_completed_timestamps).start()
     if save_lock:
         return True
@@ -278,59 +275,68 @@ def consume_completed_timestamps():
     len_t = len(timestamp_queue)
     for i in range(len_t):
         t = timestamp_queue[i]
-        for dst in stats[file_count][t]['destinations']:
-            if stats[file_count][t]['destinations'][dst] >= 10:
+        for dst in stats[t]['destinations']:
+            if stats[t]['destinations'][dst] >= 10:
                 attacks.append({"timestamp": t, "dst": dst})
-        dict_dst_count -= len(stats[file_count][t]['destinations'])
-        del stats[file_count][t]
+        dict_dst_count -= len(stats[t]['destinations'])
+        del stats[t]
     del timestamp_queue[0: len_t]
 
 
 def consume_time_exceed_timestamps():
-    global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count, save_lock
+    global stats, last_timestamp_recd, attacks, DETINT, dict_dst_count, save_lock
     Timer(10.0, consume_time_exceed_timestamps).start()
     if save_lock:
         return True
     print "attacks: " + str(len(attacks))
-    #if len(attacks) >= 1000000:
-	#save_dict(erase=False)
-    stats_t = stats[file_count].iterkeys()
+    # if len(attacks) >= 1000000:
+    #save_dict(erase=False)
+    stats_t = stats.iterkeys()
     stats_t = sorted(stats_t)
-    print len(stats[file_count])
+    print len(stats)
     print min_timestamp
     for t in stats_t:
         if min_timestamp - t >= DETINT:
-            if 'destinations' not in stats[file_count][t]:
-                del stats[file_count][t]
+            if 'destinations' not in stats[t]:
+                del stats[t]
                 continue
-            for dst in stats[file_count][t]['destinations']:
-                if stats[file_count][t]['destinations'][dst] >= 10:
-                    attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[file_count][t]['destinations'][dst],
-                                    "clients": len(stats[file_count][t]['clients'])})
+            for dst in stats[t]['destinations']:
+                if stats[t]['destinations'][dst] >= 10:
+                    attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[t]['destinations'][dst],
+                                    "clients": len(stats[t]['clients'])})
             # dict_dst_count -= len(stats[file_count][t]['destinations'])
-            del stats[file_count][t]
+            del stats[t]
         else:
             break
-    print "remaining: " + str(len(stats[file_count]))
+    print "remaining: " + str(len(stats))
 
 
-stats = [defaultdict(dict)]
+stats = defaultdict(dict)
+
+
+class EchoServer(asyncore.dispatcher):
+
+    def __init__(self, host, port):
+        asyncore.dispatcher.__init__(self)
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
+        self.bind((host, port))
+        self.listen(30)
+
+    def handle_accept(self):
+        pair = self.accept()
+        if pair is not None:
+            sock, addr = pair
+            print 'Incoming connection from %s' % repr(addr)
+            handler = EchoHandler(sock)
 
 
 def main():
     # save_dict()
     consume_completed_timestamps()
     consume_time_exceed_timestamps()
-    server = ThreadedTCPServer(("0.0.0.0", 4242), Handler)
-    try:
-        thread = Thread()
-        thread.start()
-        server.serve_forever()
-        thread.join()
-
-
-    except KeyboardInterrupt:
-        pass
+    server = EchoServer('localhost', 4242)
+    asyncore.loop()
 
 
 if __name__ == "__main__":
