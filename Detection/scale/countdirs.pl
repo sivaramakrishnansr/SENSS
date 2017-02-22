@@ -35,7 +35,7 @@ for $time (sort {$a cmp $b} keys %hash)
         }
         push @pids, $pid; #parent stores children's pids
         # system("python reader.py -f flow-tools $file &");
-        print +(split '/', $file )[6], "\n";
+        print +(split '/', $file )[10], "\n";
     }
     #wait for all children to finish
     for my $pid (@pids) {
@@ -47,7 +47,7 @@ for $time (sort {$a cmp $b} keys %hash)
     sleep(100)
     #exit;
 }
-system("python all_done.py ")
+system("python all_done.py");
 
 sub printStats
 {

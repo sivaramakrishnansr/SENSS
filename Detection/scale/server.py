@@ -48,7 +48,7 @@ min_timestamp = 0
 save_lock = False
 file_count1 = 0
 
-DETINT = 100
+DETINT = 5
 reports_count = 29
 new_start = False
 
@@ -211,7 +211,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
 
 def dump_dictionary(file_name, index):
-    global stats, timestamps, attacks
+    global stats, timestamps, attacks, file_count
     # for t in stats[index]:
     # if 'clients' in stats[index][t]:
     # stats[index][t]['reports'] = len(stats[index][t]['clients'])
@@ -221,6 +221,9 @@ def dump_dictionary(file_name, index):
         del attacks
         gc.collect()
         attacks = []
+    with open("stats_dump.pickle", "wb") as handle:
+	pickle.dump(stats[file_count], handle)
+
     """cd
     with open(file_name, 'wb') as handle:
         pickle.dump(stats[index], handle)
@@ -231,7 +234,7 @@ def dump_dictionary(file_name, index):
     # pickle.dump(timestamps[index], handle)
 
 
-def save_dict():
+def save_dict(erase=True):
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
     # Timer(10.0, save_dict).start()
     save_lock = True
@@ -248,9 +251,10 @@ def save_dict():
         #del stats
         #gc.collect()
         #stats = [defaultdict(dict)]
-        min_timestamp = 0
-        del last_timestamp_recd
-        last_timestamp_recd = defaultdict(int)
+	if erase:
+        	min_timestamp = 0
+        	del last_timestamp_recd
+        	last_timestamp_recd = defaultdict(int)
         print "saved"
     save_lock = False
     """
@@ -287,6 +291,9 @@ def consume_time_exceed_timestamps():
     Timer(10.0, consume_time_exceed_timestamps).start()
     if save_lock:
         return True
+    print "attacks: " + str(len(attacks))
+    #if len(attacks) >= 1000000:
+	#save_dict(erase=False)
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     print len(stats[file_count])
