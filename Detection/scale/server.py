@@ -52,6 +52,7 @@ save_lock = False
 file_count1 = 0
 heap = []
 current_data = {}
+current_timestamp = 0
 
 DETINT = 5
 reports_count = 29
@@ -114,17 +115,99 @@ class RemoteClient(asyncore.dispatcher):
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data['reader']
-            result = client_message_handle(data, load_json=True)
+            result = self.client_message_handle(data, load_json=True)
         except:
-            result = client_message_handle(client_message)
-        print result
-        # self.host.broadcast(client_message)
+            self.host.all_close()
+            result = self.client_message_handle(client_message)
+        self.host.broadcast(result)
 
     def handle_write(self):
         if not self.outbox:
             return
         message = self.outbox.popleft()
         self.send(message)
+
+    @staticmethod
+    def client_message_handle(data, load_json=False):
+        global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, \
+            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp
+        # prev_dict_save = int(time.time())
+        try:
+            if new_start:
+                print "new"
+                new_start = False
+        except:
+            pass
+        # new_start = False
+        if not data:
+            return False
+        if not load_json:
+            print data
+            if data == "Done":
+                print "all done"
+                min_timestamp = int(time.time())
+                consume_time_exceed_timestamps()
+            save_dict()
+            # self.wfile.write("OK")
+            print "done"
+            new_start = True
+            return False
+        prev_dict_save = int(time.time())
+        t = int(data['time'])
+        heappush(heap, (t, data['reader']))
+        current_data[data['reader']] = data
+        if len(heap) < reports_count:
+            return False
+        heap_element = heappop(heap)
+        if current_timestamp == 0:
+            current_timestamp = heap_element[0]
+        elif heap_element[0] > current_timestamp:
+            # detect attacks
+            consume_time_exceed_timestamps()
+            current_timestamp = heap_element[0]
+        data = current_data[heap_element[1]]
+        if 'destinations' not in stats[t]:
+            stats[t]['destinations'] = dict()
+
+        for dst in data['destinations']:
+            if dst in stats[t]['destinations']:
+                stats[t]['destinations'][dst] += data['destinations'][dst]
+            else:
+                stats[t]['destinations'][dst] = data['destinations'][dst]
+
+        """
+            if t > curtime:
+                stats[t] = dict()
+                stats[t]['destinations'] = dict()
+                stats[t]['rep   orts'] = 1
+                # if first time data received, set curtime and lasttime
+                if curtime == 0 and lasttime == 0:
+                    curtime = t
+                    lasttime = t
+                curtime = t
+            else:
+                try:
+                    stats[t]['reports'] += 1
+                except KeyError as e:
+                    print "curtime: " + str(curtime) + " t: " + str(t)
+            try:
+                for dst in data[d]:
+                    if dst not in stats[t]['destinations']:
+                        stats[t]['destinations'][dst] = 0
+                    stats[t]['destinations'][dst] += data[d][dst]
+                # check if all reports obtained
+                if stats[t]['reports'] == reports_count:
+                    lasttime = t
+                    # all reports obtained. Run the detection module
+                    detect()
+                elif t - lasttime >= DETINT:
+                    lasttime = t
+                # limit exceeded. Run the detection module
+                # detect()
+            except:
+                pass
+        """
+        return data['reader']
 
 
 class Host(asyncore.dispatcher):
@@ -147,84 +230,11 @@ class Host(asyncore.dispatcher):
         reports_count -= 1
 
     def broadcast(self, message):
-        self.log.info('Broadcasting message: %s', message)
         for remote_client in self.remote_clients:
             remote_client.say(message)
 
-
-def client_message_handle(data, load_json=False):
-    global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, \
-        last_timestamp_recd, timestamps, new_start, min_timestamp, heap, reports_count, current_data
-    # prev_dict_save = int(time.time())
-    try:
-        if new_start:
-            print "new"
-            new_start = False
-    except:
-        pass
-    # new_start = False
-    if not data:
-        return False
-    if not load_json:
-        print data
-        if data == "Done":
-            print "all done"
-            min_timestamp = int(time.time())
-            consume_time_exceed_timestamps()
-        save_dict()
-        # self.wfile.write("OK")
-        print "done"
-        new_start = True
-        return False
-    prev_dict_save = int(time.time())
-    t = int(data['time'])
-    heappush(heap, (t, data['reader']))
-    current_data[data['reader']] = data
-    if len(heap) < reports_count:
-        return False
-    data = current_data[heappop(heap)[1]]
-    if 'destinations' not in stats[t]:
-        stats[t]['destinations'] = dict()
-
-    for dst in data['destinations']:
-        if dst in stats[t]['destinations']:
-            stats[t]['destinations'][dst] += data['destinations'][dst]
-        else:
-            stats[t]['destinations'][dst] = data['destinations'][dst]
-
-    """
-        if t > curtime:
-            stats[t] = dict()
-            stats[t]['destinations'] = dict()
-            stats[t]['rep   orts'] = 1
-            # if first time data received, set curtime and lasttime
-            if curtime == 0 and lasttime == 0:
-                curtime = t
-                lasttime = t
-            curtime = t
-        else:
-            try:
-                stats[t]['reports'] += 1
-            except KeyError as e:
-                print "curtime: " + str(curtime) + " t: " + str(t)
-        try:
-            for dst in data[d]:
-                if dst not in stats[t]['destinations']:
-                    stats[t]['destinations'][dst] = 0
-                stats[t]['destinations'][dst] += data[d][dst]
-            # check if all reports obtained
-            if stats[t]['reports'] == reports_count:
-                lasttime = t
-                # all reports obtained. Run the detection module
-                detect()
-            elif t - lasttime >= DETINT:
-                lasttime = t
-            # limit exceeded. Run the detection module
-            # detect()
-        except:
-            pass
-    """
-    return data['reader']
+    def all_close(self):
+        self.remote_clients = []
 
 
 def dump_dictionary(file_name, index):
@@ -266,8 +276,8 @@ def save_dict(erase=True):
         # stats.append(defaultdict(dict))
         # stats[file_count].clear()
         # del stats
-        #gc.collect()
-        #stats = [defaultdict(dict)]
+        # gc.collect()
+        # stats = [defaultdict(dict)]
         if erase:
             min_timestamp = 0
             del last_timestamp_recd
@@ -310,7 +320,7 @@ def consume_time_exceed_timestamps():
         return True
     print "attacks: " + str(len(attacks))
     # if len(attacks) >= 1000000:
-    #save_dict(erase=False)
+    # save_dict(erase=False)
     stats_t = stats[file_count].iterkeys()
     stats_t = sorted(stats_t)
     print len(stats[file_count])

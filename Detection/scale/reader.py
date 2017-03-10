@@ -9,6 +9,7 @@ import socket
 import sys
 import asyncore
 from collections import deque
+from heapq import heappush, heappop
 
 nodes = 0
 WELL_KNOWN_PORTS = [19, 22, 23, 25, 53, 80, 443]
@@ -21,15 +22,23 @@ ACK_PSH = bitarray('011000')
 ACK_FIN = bitarray('010001')
 PERIOD = 60
 DELPERIOD = 600
+HEAP_SIZE = 1000
 
 
 class Client(asyncore.dispatcher):
-    def __init__(self, host_address, name):
+    def __init__(self, host_address, name, flows):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.name = name
         self.connect(host_address)
         self.outbox = deque()
+        self.flows = flows
+        self.start = 0
+        self.stop = 0
+        self.end_flag = False
+        self.destinations = {}
+        self.flow_heap = []
+        self.send_single_flow()
 
     def say(self, message):
         self.outbox.append(message)
@@ -42,109 +51,125 @@ class Client(asyncore.dispatcher):
 
     def handle_read(self):
         message = self.recv(1000)
-        return message
+        self.send_single_flow()
 
+    def send_single_flow(self):
+        global HEAP_SIZE
 
-def getFlows(infile):
-    flow_dir = infile.split("/")[6]
-    # Create a TCP/IP socket
-    server_address = ('localhost', 4242)
-    client_socket = Client(server_address, flow_dir)
-    flows = flowtools.FlowSet(infile)
-    """
-    for infile in infiles:
-        flow_dir = infile.split("/")[6]
-        flows.append((flow_dir, flowtools.FlowSet(infile)))
-    """
-    dsts = dict()
-    start = 0
-    stop = 0
-    avg = 0
+        def get_next_flow():
+            try:
+                flow = self.flows.next()
+                flow_tuple = (
+                    flow.last,
+                    flow.srcaddr,
+                    flow.dstaddr,
+                    flow.srcport,
+                    flow.dstport,
+                    flow.tcp_flags,
+                    flow.prot,
+                    flow.dPkts
+                )
+                heappush(self.flow_heap, flow_tuple)
+            except:
+                self.end_flag = True
 
-    for flow in flows:
-        flip = False
-        if flow.dstport in WELL_KNOWN_PORTS and flow.srcport not in WELL_KNOWN_PORTS:
-            src = flow.srcaddr
-            dst = flow.dstaddr
-            sport = flow.srcport
-            dport = flow.dstport
-        elif flow.dstport not in WELL_KNOWN_PORTS and flow.srcport in WELL_KNOWN_PORTS:
-            src = flow.dstaddr
-            dst = flow.srcaddr
-            sport = flow.dstport
-            dport = flow.srcport
-            flip = True
-        else:
-            continue
-        # time1 = flow.first
-        time2 = flow.last
-        if flow.tcp_flags > 63:
-            flags = bitarray('{0:06b}'.format(flow.tcp_flags & 63))
-        else:
-            flags = bitarray('{0:06b}'.format(flow.tcp_flags))
-        sc = 0
-        uc = 0
-        if flow.prot == 6:
-            fc = 1
-            if flags & SYN_ACK_PSH == SYN_ACK_PSH:
-                sc = 1
+        while len(self.flow_heap) < HEAP_SIZE:
+            if not self.end_flag:
+                get_next_flow()
             else:
-                uc = 1
-        elif flow.prot == 17:
-            fc = flow.dPkts
-            if flip:
-                sc = 1
+                break
+
+        start = 0
+        while True:
+            current_flow = heappop(self.flow_heap)
+            get_next_flow()
+            flow_last = current_flow[0]
+            flow_srcaddr = current_flow[1]
+            flow_dstaddr = current_flow[2]
+            flow_srcport = current_flow[3]
+            flow_dstport = current_flow[4]
+            flow_tcp_flags = current_flow[5]
+            flow_prot = current_flow[6]
+            flow_dPkts = current_flow[7]
+
+            flip = False
+            if flow_dstport in WELL_KNOWN_PORTS and flow_srcport not in WELL_KNOWN_PORTS:
+                src = flow_srcaddr
+                dst = flow_dstaddr
+                sport = flow_srcport
+                dport = flow_dstport
+            elif flow_dstport not in WELL_KNOWN_PORTS and flow_srcport in WELL_KNOWN_PORTS:
+                src = flow_dstaddr
+                dst = flow_srcaddr
+                sport = flow_dstport
+                dport = flow_srcport
+                flip = True
             else:
-                uc = 1
-        else:
-            continue
-        dst = str(dst) + ":" + str(dport)
-        src = str(src) + ":" + str(sport)
-        # print src, dst, flow.first, flow.last
-        # continue
+                continue
 
-        # 1453395538.07 1453395578.14 164.76.136.0:51601 <- 54.230.88.0:80 5 260 0
+            if flow_tcp_flags > 63:
+                flags = bitarray('{0:06b}'.format(flow_tcp_flags & 63))
+            else:
+                flags = bitarray('{0:06b}'.format(flow_tcp_flags))
+            sc = 0
+            uc = 0
+            if flow_prot == 6:
+                fc = 1
+                if flags & SYN_ACK_PSH == SYN_ACK_PSH:
+                    sc = 1
+                else:
+                    uc = 1
+            elif flow_prot == 17:
+                fc = flow_dPkts
+                if flip:
+                    sc = 1
+                else:
+                    uc = 1
+            else:
+                continue
+            dst = str(dst) + ":" + str(dport)
 
-        """
-        elif (time1 - stop > 1):
-            avg = 0.9 * avg + 0.1 * time1
-            if (avg - stop > 1):
-                stop = avg
-            # stash this
-            continue
-        """
-        if start == 0:
-            start = time2
+            if start == 0:
+                start = flow_last
+                # stop = time1
+                # avg = time1
+                dsts = dict()
+            elif flow_last - start >= 1:  # reporting interval, currently 1 sec
+                # push the current flow back to heap
+                heappush(self.flow_heap, current_flow)
+                mes = json.dumps({'reader': self.name, 'time': start, 'destinations': dsts})
+                mes += "\n"
+                self.say(mes)
+                # start = time2
+                dsts = dict()
             # stop = time1
 
-            # avg = time1
-            dsts = dict()
-        elif time2 - start > 1:  # reporting interval, currently 1 sec
-            mes = json.dumps({'reader': infile.split('/')[6], 'time': start, 'destinations': dsts})
-            mes += "\n"
-            client_socket.say(mes)
-            response = client_socket.handle_read()
-            start = time2
-            dsts = dict()
-            # dsts[int(start)] = dict()
-        # stop = time1
-        if dst not in dsts:
-            dsts[dst] = 0
-        if (sc):
-            dsts[dst] = dsts[dst] - fc
-        else:
-            dsts[dst] = dsts[dst] + fc
-            # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
-    """
-    for t in sorted(dsts.iterkeys()):
-        mes = json.dumps({'reader': infile.split('/')[6], 'time': t, 'destinations': dsts[t]})
-        mes = mes + "\n"
-        try:
-            print "send " + str(infile.split("/")[6])
-            sock.sendall(mes)
-        finally:
-            pass
-    """
+            """
+            elif (time1 - stop > 1):
+                avg = 0.9 * avg + 0.1 * time1
+                if (avg - stop > 1):
+                    stop = avg
+                # stash this
+                continue
+            """
+
+            if dst not in dsts:
+                dsts[dst] = 0
+            if (sc):
+                dsts[dst] = dsts[dst] - fc
+            else:
+                dsts[dst] = dsts[dst] + fc
+                # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
+        """
+        for t in sorted(dsts.iterkeys()):
+            mes = json.dumps({'reader': infile.split('/')[6], 'time': t, 'destinations': dsts[t]})
+            mes = mes + "\n"
+            try:
+                print "send " + str(infile.split("/")[6])
+                sock.sendall(mes)
+            finally:
+                pass
+        """
 
 
 """
@@ -166,7 +191,13 @@ def main():
     """t.StringTrie(separator='.')
     """
     if (args.file_format[0] == "flow-tools"):
-        getFlows(args.infile)
+        # getFlows(args.infile)
+        flow_dir = args.infile.split("/")[6]
+        # Create a TCP/IP socket
+        server_address = ('localhost', 4242)
+        flows = flowtools.FlowSet(args.infile)
+        client_socket = Client(server_address, flow_dir, flows)
+        asyncore.loop()
 
 
 if __name__ == "__main__":
