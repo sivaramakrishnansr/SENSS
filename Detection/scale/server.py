@@ -53,6 +53,7 @@ file_count1 = 0
 heap = []
 current_data = {}
 current_timestamp = 0
+backlog_consume = []
 
 DETINT = 5
 reports_count = 29
@@ -142,13 +143,12 @@ class RemoteClient(asyncore.dispatcher):
         if not data:
             return False
         if not load_json:
+            # TODO: There might be some timestamps in previous and next log file iterations
             print data
+            consume_time_exceed_timestamps(current_timestamp)
             if data == "Done":
                 print "all done"
-                min_timestamp = int(time.time())
-                consume_time_exceed_timestamps()
-            save_dict()
-            # self.wfile.write("OK")
+            save_dict(force=True)
             print "done"
             new_start = True
             return False
@@ -163,17 +163,17 @@ class RemoteClient(asyncore.dispatcher):
             current_timestamp = heap_element[0]
         elif heap_element[0] > current_timestamp:
             # detect attacks
-            consume_time_exceed_timestamps()
+            consume_time_exceed_timestamps(current_timestamp)
             current_timestamp = heap_element[0]
         data = current_data[heap_element[1]]
-        if 'destinations' not in stats[t]:
-            stats[t]['destinations'] = dict()
+        if t not in stats[t]:
+            stats[t] = dict()
 
         for dst in data['destinations']:
-            if dst in stats[t]['destinations']:
-                stats[t]['destinations'][dst] += data['destinations'][dst]
+            if dst in stats[t]:
+                stats[t][dst] += data['destinations'][dst]
             else:
-                stats[t]['destinations'][dst] = data['destinations'][dst]
+                stats[t][dst] = data['destinations'][dst]
 
         """
             if t > curtime:
@@ -248,8 +248,6 @@ def dump_dictionary(file_name, index):
         del attacks
         gc.collect()
         attacks = []
-    with open("stats_dump.pickle", "wb") as handle:
-        pickle.dump(stats[file_count], handle)
 
     """
     with open(file_name, 'wb') as handle:
@@ -261,15 +259,15 @@ def dump_dictionary(file_name, index):
     # pickle.dump(timestamps[index], handle)
 
 
-def save_dict(erase=True):
+def save_dict(force=False):
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
-    # Timer(10.0, save_dict).start()
+    Timer(10.0, save_dict).start()
     save_lock = True
     print len(attacks)
     # print "arr: " + str(len(client_arr))
-    if len(attacks) > 0:
+    if len(attacks) > 1000000 or force:
         print "inside"
-        prev_dict_save = int(time.time())
+        # prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count1) + ".pickle"
         dump_dictionary(file_name, None)
         file_count1 += 1
@@ -278,10 +276,6 @@ def save_dict(erase=True):
         # del stats
         # gc.collect()
         # stats = [defaultdict(dict)]
-        if erase:
-            min_timestamp = 0
-            del last_timestamp_recd
-            last_timestamp_recd = defaultdict(int)
         print "saved"
     save_lock = False
     """
@@ -313,41 +307,29 @@ def consume_completed_timestamps():
     del timestamp_queue[0: len_t]
 
 
-def consume_time_exceed_timestamps():
-    global stats, last_timestamp_recd, file_count, attacks, DETINT, dict_dst_count, save_lock
-    Timer(10.0, consume_time_exceed_timestamps).start()
+def consume_time_exceed_timestamps(timestamp):
+    global stats, last_timestamp_recd, attacks, DETINT, dict_dst_count, save_lock, backlog_consume
+    backlog_consume.append(timestamp)
     if save_lock:
         return True
     print "attacks: " + str(len(attacks))
     # if len(attacks) >= 1000000:
     # save_dict(erase=False)
-    stats_t = stats[file_count].iterkeys()
-    stats_t = sorted(stats_t)
-    print len(stats[file_count])
-    print min_timestamp
-    for t in stats_t:
-        if min_timestamp - t >= DETINT:
-            if 'destinations' not in stats[file_count][t]:
-                del stats[file_count][t]
-                continue
-            for dst in stats[file_count][t]['destinations']:
-                if stats[file_count][t]['destinations'][dst] >= 10:
-                    attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[file_count][t]['destinations'][dst],
-                                    "clients": len(stats[file_count][t]['clients'])})
-            # dict_dst_count -= len(stats[file_count][t]['destinations'])
-            del stats[file_count][t]
-        else:
-            break
-    print "remaining: " + str(len(stats[file_count]))
+    for t in backlog_consume:
+        for dst in stats[t]:
+            if stats[t][dst] >= 10:
+                attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[t][dst]})
+        del stats[t]
+    backlog_consume = []
 
 
-stats = defaultdict(dict)
+stats = dict()
 
 
 def main():
-    # save_dict()
-    consume_completed_timestamps()
-    consume_time_exceed_timestamps()
+    save_dict()
+    # consume_completed_timestamps()
+    # consume_time_exceed_timestamps()
     server = Host(address=('localhost', 4242))
     asyncore.loop()
 

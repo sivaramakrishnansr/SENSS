@@ -51,7 +51,10 @@ class Client(asyncore.dispatcher):
 
     def handle_read(self):
         message = self.recv(1000)
-        self.send_single_flow()
+        print message
+        if message == self.name:
+            print "that\'s me"
+            self.send_single_flow()
 
     def send_single_flow(self):
         global HEAP_SIZE
