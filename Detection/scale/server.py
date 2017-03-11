@@ -120,6 +120,7 @@ class RemoteClient(asyncore.dispatcher):
         except:
             self.host.all_close()
             result = self.client_message_handle(client_message)
+        print result
         self.host.broadcast(result)
 
     def handle_write(self):
@@ -157,6 +158,7 @@ class RemoteClient(asyncore.dispatcher):
         heappush(heap, (t, data['reader']))
         current_data[data['reader']] = data
         if len(heap) < reports_count:
+            print data['reader']
             return False
         heap_element = heappop(heap)
         if current_timestamp == 0:
@@ -215,7 +217,7 @@ class Host(asyncore.dispatcher):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.bind(address)
-        self.listen(30)
+        self.listen(29)
         self.remote_clients = []
 
     def handle_accept(self):
