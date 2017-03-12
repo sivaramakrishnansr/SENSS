@@ -145,6 +145,7 @@ class Client(asyncore.dispatcher):
                 self.say(mes)
                 # start = time2
                 dsts = dict()
+                break
             # stop = time1
 
             """
