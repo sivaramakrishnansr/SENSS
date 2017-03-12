@@ -111,7 +111,7 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        client_message = self.recv(10000)
+        client_message = self.recv(1000000000)
         try:
             data = json.loads(client_message)
             if self.name is None:
@@ -142,7 +142,7 @@ class RemoteClient(asyncore.dispatcher):
             pass
         # new_start = False
         if not data:
-            return False
+            return ""
         if not load_json:
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
@@ -152,14 +152,14 @@ class RemoteClient(asyncore.dispatcher):
             save_dict(force=True)
             print "done"
             new_start = True
-            return False
+            return ""
         prev_dict_save = int(time.time())
         t = int(data['time'])
         heappush(heap, (t, data['reader']))
         current_data[data['reader']] = data
         if len(heap) < reports_count:
             print data['reader']
-            return False
+            return ""
         heap_element = heappop(heap)
         if current_timestamp == 0:
             current_timestamp = heap_element[0]
