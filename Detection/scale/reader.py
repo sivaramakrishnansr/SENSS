@@ -63,7 +63,7 @@ class Client(asyncore.dispatcher):
             try:
                 flow = self.flows.next()
                 flow_tuple = (
-                    flow.last,
+                    int(flow.last),
                     flow.srcaddr,
                     flow.dstaddr,
                     flow.srcport,
