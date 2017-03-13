@@ -54,9 +54,10 @@ class Client(asyncore.dispatcher):
         message_list = message.split("\t")
         for message in message_list:
             if message == self.name:
-                print message
-                print "that\'s me"
-                self.send_single_flow()
+                result = self.send_single_flow()
+                if result == False:
+                    print self.name + " close"
+                    self.close()
 
     def send_single_flow(self):
         global HEAP_SIZE
@@ -90,7 +91,10 @@ class Client(asyncore.dispatcher):
 
         start = 0
         while True:
-            current_flow = heappop(self.flow_heap)
+            try:
+                current_flow = heappop(self.flow_heap)
+            except IndexError as e:
+                return False
             get_next_flow(current_last=current_flow[0])
             flow_last = current_flow[0]
             flow_srcaddr = current_flow[1]
