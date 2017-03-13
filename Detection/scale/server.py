@@ -118,10 +118,10 @@ class RemoteClient(asyncore.dispatcher):
                 self.name = data['reader']
             result = self.client_message_handle(data, load_json=True)
         except ValueError as e:
-	    print e
+            print e
             self.host.all_close()
             result = self.client_message_handle(client_message)
-        #print result
+        # print result
         self.host.broadcast(result)
 
     def handle_write(self):
@@ -147,7 +147,7 @@ class RemoteClient(asyncore.dispatcher):
         if not load_json:
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
-	    print "not load json"
+            print "not load json"
             consume_time_exceed_timestamps(current_timestamp)
             if data == "Done":
                 print "all done"
@@ -170,7 +170,7 @@ class RemoteClient(asyncore.dispatcher):
             consume_time_exceed_timestamps(current_timestamp)
             current_timestamp = heap_element[0]
         data = current_data[heap_element[1]]
-        if t not in stats[t]:
+        if t not in stats:
             stats[t] = dict()
 
         for dst in data['destinations']:
