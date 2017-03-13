@@ -51,10 +51,12 @@ class Client(asyncore.dispatcher):
 
     def handle_read(self):
         message = self.recv(1000)
-        print message
-        if message == self.name:
-            print "that\'s me"
-            self.send_single_flow()
+        message_list = message.split("\t")
+        for message in message_list:
+            if message == self.name:
+                print message
+                print "that\'s me"
+                self.send_single_flow()
 
     def send_single_flow(self):
         global HEAP_SIZE
@@ -205,7 +207,7 @@ def main():
         server_address = ('localhost', 4242)
         flows = flowtools.FlowSet(args.infile)
         client_socket = Client(server_address, flow_dir, flows)
-        asyncore.loop()
+        asyncore.loop(timeout=1)
 
 
 if __name__ == "__main__":

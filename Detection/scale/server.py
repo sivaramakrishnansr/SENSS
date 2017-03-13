@@ -128,6 +128,7 @@ class RemoteClient(asyncore.dispatcher):
         if not self.outbox:
             return
         message = self.outbox.popleft()
+        message += "\t"
         self.send(message)
 
     @staticmethod
