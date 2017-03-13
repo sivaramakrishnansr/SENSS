@@ -111,16 +111,17 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        client_message = self.recv(1000000000)
+        client_message = self.recv(99999999)
         try:
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data['reader']
             result = self.client_message_handle(data, load_json=True)
-        except:
+        except ValueError as e:
+	    print e
             self.host.all_close()
             result = self.client_message_handle(client_message)
-        print result
+        #print result
         self.host.broadcast(result)
 
     def handle_write(self):
@@ -146,6 +147,7 @@ class RemoteClient(asyncore.dispatcher):
         if not load_json:
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
+	    print "not load json"
             consume_time_exceed_timestamps(current_timestamp)
             if data == "Done":
                 print "all done"
