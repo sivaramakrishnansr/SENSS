@@ -59,9 +59,13 @@ class Client(asyncore.dispatcher):
     def send_single_flow(self):
         global HEAP_SIZE
 
-        def get_next_flow():
+        def get_next_flow(current_last=None):
             try:
                 flow = self.flows.next()
+                if current_last:
+                    if int(flow.last) < current_last:
+                        get_next_flow(current_last=current_last)
+                        return
                 flow_tuple = (
                     int(flow.last),
                     flow.srcaddr,
@@ -85,7 +89,7 @@ class Client(asyncore.dispatcher):
         start = 0
         while True:
             current_flow = heappop(self.flow_heap)
-            get_next_flow()
+            get_next_flow(current_last=current_flow[0])
             flow_last = current_flow[0]
             flow_srcaddr = current_flow[1]
             flow_dstaddr = current_flow[2]
