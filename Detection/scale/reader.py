@@ -56,8 +56,8 @@ class Client(asyncore.dispatcher):
             if message == self.name:
                 result = self.send_single_flow()
                 if result == False:
-                    print self.name + " close"
                     self.close()
+                    raise asyncore.ExitNow(self.name + " close")
 
     def send_single_flow(self):
         global HEAP_SIZE
@@ -135,7 +135,7 @@ class Client(asyncore.dispatcher):
             elif flow_prot == 17:
                 fc = flow_dPkts
                 if flip:
-                    sc = 1
+                    sc = 1 # success count
                 else:
                     uc = 1
             else:
@@ -170,9 +170,9 @@ class Client(asyncore.dispatcher):
             if dst not in dsts:
                 dsts[dst] = 0
             if (sc):
-                dsts[dst] = dsts[dst] - fc
+                dsts[dst] = dsts[dst] - fc # flow cpount (+ replies)
             else:
-                dsts[dst] = dsts[dst] + fc
+                dsts[dst] = dsts[dst] + fc # (+ requesats)
                 # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
         """
         for t in sorted(dsts.iterkeys()):
