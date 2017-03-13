@@ -121,7 +121,7 @@ class RemoteClient(asyncore.dispatcher):
             print e
             self.host.all_close()
             result = self.client_message_handle(client_message)
-        # print result
+        print result
         self.host.broadcast(result)
 
     def handle_write(self):
@@ -163,18 +163,10 @@ class RemoteClient(asyncore.dispatcher):
             print data['reader']
             return ""
         heap_element = heappop(heap)
-	print "pop"
-	print current_timestamp
-	if current_timestamp in stats:
-		print stats[current_timestamp]
-	else:
-		print stats
         if current_timestamp == 0:
             current_timestamp = heap_element[0]
         elif heap_element[0] > current_timestamp:
             # detect attacks
-	    print heap_element[0]
-	    print "current: " + str(current_timestamp)
             consume_time_exceed_timestamps(current_timestamp)
             current_timestamp = heap_element[0]
         data = current_data[heap_element[1]]
@@ -239,6 +231,7 @@ class Host(asyncore.dispatcher):
 
     def handle_close(self):
         global reports_count
+        print "closed"
         reports_count -= 1
 
     def broadcast(self, message):
