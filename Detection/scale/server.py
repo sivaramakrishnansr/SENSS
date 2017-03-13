@@ -163,21 +163,29 @@ class RemoteClient(asyncore.dispatcher):
             print data['reader']
             return ""
         heap_element = heappop(heap)
+	print "pop"
+	print current_timestamp
+	if current_timestamp in stats:
+		print stats[current_timestamp]
+	else:
+		print stats
         if current_timestamp == 0:
             current_timestamp = heap_element[0]
         elif heap_element[0] > current_timestamp:
             # detect attacks
+	    print heap_element[0]
+	    print "current: " + str(current_timestamp)
             consume_time_exceed_timestamps(current_timestamp)
             current_timestamp = heap_element[0]
         data = current_data[heap_element[1]]
-        if t not in stats:
-            stats[t] = dict()
+        if current_timestamp not in stats:
+            stats[current_timestamp] = dict()
 
         for dst in data['destinations']:
-            if dst in stats[t]:
-                stats[t][dst] += data['destinations'][dst]
+            if dst in stats[current_timestamp]:
+                stats[current_timestamp][dst] += data['destinations'][dst]
             else:
-                stats[t][dst] = data['destinations'][dst]
+                stats[current_timestamp][dst] = data['destinations'][dst]
 
         """
             if t > curtime:
