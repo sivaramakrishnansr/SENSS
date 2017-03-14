@@ -111,6 +111,7 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
+        global reports_count
         client_message = self.recv(99999999)
         try:
             data = json.loads(client_message)
@@ -119,8 +120,12 @@ class RemoteClient(asyncore.dispatcher):
             result = self.client_message_handle(data, load_json=True)
         except ValueError as e:
             print e
-            self.host.all_close()
-            result = self.client_message_handle(client_message)
+            if client_message == "close":
+                reports_count -= 1
+                result = self.client_message_handle(client_message, force_get_next=True)
+            else:
+                self.host.all_close()
+                result = self.client_message_handle(client_message)
         print result
         self.host.broadcast(result)
 
@@ -132,7 +137,7 @@ class RemoteClient(asyncore.dispatcher):
         self.send(message)
 
     @staticmethod
-    def client_message_handle(data, load_json=False):
+    def client_message_handle(data, load_json=False, force_get_next=False):
         global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, \
             timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp
         # prev_dict_save = int(time.time())
@@ -145,7 +150,7 @@ class RemoteClient(asyncore.dispatcher):
         # new_start = False
         if not data:
             return ""
-        if not load_json:
+        if not load_json and not force_get_next:
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
             print "not load json"
@@ -156,10 +161,11 @@ class RemoteClient(asyncore.dispatcher):
             print "done"
             new_start = True
             return ""
-        prev_dict_save = int(time.time())
-        t = int(data['time'])
-        heappush(heap, (t, data['reader']))
-        current_data[data['reader']] = data
+        if not force_get_next:
+            prev_dict_save = int(time.time())
+            t = int(data['time'])
+            heappush(heap, (t, data['reader']))
+            current_data[data['reader']] = data
         if len(heap) < reports_count:
             print data['reader']
             return ""

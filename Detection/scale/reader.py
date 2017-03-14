@@ -10,6 +10,7 @@ import sys
 import asyncore
 from collections import deque
 from heapq import heappush, heappop
+from time import sleep
 
 nodes = 0
 WELL_KNOWN_PORTS = [19, 22, 23, 25, 53, 80, 443]
@@ -56,8 +57,10 @@ class Client(asyncore.dispatcher):
             if message == self.name:
                 result = self.send_single_flow()
                 if result == False:
+                    self.say("close")
+                    sleep(2)
                     self.close()
-                    raise asyncore.ExitNow(self.name + " close")
+                    raise asyncore.ExitNow()
 
     def send_single_flow(self):
         global HEAP_SIZE
@@ -124,20 +127,20 @@ class Client(asyncore.dispatcher):
                 flags = bitarray('{0:06b}'.format(flow_tcp_flags & 63))
             else:
                 flags = bitarray('{0:06b}'.format(flow_tcp_flags))
-            sc = 0
-            uc = 0
+            success_count = 0
+            unsuccessful_count = 0
             if flow_prot == 6:
-                fc = 1
+                flow_count = 1
                 if flags & SYN_ACK_PSH == SYN_ACK_PSH:
-                    sc = 1
+                    success_count = 1
                 else:
-                    uc = 1
+                    unsuccessful_count = 1
             elif flow_prot == 17:
-                fc = flow_dPkts
+                flow_count = flow_dPkts
                 if flip:
-                    sc = 1 # success count
+                    success_count = 1
                 else:
-                    uc = 1
+                    unsuccessful_count = 1
             else:
                 continue
             dst = str(dst) + ":" + str(dport)
@@ -168,11 +171,11 @@ class Client(asyncore.dispatcher):
             """
 
             if dst not in dsts:
-                dsts[dst] = 0
-            if (sc):
-                dsts[dst] = dsts[dst] - fc # flow cpount (+ replies)
+                dsts[dst] = {"requests": 0, "replies": 0}
+            if success_count:
+                dsts[dst]['replies'] = dsts[dst] + flow_count
             else:
-                dsts[dst] = dsts[dst] + fc # (+ requesats)
+                dsts[dst]['requests'] = dsts[dst] + flow_count
                 # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
         """
         for t in sorted(dsts.iterkeys()):
@@ -211,7 +214,11 @@ def main():
         server_address = ('localhost', 4242)
         flows = flowtools.FlowSet(args.infile)
         client_socket = Client(server_address, flow_dir, flows)
-        asyncore.loop(timeout=1)
+        try:
+            asyncore.loop(timeout=1)
+        except asyncore.ExitNow, e:
+            pass
+        print "close"
 
 
 if __name__ == "__main__":
