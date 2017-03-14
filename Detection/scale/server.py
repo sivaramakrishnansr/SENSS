@@ -182,9 +182,11 @@ class RemoteClient(asyncore.dispatcher):
 
         for dst in data['destinations']:
             if dst in stats[current_timestamp]:
-                stats[current_timestamp][dst] += data['destinations'][dst]
+                stats[current_timestamp][dst] += data['destinations'][dst]['requests']
+                stats[current_timestamp][dst] -= data['destinations'][dst]['replies']
             else:
-                stats[current_timestamp][dst] = data['destinations'][dst]
+                stats[current_timestamp][dst] = data['destinations'][dst]['requests']
+                stats[current_timestamp][dst] -= data['destinations'][dst]['replies']
 
         """
             if t > curtime:
