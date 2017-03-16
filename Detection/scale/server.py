@@ -112,7 +112,7 @@ class RemoteClient(asyncore.dispatcher):
 
     def handle_read(self):
         global reports_count
-        client_message = self.recv(9999999999)
+        client_message = self.recv(999999999)
         try:
             data = json.loads(client_message)
             if self.name is None:
@@ -120,8 +120,7 @@ class RemoteClient(asyncore.dispatcher):
             result = self.client_message_handle(data, load_json=True)
         except ValueError as e:
             print e
-	    client_message = client_message.strip()
-	    print repr(client_message)
+            client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
@@ -184,11 +183,11 @@ class RemoteClient(asyncore.dispatcher):
 
         for dst in data['destinations']:
             if dst in stats[current_timestamp]:
-                stats[current_timestamp][dst] += data['destinations'][dst]['requests']
-                stats[current_timestamp][dst] -= data['destinations'][dst]['replies']
+                stats[current_timestamp][dst] += data['destinations'][dst]['req']
+                stats[current_timestamp][dst] -= data['destinations'][dst]['rep']
             else:
-                stats[current_timestamp][dst] = data['destinations'][dst]['requests']
-                stats[current_timestamp][dst] -= data['destinations'][dst]['replies']
+                stats[current_timestamp][dst] = data['destinations'][dst]['req']
+                stats[current_timestamp][dst] -= data['destinations'][dst]['rep']
 
         """
             if t > curtime:
