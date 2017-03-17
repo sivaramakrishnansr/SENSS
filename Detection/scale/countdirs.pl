@@ -47,14 +47,10 @@ for $time (sort {$a cmp $b} keys %hash)
     	waitpid $pid, 0;
     }
     #print "$i";
-    if($break_flag == 1) {
-        continue;
-    }
-    print "\n-------\n";
-    system("python iteration_done.py");
-    sleep(100)
     if($break_flag == 0) {
-        last;
+        print "\n-------\n";
+        system("python iteration_done.py");
+        sleep(100);
     }
     #exit;
 }
