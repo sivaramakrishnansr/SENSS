@@ -171,11 +171,11 @@ class Client(asyncore.dispatcher):
             """
 
             if dst not in dsts:
-                dsts[dst] = {"req": 0, "rep": 0}
+                dsts[dst] = {"q": 0, "p": 0}
             if success_count:
-                dsts[dst]['rep'] = dsts[dst]['rep'] + flow_count
+                dsts[dst]['p'] = dsts[dst]['p'] + flow_count
             else:
-                dsts[dst]['req'] = dsts[dst]['req'] + flow_count
+                dsts[dst]['q'] = dsts[dst]['q'] + flow_count
                 # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
         """
         for t in sorted(dsts.iterkeys()):
