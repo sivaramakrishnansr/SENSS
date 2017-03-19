@@ -127,6 +127,7 @@ class RemoteClient(asyncore.dispatcher):
             print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
+		print "close"
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
             elif len(client_message) >= 20:
