@@ -54,6 +54,7 @@ heap = []
 current_data = {}
 current_timestamp = 0
 backlog_consume = []
+receive_buffer = ""
 
 DETINT = 5
 reports_count = 29
@@ -111,19 +112,25 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        global reports_count
+        global reports_count, receive_buffer
+        result = ""
         client_message = self.recv(999999999)
         try:
+            if receive_buffer != "":
+                client_message = receive_buffer + client_message
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data['reader']
             result = self.client_message_handle(data, load_json=True)
+            receive_buffer = ""
         except ValueError as e:
             print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
+            elif len(client_message) >= 20:
+                receive_buffer += client_message
             else:
                 self.host.all_close()
                 result = self.client_message_handle(client_message)

@@ -48,7 +48,9 @@ class Client(asyncore.dispatcher):
         if not self.outbox:
             return
         message = self.outbox.popleft()
-        self.send(message)
+        while message != "":
+            sent_bytes = self.send(message)
+            message = message[sent_bytes:]
 
     def handle_read(self):
         message = self.recv(1000)
