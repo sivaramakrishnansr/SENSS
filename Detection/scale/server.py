@@ -127,7 +127,7 @@ class RemoteClient(asyncore.dispatcher):
             print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
-		print "close"
+                print "close"
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
             elif len(client_message) >= 20:
@@ -191,11 +191,10 @@ class RemoteClient(asyncore.dispatcher):
 
         for dst in data['destinations']:
             if dst in stats[current_timestamp]:
-                stats[current_timestamp][dst] += data['destinations'][dst]['q']
-                stats[current_timestamp][dst] -= data['destinations'][dst]['p']
+                stats[current_timestamp][dst][0] += data['destinations'][dst]['q']
+                stats[current_timestamp][dst][1] += data['destinations'][dst]['p']
             else:
-                stats[current_timestamp][dst] = data['destinations'][dst]['q']
-                stats[current_timestamp][dst] -= data['destinations'][dst]['p']
+                stats[current_timestamp][dst] = [data['destinations'][dst]['q'], data['destinations'][dst]['p']]
 
         """
             if t > curtime:
@@ -340,8 +339,10 @@ def consume_time_exceed_timestamps(timestamp):
     # save_dict(erase=False)
     for t in backlog_consume:
         for dst in stats[t]:
-            if stats[t][dst] >= 10:
-                attacks.append({"timestamp": t, "dst": dst, "flow_count": stats[t][dst]})
+            req_rep = stats[t][dst][0] - stats[t][dst][1]
+            if req_rep >= 10:
+                attacks.append({"timestamp": t, "dst": dst, "req": stats[t][dst][0], "rep": stats[t][dst][1],
+                                "flow_count": req_rep})
         del stats[t]
     backlog_consume = []
 
