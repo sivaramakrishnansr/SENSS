@@ -41,8 +41,8 @@ class Client(asyncore.dispatcher):
         self.flow_heap = []
         self.reqs1 = 0
         self.reps1 = 0
-	self.reqs2 = 0
-	self.reps2 = 0
+        self.reqs2 = 0
+        self.reps2 = 0
         self.fh = open("reader_print.txt", "a")
         self.send_single_flow()
 
@@ -65,7 +65,7 @@ class Client(asyncore.dispatcher):
                 result = self.send_single_flow()
                 if result == False:
                     self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
-		    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
+                    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
                     self.say("close")
                     sleep(2)
                     self.close()
@@ -165,7 +165,7 @@ class Client(asyncore.dispatcher):
                 if "198.108.0.0:53" in dsts:
                     self.reqs1 += dsts['198.108.0.0:53']['q']
                     self.reps1 += dsts['198.108.0.0:53']['p']
-		if "207.75.112.0:53" in dsts:
+                if "207.75.112.0:53" in dsts:
                     self.reqs2 += dsts['207.75.112.0:53']['q']
                     self.reps2 += dsts['207.75.112.0:53']['p']
                 mes = json.dumps({'reader': self.name, 'time': start, 'destinations': dsts})
