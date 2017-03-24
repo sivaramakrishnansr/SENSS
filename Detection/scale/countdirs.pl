@@ -27,7 +27,7 @@ for $time (sort {$a cmp $b} keys %hash)
     $break_flag = 0;
     for $file (keys %{$hash{$time}})
     {
-        if(index($file, "21.0900") == -1) {
+        if(index($file, "22.1300") == -1) {
             $break_flag = 1;
             last;
         }
