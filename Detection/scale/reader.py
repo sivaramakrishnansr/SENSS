@@ -39,8 +39,11 @@ class Client(asyncore.dispatcher):
         self.end_flag = False
         self.destinations = {}
         self.flow_heap = []
-        self.reqs = 0
-        self.reps = 0
+        self.reqs1 = 0
+        self.reps1 = 0
+	self.reqs2 = 0
+	self.reps2 = 0
+        self.fh = open("reader_print.txt", "a")
         self.send_single_flow()
 
     def say(self, message):
@@ -61,7 +64,8 @@ class Client(asyncore.dispatcher):
             if message == self.name:
                 result = self.send_single_flow()
                 if result == False:
-                    print self.name + " " + self.reqs + " " + self.reps
+                    self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
+		    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
                     self.say("close")
                     sleep(2)
                     self.close()
@@ -159,8 +163,11 @@ class Client(asyncore.dispatcher):
                 # push the current flow back to heap
                 heappush(self.flow_heap, current_flow)
                 if "198.108.0.0:53" in dsts:
-                    self.reqs += dsts['198.108.0.0:53']['q']
-                    self.reps += dsts['198.108.0.0:53']['p']
+                    self.reqs1 += dsts['198.108.0.0:53']['q']
+                    self.reps1 += dsts['198.108.0.0:53']['p']
+		if "207.75.112.0:53" in dsts:
+                    self.reqs2 += dsts['207.75.112.0:53']['q']
+                    self.reps2 += dsts['207.75.112.0:53']['p']
                 mes = json.dumps({'reader': self.name, 'time': start, 'destinations': dsts})
                 mes += "\n"
                 self.say(mes)
