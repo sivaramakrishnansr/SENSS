@@ -22,7 +22,7 @@ def sort_flows(infile):
     flows = flowtools.FlowSet(infile)
     replies = 0
     requests = 0
-    # fh = open("chi-600e_check.txt", "a")
+    fh = open("chi-600e_check.txt", "a")
     for flow in flows:
         flip = False
         if flow.dstport in WELL_KNOWN_PORTS and flow.srcport not in WELL_KNOWN_PORTS:
@@ -64,13 +64,16 @@ def sort_flows(infile):
         else:
             continue
 
+        fh.write(str(flow.srcaddr) + ":" + str(flow.srcport) + "\t" + str(flow.dstaddr) + ":" + str(
+            flow.dstaddr) + "\t" + str(flow_count))
+
         if success_count:
             replies += flow_count
         else:
             requests += flow_count
 
-    fh = open("chi-600e_all_times", "a")
-    fh.write(infile.split('/')[10] + "\t" + str(requests) + "\t" + str(replies) + "\n")
+    # fh = open("chi-600e_all_times", "a")
+    # fh.write(infile.split('/')[10] + "\t" + str(requests) + "\t" + str(replies) + "\n")
     fh.close()
 
 
