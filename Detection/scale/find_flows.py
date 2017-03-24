@@ -65,7 +65,7 @@ def sort_flows(infile):
             continue
 
         fh.write(str(flow.srcaddr) + ":" + str(flow.srcport) + "\t" + str(flow.dstaddr) + ":" + str(
-            flow.dstaddr) + "\t" + str(flow_count))
+            flow.dstport) + "\t" + str(flow_count) + "\n")
 
         if success_count:
             replies += flow_count
