@@ -22,7 +22,7 @@ def sort_flows(infile):
     flows = flowtools.FlowSet(infile)
     replies = 0
     requests = 0
-    fh = open("chi-600e_check.txt", "a")
+    fh = open("all_flows/13-14/" + infile.split('/')[6] + "_check.txt", "a")
     for flow in flows:
         flip = False
         if flow.dstport in WELL_KNOWN_PORTS and flow.srcport not in WELL_KNOWN_PORTS:
@@ -40,7 +40,7 @@ def sort_flows(infile):
             continue
 
         dst = str(dst) + ":" + str(dport)
-        if dst != "198.108.0.0:53":
+        if dst != "207.75.112.0:53":
             continue
 
         if flow.tcp_flags > 63:
