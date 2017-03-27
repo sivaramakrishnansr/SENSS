@@ -162,9 +162,11 @@ class Client(asyncore.dispatcher):
             elif flow_last - start >= 1:  # reporting interval, currently 1 sec
                 # push the current flow back to heap
                 heappush(self.flow_heap, current_flow)
+                """
                 if "198.108.0.0:53" in dsts:
                     self.reqs1 += dsts['198.108.0.0:53']['q']
                     self.reps1 += dsts['198.108.0.0:53']['p']
+                """
                 if "207.75.112.0:53" in dsts:
                     self.reqs2 += dsts['207.75.112.0:53']['q']
                     self.reps2 += dsts['207.75.112.0:53']['p']
