@@ -196,12 +196,12 @@ class RemoteClient(asyncore.dispatcher):
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
 
-            for dst in data['destinations']:
+            for dst in data:
                 if dst in stats[current_timestamp]:
-                    stats[current_timestamp][dst][0] += data['destinations'][dst]['q']
-                    stats[current_timestamp][dst][1] += data['destinations'][dst]['p']
+                    stats[current_timestamp][dst][0] += data[dst]['q']
+                    stats[current_timestamp][dst][1] += data[dst]['p']
                 else:
-                    stats[current_timestamp][dst] = [data['destinations'][dst]['q'], data['destinations'][dst]['p']]
+                    stats[current_timestamp][dst] = [data[dst]['q'], data[dst]['p']]
 
             try:
                 t = int(all_data[heap_element[1]][0][0])
