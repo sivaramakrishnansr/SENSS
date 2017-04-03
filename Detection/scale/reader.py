@@ -44,6 +44,7 @@ class Client(asyncore.dispatcher):
         self.reqs2 = 0
         self.reps2 = 0
         self.total_reqs = 0
+        self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
         self.fh_flow = open("flow_check/" + self.name, "a")
         self.send_single_flow(size=1000)
@@ -65,6 +66,8 @@ class Client(asyncore.dispatcher):
         self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
             if message == self.name:
+                self.self_reqs += 1
+                print self.name + " : " + str(self.self_reqs)
                 result = self.send_single_flow()
                 if result == False:
                     # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
