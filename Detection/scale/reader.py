@@ -188,7 +188,7 @@ class Client(asyncore.dispatcher):
                     self.reps2 += dsts['207.75.112.0:53']['p']
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
-                if len(aggregated_dsts) >= 100:
+                if len(aggregated_dsts) >= size:
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
                     self.say(mes)

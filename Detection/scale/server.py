@@ -124,6 +124,7 @@ class RemoteClient(asyncore.dispatcher):
                 self.name = data[0]['reader']
             if self.name not in all_data:
                 all_data[self.name] = []
+	    #print len(data)
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
             result = self.client_message_handle(data, reader_name=self.name, load_json=True)
@@ -140,7 +141,7 @@ class RemoteClient(asyncore.dispatcher):
             else:
                 self.host.all_close()
                 result = self.client_message_handle(client_message)
-        print result
+        #print result
         self.host.broadcast(result)
 
     def handle_write(self):
@@ -182,9 +183,15 @@ class RemoteClient(asyncore.dispatcher):
             current_data[reader_name] = all_data[reader_name][0][1]
             del all_data[reader_name][0]
         if len(heap) < reports_count:
-            print reader_name
+            print "reader: " + reader_name
+	    print len(all_data[reader_name])
             return ""
+	#for reader in all_data:
+	    #print reader + " : " + str(len(all_data[reader]))
+	j = 0
         while True:
+	    #print j
+	    #j += 1
             heap_element = heappop(heap)
             if current_timestamp == 0:
                 current_timestamp = heap_element[0]
@@ -195,6 +202,9 @@ class RemoteClient(asyncore.dispatcher):
             data = current_data[heap_element[1]]
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
+
+	    if len(data) > 100:
+		print len(data)
 
             for dst in data:
                 if dst in stats[current_timestamp]:
