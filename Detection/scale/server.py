@@ -55,6 +55,7 @@ current_data = {}
 current_timestamp = 0
 backlog_consume = []
 receive_buffer = ""
+all_data = {}
 
 DETINT = 5
 reports_count = 29
@@ -112,7 +113,7 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        global reports_count, receive_buffer
+        global reports_count, receive_buffer, all_data
         result = ""
         client_message = self.recv(999999999)
         try:
@@ -120,8 +121,12 @@ class RemoteClient(asyncore.dispatcher):
                 client_message = receive_buffer + client_message
             data = json.loads(client_message)
             if self.name is None:
-                self.name = data['reader']
-            result = self.client_message_handle(data, load_json=True)
+                self.name = data[0]['reader']
+            if self.name not in all_data:
+                all_data[self.name] = []
+            for single_data in data:
+                all_data[self.name].append((single_data['time'], single_data['destinations']))
+            result = self.client_message_handle(data, reader_name=self.name, load_json=True)
             receive_buffer = ""
         except ValueError as e:
             print e
@@ -146,9 +151,9 @@ class RemoteClient(asyncore.dispatcher):
         self.send(message)
 
     @staticmethod
-    def client_message_handle(data, load_json=False, force_get_next=False):
+    def client_message_handle(data, reader_name=None, load_json=False, force_get_next=False):
         global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, \
-            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp
+            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp, all_data
         # prev_dict_save = int(time.time())
         try:
             if new_start:
@@ -171,30 +176,43 @@ class RemoteClient(asyncore.dispatcher):
             new_start = True
             return ""
         if not force_get_next:
-            prev_dict_save = int(time.time())
-            t = int(data['time'])
-            heappush(heap, (t, data['reader']))
-            current_data[data['reader']] = data
+            # prev_dict_save = int(time.time())
+            t = int(all_data[reader_name][0][0])
+            heappush(heap, (t, reader_name))
+            current_data[reader_name] = all_data[reader_name][0][1]
+            del all_data[reader_name][0]
         if len(heap) < reports_count:
-            print data['reader']
+            print reader_name
             return ""
-        heap_element = heappop(heap)
-        if current_timestamp == 0:
-            current_timestamp = heap_element[0]
-        elif heap_element[0] > current_timestamp:
-            # detect attacks
-            consume_time_exceed_timestamps(current_timestamp)
-            current_timestamp = heap_element[0]
-        data = current_data[heap_element[1]]
-        if current_timestamp not in stats:
-            stats[current_timestamp] = dict()
+        while True:
+            heap_element = heappop(heap)
+            if current_timestamp == 0:
+                current_timestamp = heap_element[0]
+            elif heap_element[0] > current_timestamp:
+                # detect attacks
+                consume_time_exceed_timestamps(current_timestamp)
+                current_timestamp = heap_element[0]
+            data = current_data[heap_element[1]]
+            if current_timestamp not in stats:
+                stats[current_timestamp] = dict()
 
-        for dst in data['destinations']:
-            if dst in stats[current_timestamp]:
-                stats[current_timestamp][dst][0] += data['destinations'][dst]['q']
-                stats[current_timestamp][dst][1] += data['destinations'][dst]['p']
-            else:
-                stats[current_timestamp][dst] = [data['destinations'][dst]['q'], data['destinations'][dst]['p']]
+            for dst in data['destinations']:
+                if dst in stats[current_timestamp]:
+                    stats[current_timestamp][dst][0] += data['destinations'][dst]['q']
+                    stats[current_timestamp][dst][1] += data['destinations'][dst]['p']
+                else:
+                    stats[current_timestamp][dst] = [data['destinations'][dst]['q'], data['destinations'][dst]['p']]
+
+            try:
+                t = int(all_data[heap_element[1]][0][0])
+                heappush(heap, (t, heap_element[1]))
+                current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
+                del all_data[heap_element[1]][0]
+            except IndexError as e:
+                continue
+
+            if len(all_data[heap_element[1]]) <= 900:
+                return heap_element[1]
 
         """
             if t > curtime:
@@ -228,7 +246,7 @@ class RemoteClient(asyncore.dispatcher):
             except:
                 pass
         """
-        return data['reader']
+        # return data['reader']
 
 
 class Host(asyncore.dispatcher):
@@ -334,7 +352,7 @@ def consume_time_exceed_timestamps(timestamp):
     backlog_consume.append(timestamp)
     if save_lock:
         return True
-    print "attacks: " + str(len(attacks))
+    print "attacks: " + str(len(attacks)) + " t: " + str(timestamp)
     # if len(attacks) >= 1000000:
     # save_dict(erase=False)
     for t in backlog_consume:

@@ -43,10 +43,10 @@ class Client(asyncore.dispatcher):
         self.reps1 = 0
         self.reqs2 = 0
         self.reps2 = 0
-	self.total_reqs = 0
+        self.total_reqs = 0
         self.fh = open("reader_print.txt", "a")
-	self.fh_flow = open("flow_check/" + self.name, "a")
-        self.send_single_flow()
+        self.fh_flow = open("flow_check/" + self.name, "a")
+        self.send_single_flow(size=1000)
 
     def say(self, message):
         self.outbox.append(message)
@@ -62,14 +62,14 @@ class Client(asyncore.dispatcher):
     def handle_read(self):
         message = self.recv(1000)
         message_list = message.split("\t")
-	self.fh_flow.write(str(message_list) + "\n")
+        self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
             if message == self.name:
                 result = self.send_single_flow()
                 if result == False:
-                    #self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
+                    # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
                     self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
-		    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
+                    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
                     self.say("close")
                     sleep(2)
                     self.close()
@@ -81,10 +81,10 @@ class Client(asyncore.dispatcher):
         def get_next_flow(current_last=None):
             try:
                 flow = self.flows.next()
-		self.total_reqs += 1
+                self.total_reqs += 1
                 if current_last:
                     if int(flow.last) < current_last:
-			self.fh_flow.write("exceed\n")
+                        self.fh_flow.write("exceed\n")
                         get_next_flow(current_last=current_last)
                         return
                 flow_tuple = (
@@ -101,19 +101,24 @@ class Client(asyncore.dispatcher):
             except:
                 self.end_flag = True
 
-        while len(self.flow_heap) < HEAP_SIZE:
-            if not self.end_flag:
-                get_next_flow()
-            else:
-                break
-
         start = 0
         aggregated_dsts = []
         while True:
+            while len(self.flow_heap) < HEAP_SIZE:
+                if not self.end_flag:
+                    get_next_flow()
+                else:
+                    break
             try:
                 current_flow = heappop(self.flow_heap)
             except IndexError as e:
-                return False
+                if len(aggregated_dsts) > 0:
+                    mes = json.dumps(aggregated_dsts)
+                    mes += "\n"
+                    self.say(mes)
+                    break
+                else:
+                    return False
             get_next_flow(current_last=current_flow[0])
             flow_last = current_flow[0]
             flow_srcaddr = current_flow[1]
@@ -159,11 +164,11 @@ class Client(asyncore.dispatcher):
                     unsuccessful_count = 1
             else:
                 continue
-	    src = str(src) + ":" + str(sport)
+            src = str(src) + ":" + str(sport)
             dst = str(dst) + ":" + str(dport)
 
-	    #if dst == "207.75.112.0:53":
-		#self.fh_flow.write(str(flow_last) + "\t" + src + "\t" + dst + "\t" + str(flow_dPkts) + "\n")
+            # if dst == "207.75.112.0:53":
+            #self.fh_flow.write(str(flow_last) + "\t" + src + "\t" + dst + "\t" + str(flow_dPkts) + "\n")
 
             if start == 0:
                 start = flow_last
@@ -187,6 +192,7 @@ class Client(asyncore.dispatcher):
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
                     self.say(mes)
+                    aggregated_dsts = []
                     break
                 # start = time2
                 dsts = dict()
@@ -201,8 +207,8 @@ class Client(asyncore.dispatcher):
                 continue
             """
 
-	    #if dst == "207.75.112.0:53":
-		#self.total_reqs += 1
+            #if dst == "207.75.112.0:53":
+            #self.total_reqs += 1
 
             if dst not in dsts:
                 dsts[dst] = {"q": 0, "p": 0}
