@@ -71,7 +71,7 @@ class Client(asyncore.dispatcher):
                     self.close()
                     raise asyncore.ExitNow()
 
-    def send_single_flow(self):
+    def send_single_flow(self, size=100):
         global HEAP_SIZE
 
         def get_next_flow(current_last=None):
@@ -102,6 +102,7 @@ class Client(asyncore.dispatcher):
                 break
 
         start = 0
+        aggregated_dsts = []
         while True:
             try:
                 current_flow = heappop(self.flow_heap)
@@ -170,12 +171,15 @@ class Client(asyncore.dispatcher):
                 if "207.75.112.0:53" in dsts:
                     self.reqs2 += dsts['207.75.112.0:53']['q']
                     self.reps2 += dsts['207.75.112.0:53']['p']
-                mes = json.dumps({'reader': self.name, 'time': start, 'destinations': dsts})
-                mes += "\n"
-                self.say(mes)
+
+                aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
+                if len(aggregated_dsts) >= 100:
+                    mes = json.dumps(aggregated_dsts)
+                    mes += "\n"
+                    self.say(mes)
+                    break
                 # start = time2
                 dsts = dict()
-                break
             # stop = time1
 
             """
