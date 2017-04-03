@@ -23,7 +23,7 @@ ACK_PSH = bitarray('011000')
 ACK_FIN = bitarray('010001')
 PERIOD = 60
 DELPERIOD = 600
-HEAP_SIZE = 1000
+HEAP_SIZE = 10000
 
 
 class Client(asyncore.dispatcher):
@@ -43,7 +43,9 @@ class Client(asyncore.dispatcher):
         self.reps1 = 0
         self.reqs2 = 0
         self.reps2 = 0
+	self.total_reqs = 0
         self.fh = open("reader_print.txt", "a")
+	self.fh_flow = open("flow_check/" + self.name, "a")
         self.send_single_flow()
 
     def say(self, message):
@@ -60,12 +62,14 @@ class Client(asyncore.dispatcher):
     def handle_read(self):
         message = self.recv(1000)
         message_list = message.split("\t")
+	self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
             if message == self.name:
                 result = self.send_single_flow()
                 if result == False:
-                    self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
+                    #self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
                     self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
+		    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
                     self.say("close")
                     sleep(2)
                     self.close()
@@ -77,8 +81,10 @@ class Client(asyncore.dispatcher):
         def get_next_flow(current_last=None):
             try:
                 flow = self.flows.next()
+		self.total_reqs += 1
                 if current_last:
                     if int(flow.last) < current_last:
+			self.fh_flow.write("exceed\n")
                         get_next_flow(current_last=current_last)
                         return
                 flow_tuple = (
@@ -152,7 +158,11 @@ class Client(asyncore.dispatcher):
                     unsuccessful_count = 1
             else:
                 continue
+	    src = str(src) + ":" + str(sport)
             dst = str(dst) + ":" + str(dport)
+
+	    #if dst == "207.75.112.0:53":
+		#self.fh_flow.write(str(flow_last) + "\t" + src + "\t" + dst + "\t" + str(flow_dPkts) + "\n")
 
             if start == 0:
                 start = flow_last
@@ -186,6 +196,9 @@ class Client(asyncore.dispatcher):
                 # stash this
                 continue
             """
+
+	    #if dst == "207.75.112.0:53":
+		#self.total_reqs += 1
 
             if dst not in dsts:
                 dsts[dst] = {"q": 0, "p": 0}
