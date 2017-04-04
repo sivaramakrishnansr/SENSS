@@ -47,7 +47,7 @@ class Client(asyncore.dispatcher):
         self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
         self.fh_flow = open("flow_check/" + self.name, "a")
-        self.send_single_flow(size=1000)
+        self.send_single_flow(size=100)
 
     def say(self, message):
         self.outbox.append(message)
@@ -67,7 +67,7 @@ class Client(asyncore.dispatcher):
         for message in message_list:
             if message == self.name:
                 self.self_reqs += 1
-                print self.name + " : " + str(self.self_reqs)
+                #print self.name + " : " + str(self.self_reqs)
                 result = self.send_single_flow()
                 if result == False:
                     # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
@@ -78,7 +78,7 @@ class Client(asyncore.dispatcher):
                     self.close()
                     raise asyncore.ExitNow()
 
-    def send_single_flow(self, size=100):
+    def send_single_flow(self, size=10):
         global HEAP_SIZE
 
         def get_next_flow(current_last=None):
@@ -192,13 +192,16 @@ class Client(asyncore.dispatcher):
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
                 if len(aggregated_dsts) >= size:
+		    #print self.name + " : " + str(aggregated_dsts[0]['time'])
+		    print len(aggregated_dsts)
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
                     self.say(mes)
                     aggregated_dsts = []
                     break
-                # start = time2
+                start = flow_last
                 dsts = dict()
+		continue
             # stop = time1
 
             """

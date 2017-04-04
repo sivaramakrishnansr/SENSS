@@ -56,6 +56,7 @@ current_timestamp = 0
 backlog_consume = []
 receive_buffer = ""
 all_data = {}
+fh1 = open("test_json.txt", "a")
 
 DETINT = 5
 reports_count = 29
@@ -108,18 +109,22 @@ class RemoteClient(asyncore.dispatcher):
         self.host = host
         self.outbox = deque()
         self.name = None
+	self.rb = ""
 
     def say(self, message):
         self.outbox.append(message)
 
     def handle_read(self):
-        global reports_count, receive_buffer, all_data
+        global reports_count, receive_buffer, all_data, fh1
         result = ""
         client_message = self.recv(999999999)
+	print "response"
         try:
-            if receive_buffer != "":
-                client_message = receive_buffer + client_message
+            if self.rb != "":
+                client_message = self.rb + client_message
+		self.rb = client_message
             data = json.loads(client_message)
+	    #print "loaded"
             if self.name is None:
                 self.name = data[0]['reader']
             if self.name not in all_data:
@@ -128,16 +133,17 @@ class RemoteClient(asyncore.dispatcher):
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
             result = self.client_message_handle(data, reader_name=self.name, load_json=True)
-            receive_buffer = ""
+            self.rb = ""
         except ValueError as e:
-            print e
+            #print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 print "close"
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
             elif len(client_message) >= 20:
-                receive_buffer += client_message
+		if self.rb == "":
+	                self.rb += client_message
             else:
                 self.host.all_close()
                 result = self.client_message_handle(client_message)
@@ -203,8 +209,8 @@ class RemoteClient(asyncore.dispatcher):
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
 
-            if len(data) > 100:
-                print len(data)
+            #if len(data) > 100:
+                #print len(data)
 
             for dst in data:
                 if dst in stats[current_timestamp]:
@@ -221,7 +227,7 @@ class RemoteClient(asyncore.dispatcher):
             except IndexError as e:
                 continue
 
-            if len(all_data[heap_element[1]]) <= 900:
+            if len(all_data[heap_element[1]]) <= 90:
                 return heap_element[1]
 
         """
@@ -282,6 +288,8 @@ class Host(asyncore.dispatcher):
     def broadcast(self, message):
         for remote_client in self.remote_clients:
             remote_client.say(message)
+	if len(message) >= 4:
+		print "request"
 
     def all_close(self):
         self.remote_clients = []
