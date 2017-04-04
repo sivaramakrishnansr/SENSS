@@ -11,6 +11,7 @@ import asyncore
 from collections import deque
 from heapq import heappush, heappop
 from time import sleep
+from copy import deepcopy
 
 nodes = 0
 WELL_KNOWN_PORTS = [19, 22, 23, 25, 53, 80, 443]
@@ -47,7 +48,11 @@ class Client(asyncore.dispatcher):
         self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
         self.fh_flow = open("flow_check/" + self.name, "a")
-        self.send_single_flow(size=100)
+        self.current_flows = self.prepare_flows(size=100)
+        flows = deepcopy(self.current_flows)
+        self.say(flows)
+        self.current_flows = ""
+        self.current_flows = self.prepare_flows()
 
     def say(self, message):
         self.outbox.append(message)
@@ -67,8 +72,20 @@ class Client(asyncore.dispatcher):
         for message in message_list:
             if message == self.name:
                 self.self_reqs += 1
-                #print self.name + " : " + str(self.self_reqs)
-                result = self.send_single_flow()
+                # print self.name + " : " + str(self.self_reqs)
+                if self.current_flows != "":
+                    flows = deepcopy(self.current_flows)
+                    self.say(flows)
+                    self.current_flows = ""
+                    self.current_flows = self.prepare_flows()
+                else:
+                    while self.current_flows == "":
+                        sleep(1)
+                    flows = deepcopy(self.current_flows)
+                    self.say(flows)
+                    self.current_flows = ""
+                    self.current_flows = self.prepare_flows()
+                result = self.prepare_flows()
                 if result == False:
                     # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
                     self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
@@ -78,7 +95,7 @@ class Client(asyncore.dispatcher):
                     self.close()
                     raise asyncore.ExitNow()
 
-    def send_single_flow(self, size=10):
+    def prepare_flows(self, size=10):
         global HEAP_SIZE
 
         def get_next_flow(current_last=None):
@@ -171,7 +188,7 @@ class Client(asyncore.dispatcher):
             dst = str(dst) + ":" + str(dport)
 
             # if dst == "207.75.112.0:53":
-            #self.fh_flow.write(str(flow_last) + "\t" + src + "\t" + dst + "\t" + str(flow_dPkts) + "\n")
+            # self.fh_flow.write(str(flow_last) + "\t" + src + "\t" + dst + "\t" + str(flow_dPkts) + "\n")
 
             if start == 0:
                 start = flow_last
@@ -192,16 +209,17 @@ class Client(asyncore.dispatcher):
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
                 if len(aggregated_dsts) >= size:
-		    #print self.name + " : " + str(aggregated_dsts[0]['time'])
-		    print len(aggregated_dsts)
+                    #print self.name + " : " + str(aggregated_dsts[0]['time'])
+                    print len(aggregated_dsts)
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
-                    self.say(mes)
+                    return mes
+                    # self.say(mes)
                     aggregated_dsts = []
-                    break
+                    # break
                 start = flow_last
                 dsts = dict()
-		continue
+                continue
             # stop = time1
 
             """

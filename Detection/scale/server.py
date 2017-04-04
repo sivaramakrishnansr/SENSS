@@ -109,7 +109,7 @@ class RemoteClient(asyncore.dispatcher):
         self.host = host
         self.outbox = deque()
         self.name = None
-	self.rb = ""
+        self.rb = ""
 
     def say(self, message):
         self.outbox.append(message)
@@ -118,13 +118,13 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, receive_buffer, all_data, fh1
         result = ""
         client_message = self.recv(999999999)
-	print "response"
+        print "response"
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
-		self.rb = client_message
+                self.rb = client_message
             data = json.loads(client_message)
-	    #print "loaded"
+            # print "loaded"
             if self.name is None:
                 self.name = data[0]['reader']
             if self.name not in all_data:
@@ -135,15 +135,15 @@ class RemoteClient(asyncore.dispatcher):
             result = self.client_message_handle(data, reader_name=self.name, load_json=True)
             self.rb = ""
         except ValueError as e:
-            #print e
+            # print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 print "close"
                 reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
             elif len(client_message) >= 20:
-		if self.rb == "":
-	                self.rb += client_message
+                if self.rb == "":
+                    self.rb += client_message
             else:
                 self.host.all_close()
                 result = self.client_message_handle(client_message)
@@ -193,11 +193,11 @@ class RemoteClient(asyncore.dispatcher):
             print len(all_data[reader_name])
             return ""
             # for reader in all_data:
-            #print reader + " : " + str(len(all_data[reader]))
+            # print reader + " : " + str(len(all_data[reader]))
         j = 0
         while True:
             # print j
-            #j += 1
+            # j += 1
             heap_element = heappop(heap)
             if current_timestamp == 0:
                 current_timestamp = heap_element[0]
@@ -209,7 +209,7 @@ class RemoteClient(asyncore.dispatcher):
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
 
-            #if len(data) > 100:
+                #if len(data) > 100:
                 #print len(data)
 
             for dst in data:
@@ -288,8 +288,8 @@ class Host(asyncore.dispatcher):
     def broadcast(self, message):
         for remote_client in self.remote_clients:
             remote_client.say(message)
-	if len(message) >= 4:
-		print "request"
+        if len(message) >= 4:
+            print "request"
 
     def all_close(self):
         self.remote_clients = []
