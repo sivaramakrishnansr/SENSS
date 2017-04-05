@@ -94,7 +94,7 @@ class Client(asyncore.dispatcher):
                 if self.current_flows != "":
                     flows = deepcopy(self.current_flows)
                     self.say(flows)
-                    print "said"
+                    #print "said"
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
                 else:

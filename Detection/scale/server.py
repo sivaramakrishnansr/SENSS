@@ -118,7 +118,7 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, receive_buffer, all_data, fh1
         result = ""
         client_message = self.recv(999999999)
-        print "response"
+        #print "response"
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
@@ -288,8 +288,8 @@ class Host(asyncore.dispatcher):
     def broadcast(self, message):
         for remote_client in self.remote_clients:
             remote_client.say(message)
-        if len(message) >= 4:
-            print "request"
+        #if len(message) >= 4:
+            #print "request"
 
     def all_close(self):
         self.remote_clients = []
@@ -323,7 +323,7 @@ def save_dict(force=False):
     save_lock = True
     print len(attacks)
     # print "arr: " + str(len(client_arr))
-    if len(attacks) > 1000000 or force:
+    if len(attacks) > 500000 or force:
         print "inside"
         # prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count1) + ".pickle"
