@@ -81,6 +81,16 @@ class Client(asyncore.dispatcher):
             if message == self.name:
                 self.self_reqs += 1
                 # print self.name + " : " + str(self.self_reqs)
+
+                if self.current_flows == False:
+                    # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
+                    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
+                    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
+                    self.say("close")
+                    sleep(2)
+                    self.close()
+                    raise asyncore.ExitNow()
+
                 if self.current_flows != "":
                     flows = deepcopy(self.current_flows)
                     self.say(flows)
@@ -95,14 +105,6 @@ class Client(asyncore.dispatcher):
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
                     # result = self.prepare_flows()
-                if self.current_flows == False:
-                    # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
-                    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
-                    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
-                    self.say("close")
-                    sleep(2)
-                    self.close()
-                    raise asyncore.ExitNow()
 
     def prepare_flows(self, size=10):
         global HEAP_SIZE
