@@ -55,17 +55,23 @@ class Client(asyncore.dispatcher):
         self.current_flows = self.prepare_flows()
 
     def say(self, message):
-        self.outbox.append(message)
+        # self.outbox.append(message)
+        while message != "":
+            sent_bytes = self.send(message)
+            message = message[sent_bytes:]
+        print "sent"
 
+    """
     def handle_write(self):
         if not self.outbox:
             return
         message = self.outbox.popleft()
-	#print "start send"
+        # print "start send"
         while message != "":
             sent_bytes = self.send(message)
             message = message[sent_bytes:]
-	#print "sent"
+        #print "sent"
+    """
 
     def handle_read(self):
         message = self.recv(1000)
@@ -73,13 +79,12 @@ class Client(asyncore.dispatcher):
         self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
             if message == self.name:
-		print "request"
                 self.self_reqs += 1
                 # print self.name + " : " + str(self.self_reqs)
                 if self.current_flows != "":
                     flows = deepcopy(self.current_flows)
                     self.say(flows)
-		    print "said"
+                    print "said"
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
                 else:
@@ -89,7 +94,7 @@ class Client(asyncore.dispatcher):
                     self.say(flows)
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
-                #result = self.prepare_flows()
+                    # result = self.prepare_flows()
                 if self.current_flows == False:
                     # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
                     self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
@@ -213,7 +218,7 @@ class Client(asyncore.dispatcher):
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
                 if len(aggregated_dsts) >= size:
-                    #print self.name + " : " + str(aggregated_dsts[0]['time'])
+                    # print self.name + " : " + str(aggregated_dsts[0]['time'])
                     print self.name + str(len(aggregated_dsts))
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
@@ -235,7 +240,7 @@ class Client(asyncore.dispatcher):
                 continue
             """
 
-            #if dst == "207.75.112.0:53":
+            # if dst == "207.75.112.0:53":
             #self.total_reqs += 1
 
             if dst not in dsts:
