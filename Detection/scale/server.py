@@ -35,6 +35,7 @@ import time
 from collections import defaultdict, deque
 import gc
 from heapq import heappush, heappop
+from copy import deepcopy
 
 
 curtime = 0
@@ -118,7 +119,7 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, receive_buffer, all_data, fh1
         result = ""
         client_message = self.recv(999999999)
-        #print "response"
+        # print "response"
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
@@ -209,7 +210,7 @@ class RemoteClient(asyncore.dispatcher):
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
 
-                #if len(data) > 100:
+                # if len(data) > 100:
                 #print len(data)
 
             for dst in data:
@@ -288,7 +289,7 @@ class Host(asyncore.dispatcher):
     def broadcast(self, message):
         for remote_client in self.remote_clients:
             remote_client.say(message)
-        #if len(message) >= 4:
+            # if len(message) >= 4:
             #print "request"
 
     def all_close(self):
@@ -320,6 +321,8 @@ def dump_dictionary(file_name, index):
 def save_dict(force=False):
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
     Timer(10.0, save_dict).start()
+    if save_lock:
+        return
     save_lock = True
     print len(attacks)
     # print "arr: " + str(len(client_arr))
@@ -373,14 +376,15 @@ def consume_time_exceed_timestamps(timestamp):
     print "attacks: " + str(len(attacks)) + " t: " + str(timestamp)
     # if len(attacks) >= 1000000:
     # save_dict(erase=False)
-    for t in backlog_consume:
+    temp_consume = deepcopy(backlog_consume)
+    backlog_consume = []
+    for t in temp_consume:
         for dst in stats[t]:
             req_rep = stats[t][dst][0] - stats[t][dst][1]
             if req_rep >= 10:
                 attacks.append({"timestamp": t, "dst": dst, "req": stats[t][dst][0], "rep": stats[t][dst][1],
                                 "flow_count": req_rep})
         del stats[t]
-    backlog_consume = []
 
 
 stats = dict()
