@@ -146,8 +146,7 @@ class Client(asyncore.dispatcher):
                 if len(aggregated_dsts) > 0:
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
-                    self.say(mes)
-                    break
+                    return mes
                 else:
                     return False
             get_next_flow(current_last=current_flow[0])
