@@ -58,6 +58,7 @@ backlog_consume = []
 receive_buffer = ""
 all_data = {}
 fh1 = open("test_json.txt", "a")
+closed_clients = []
 
 DETINT = 5
 reports_count = 29
@@ -116,7 +117,7 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        global reports_count, receive_buffer, all_data, fh1
+        global reports_count, receive_buffer, all_data, fh1, closed_clients, current_timestamp
         result = ""
         client_message = self.recv(999999999)
         # print "response"
@@ -139,15 +140,24 @@ class RemoteClient(asyncore.dispatcher):
             # print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
+                closed_clients.append(self.name)
                 print "close"
-                reports_count -= 1
+                # reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
+            """
             else:
                 self.host.all_close()
                 result = self.client_message_handle(client_message)
+            """
+        if result == "all_close":
+            self.host.all_close()
+            consume_time_exceed_timestamps(current_timestamp)
+            save_dict(force=True)
+            print result
+            return
         # print result
         self.host.broadcast(result)
 
@@ -161,7 +171,7 @@ class RemoteClient(asyncore.dispatcher):
     @staticmethod
     def client_message_handle(data, reader_name=None, load_json=False, force_get_next=False):
         global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, \
-            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp, all_data
+            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
         # prev_dict_save = int(time.time())
         try:
             if new_start:
@@ -229,7 +239,18 @@ class RemoteClient(asyncore.dispatcher):
                 continue
 
             if len(all_data[heap_element[1]]) <= 90:
-                return heap_element[1]
+                if heap_element[1] not in closed_clients:
+                    return heap_element[1]
+                else:
+                    if len(all_data[heap_element[1]]) > 0:
+                        t = int(all_data[heap_element[1]][0][0])
+                        heappush(heap, (t, heap_element[1]))
+                        current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
+                        del all_data[heap_element[1]][0]
+                    else:
+                        reports_count -= 1
+                        if reports_count == 0:
+                            return "all_close"
 
         """
             if t > curtime:
@@ -320,7 +341,8 @@ def dump_dictionary(file_name, index):
 
 def save_dict(force=False):
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
-    Timer(10.0, save_dict).start()
+    if not force:
+        Timer(10.0, save_dict).start()
     if save_lock:
         return
     save_lock = True
