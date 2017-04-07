@@ -113,6 +113,12 @@ class RemoteClient(asyncore.dispatcher):
         self.name = None
         self.rb = ""
 
+    def writable(self):
+        ''' It has point to call handle_write only when there's something in outbox
+            Having this method always returning true will cause 100% CPU usage
+        '''
+        return bool(self.outbox)
+
     def say(self, message):
         self.outbox.append(message)
 
