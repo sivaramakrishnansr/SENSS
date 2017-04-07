@@ -199,8 +199,8 @@ class RemoteClient(asyncore.dispatcher):
             heappush(heap, (t, reader_name))
             current_data[reader_name] = all_data[reader_name][0][1]
             del all_data[reader_name][0]
-        if len(heap) < reports_count:
-            print "reader: " + reader_name
+        if len(heap) < reports_count and data != "close":
+            print "reader: " + str(reader_name)
             print len(all_data[reader_name])
             return ""
             # for reader in all_data:
