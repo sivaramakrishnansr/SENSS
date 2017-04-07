@@ -53,6 +53,7 @@ class Client(asyncore.dispatcher):
         self.say(flows)
         self.current_flows = ""
         self.current_flows = self.prepare_flows()
+        self.timestamps_processed = 0
 
     def say(self, message):
         # self.outbox.append(message)
@@ -229,6 +230,9 @@ class Client(asyncore.dispatcher):
                     # break
                 start = flow_last
                 dsts = dict()
+                self.timestamps_processed += 1
+                if self.timestamps_processed >= 200:
+                    self.end_flag = True
                 continue
             # stop = time1
 
