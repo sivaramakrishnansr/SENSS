@@ -52,8 +52,8 @@ class Client(asyncore.dispatcher):
         flows = deepcopy(self.current_flows)
         self.say(flows)
         self.current_flows = ""
-        self.current_flows = self.prepare_flows()
         self.timestamps_processed = 0
+        self.current_flows = self.prepare_flows()
 
     def say(self, message):
         # self.outbox.append(message)
