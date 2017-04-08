@@ -230,9 +230,6 @@ class Client(asyncore.dispatcher):
                     # break
                 start = flow_last
                 dsts = dict()
-                self.timestamps_processed += 1
-                if self.timestamps_processed >= 200:
-                    self.end_flag = True
                 continue
             # stop = time1
 

@@ -215,7 +215,12 @@ class RemoteClient(asyncore.dispatcher):
         while True:
             # print j
             # j += 1
-            heap_element = heappop(heap)
+            try:
+                heap_element = heappop(heap)
+            except:
+                consume_time_exceed_timestamps(current_timestamp)
+                save_dict(force=True)
+                return ""
             if current_timestamp == 0:
                 current_timestamp = heap_element[0]
             elif heap_element[0] > current_timestamp:
