@@ -126,6 +126,7 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, receive_buffer, all_data, fh1, closed_clients, current_timestamp
         result = ""
         client_message = self.recv(999999999)
+	save_dict.backlog_time = 0
         # print "response"
         try:
             if self.rb != "":
@@ -358,13 +359,15 @@ def save_dict(force=False):
         return
     save_lock = True
     print len(attacks)
+    save_dict.backlog_time += 1
     # print "arr: " + str(len(client_arr))
-    if len(attacks) > 500000 or force:
+    if len(attacks) > 500000 or force or save_dict.backlog_time >= 5:
         print "inside"
         # prev_dict_save = int(time.time())
         file_name = "attack-dump-" + str(file_count1) + ".pickle"
         dump_dictionary(file_name, None)
         file_count1 += 1
+	save_dict.backlog_time = 0
         # stats.append(defaultdict(dict))
         # stats[file_count].clear()
         # del stats
@@ -382,6 +385,7 @@ def save_dict(force=False):
         #stats.append(defaultdict(dict))
         print "saved"
     """
+save_dict.backlog_time = 0
 
 
 def consume_completed_timestamps():
