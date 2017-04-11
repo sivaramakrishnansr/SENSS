@@ -11,6 +11,7 @@ finally:
 
 sock.send("Done")
 print "sent done"
+sock.close()
 
 #msg = sock.recv(1024)
 #print msg

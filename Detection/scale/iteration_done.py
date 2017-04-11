@@ -1,7 +1,5 @@
 import socket
-#import server
 
-#server.save_dict()
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Connect the socket to the port where the server is listening
@@ -14,6 +12,7 @@ finally:
 
 sock.send("OK")
 print "sent"
+sock.close()
 
 #msg = sock.recv(1024)
 #print msg

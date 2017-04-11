@@ -214,9 +214,9 @@ class Client(asyncore.dispatcher):
                     self.reqs1 += dsts['198.108.0.0:53']['q']
                     self.reps1 += dsts['198.108.0.0:53']['p']
                 """
-                #if "207.75.112.0:53" in dsts:
-                    #self.reqs2 += dsts['207.75.112.0:53']['q']
-                    #self.reps2 += dsts['207.75.112.0:53']['p']
+                # if "207.75.112.0:53" in dsts:
+                #self.reqs2 += dsts['207.75.112.0:53']['q']
+                #self.reps2 += dsts['207.75.112.0:53']['p']
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
                 if len(aggregated_dsts) >= size:
@@ -243,7 +243,7 @@ class Client(asyncore.dispatcher):
             """
 
             if dst == "207.75.112.0:53":
-            	self.reqs2 += flow_count
+                self.reqs2 += flow_count
 
             if dst not in dsts:
                 dsts[dst] = {"q": 0, "p": 0}

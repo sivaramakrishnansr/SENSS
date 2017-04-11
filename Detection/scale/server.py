@@ -38,29 +38,12 @@ from heapq import heappush, heappop
 from copy import deepcopy
 
 
-curtime = 0
-lasttime = 0
-dict_dst_count = 0
-file_count = 0
-prev_dict_save = 0
-client_arr = []
-timestamp_queue = []
-attacks = []
-last_timestamp_recd = defaultdict(int)
-timestamps = defaultdict(set)
-min_timestamp = 0
-save_lock = False
-file_count1 = 0
 heap = []
 current_data = {}
 current_timestamp = 0
-backlog_consume = []
-receive_buffer = ""
 all_data = {}
-fh1 = open("test_json.txt", "a")
 closed_clients = []
 
-DETINT = 5
 reports_count = 29
 new_start = False
 
@@ -89,22 +72,6 @@ def detect():
 '''
 
 
-def detect():
-    global stats, curtime, lasttime
-    for t in stats:
-        for destination in stats[t]['destinations']:
-            if stats[t]['destinations'][destination] > 20:
-                print "attack on " + str(destination) + " at time " + str(t) + " count " + str(
-                    stats[t]['destinations'][destination])
-    stats = dict()
-
-
-def store_attacks():
-    save_dict()
-    # time.sleep(5)
-    return True
-
-
 class RemoteClient(asyncore.dispatcher):
     def __init__(self, host, client_socket, address):
         asyncore.dispatcher.__init__(self, client_socket)
@@ -123,10 +90,9 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox.append(message)
 
     def handle_read(self):
-        global reports_count, receive_buffer, all_data, fh1, closed_clients, current_timestamp
+        global reports_count, all_data, closed_clients, current_timestamp
         result = ""
         client_message = self.recv(999999999)
-	save_dict.backlog_time = 0
         # print "response"
         try:
             if self.rb != "":
@@ -151,6 +117,9 @@ class RemoteClient(asyncore.dispatcher):
                 print "close"
                 # reports_count -= 1
                 result = self.client_message_handle("close", force_get_next=True)
+            elif client_message == "Done":
+                self.host.all_close()
+                raise asyncore.ExitNow()
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
@@ -161,8 +130,7 @@ class RemoteClient(asyncore.dispatcher):
             """
         if result == "all_close":
             self.host.all_close()
-            consume_time_exceed_timestamps(current_timestamp)
-            save_dict(force=True)
+            self.host.consume_time_exceed_timestamps(current_timestamp)
             print result
             return
         # print result
@@ -175,11 +143,8 @@ class RemoteClient(asyncore.dispatcher):
         message += "\t"
         self.send(message)
 
-    @staticmethod
-    def client_message_handle(data, reader_name=None, load_json=False, force_get_next=False):
-        global stats, curtime, lasttime, prev_dict_save, dict_dst_count, timestamp_queue, last_timestamp_recd, \
-            timestamps, new_start, min_timestamp, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
-        # prev_dict_save = int(time.time())
+    def client_message_handle(self, data, reader_name=None, load_json=False, force_get_next=False):
+        global stats, new_start, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
         try:
             if new_start:
                 print "new"
@@ -187,16 +152,13 @@ class RemoteClient(asyncore.dispatcher):
         except:
             pass
         # new_start = False
-        if not data:
-            return ""
         if not load_json and not force_get_next:
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
             print "not load json"
-            consume_time_exceed_timestamps(current_timestamp)
+            self.host.consume_time_exceed_timestamps(current_timestamp)
             if data == "Done":
                 print "all done"
-            save_dict(force=True)
             print "done"
             new_start = True
             return ""
@@ -210,30 +172,33 @@ class RemoteClient(asyncore.dispatcher):
             print "reader: " + str(reader_name)
             print len(all_data[reader_name])
             return ""
-            # for reader in all_data:
-            # print reader + " : " + str(len(all_data[reader]))
-        j = 0
+
         while True:
-            # print j
-            # j += 1
             try:
                 heap_element = heappop(heap)
             except:
-                consume_time_exceed_timestamps(current_timestamp)
-                save_dict(force=True)
-                return ""
+                remaining_flows_flag = False
+                for reader in all_data:
+                    if len(all_data[reader]) > 0:
+                        t = int(all_data[reader][0][0])
+                        heappush(heap, (t, reader))
+                        current_data[reader] = all_data[reader][0][1]
+                        del all_data[reader][0]
+                        remaining_flows_flag = True
+                if not remaining_flows_flag:
+                    self.host.consume_time_exceed_timestamps(current_timestamp)
+                    return ""
+                else:
+                    heap_element = heappop(heap)
             if current_timestamp == 0:
                 current_timestamp = heap_element[0]
             elif heap_element[0] > current_timestamp:
                 # detect attacks
-                consume_time_exceed_timestamps(current_timestamp)
+                self.host.consume_time_exceed_timestamps(current_timestamp)
                 current_timestamp = heap_element[0]
             data = current_data[heap_element[1]]
             if current_timestamp not in stats:
                 stats[current_timestamp] = dict()
-
-                # if len(data) > 100:
-                #print len(data)
 
             for dst in data:
                 if dst in stats[current_timestamp]:
@@ -264,40 +229,6 @@ class RemoteClient(asyncore.dispatcher):
                         if reports_count == 0:
                             return "all_close"
 
-        """
-            if t > curtime:
-                stats[t] = dict()
-                stats[t]['destinations'] = dict()
-                stats[t]['rep   orts'] = 1
-                # if first time data received, set curtime and lasttime
-                if curtime == 0 and lasttime == 0:
-                    curtime = t
-                    lasttime = t
-                curtime = t
-            else:
-                try:
-                    stats[t]['reports'] += 1
-                except KeyError as e:
-                    print "curtime: " + str(curtime) + " t: " + str(t)
-            try:
-                for dst in data[d]:
-                    if dst not in stats[t]['destinations']:
-                        stats[t]['destinations'][dst] = 0
-                    stats[t]['destinations'][dst] += data[d][dst]
-                # check if all reports obtained
-                if stats[t]['reports'] == reports_count:
-                    lasttime = t
-                    # all reports obtained. Run the detection module
-                    detect()
-                elif t - lasttime >= DETINT:
-                    lasttime = t
-                # limit exceeded. Run the detection module
-                # detect()
-            except:
-                pass
-        """
-        # return data['reader']
-
 
 class Host(asyncore.dispatcher):
     def __init__(self, address=('localhost', 4242)):
@@ -306,6 +237,8 @@ class Host(asyncore.dispatcher):
         self.bind(address)
         self.listen(29)
         self.remote_clients = []
+        self.hour_count = 0
+        self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
@@ -322,35 +255,47 @@ class Host(asyncore.dispatcher):
     def broadcast(self, message):
         for remote_client in self.remote_clients:
             remote_client.say(message)
-            # if len(message) >= 4:
-            #print "request"
 
     def all_close(self):
+        global heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
         self.remote_clients = []
+        self.attack_fh.close()
+        self.hour_count += 1
+        self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+
+        # Initialize global variables
+        heap = []
+        current_data = {}
+        current_timestamp = 0
+        all_data = {}
+        closed_clients = []
+        reports_count = 29
+        new_start = False
+
+    def consume_time_exceed_timestamps(self, timestamp):
+        global stats
+        print "t: " + str(timestamp)
+        if timestamp in stats:
+            for dst in stats[timestamp]:
+                req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
+                if req_rep >= 10:
+                    # timestamp dst req rep flow_count
+                    self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
+                        stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
+            del stats[timestamp]
 
 
+"""
 def dump_dictionary(file_name, index):
     global stats, timestamps, attacks, file_count
-    # for t in stats[index]:
-    # if 'clients' in stats[index][t]:
-    # stats[index][t]['reports'] = len(stats[index][t]['clients'])
-    # del stats[index][t]['clients']
     with open(file_name, 'wb') as handle:
         pickle.dump(attacks, handle)
         del attacks
         gc.collect()
         attacks = []
+"""
 
-    """
-    with open(file_name, 'wb') as handle:
-        pickle.dump(stats[index], handle)
-        stats[index].clear()
-        print "gc = " + str(gc.collect())
-    """
-    # with open('t-' + file_name, 'wb') as handle:
-    # pickle.dump(timestamps[index], handle)
-
-
+"""
 def save_dict(force=False):
     global stats, prev_dict_save, file_count, client_arr, attacks, timestamps, min_timestamp, last_timestamp_recd, save_lock, file_count1
     if not force:
@@ -367,72 +312,27 @@ def save_dict(force=False):
         file_name = "attack-dump-" + str(file_count1) + ".pickle"
         dump_dictionary(file_name, None)
         file_count1 += 1
-	save_dict.backlog_time = 0
-        # stats.append(defaultdict(dict))
-        # stats[file_count].clear()
-        # del stats
-        # gc.collect()
-        # stats = [defaultdict(dict)]
+        save_dict.backlog_time = 0
         print "saved"
     save_lock = False
-    """
-    if len(stats[file_count]) > 0 and int(time.time()) - prev_dict_save > 10:
-        prev_dict_save = int(time.time())
-        file_name = "dump-" + str(file_count) + ".pickle"
-        file_count += 1
-        stats.append(defaultdict(dict))
-        dump_dictionary(file_name, file_count)
-        #stats.append(defaultdict(dict))
-        print "saved"
-    """
+
+
 save_dict.backlog_time = 0
-
-
-def consume_completed_timestamps():
-    global stats, timestamp_queue, file_count, attacks, dict_dst_count, save_lock
-    Timer(5.0, consume_completed_timestamps).start()
-    if save_lock:
-        return True
-    # print "Timestamp queue: " + str(len(timestamp_queue))
-    len_t = len(timestamp_queue)
-    for i in range(len_t):
-        t = timestamp_queue[i]
-        for dst in stats[file_count][t]['destinations']:
-            if stats[file_count][t]['destinations'][dst] >= 10:
-                attacks.append({"timestamp": t, "dst": dst})
-        dict_dst_count -= len(stats[file_count][t]['destinations'])
-        del stats[file_count][t]
-    del timestamp_queue[0: len_t]
-
-
-def consume_time_exceed_timestamps(timestamp):
-    global stats, last_timestamp_recd, attacks, DETINT, dict_dst_count, save_lock, backlog_consume
-    backlog_consume.append(timestamp)
-    if save_lock:
-        return True
-    print "attacks: " + str(len(attacks)) + " t: " + str(timestamp)
-    # if len(attacks) >= 1000000:
-    # save_dict(erase=False)
-    temp_consume = deepcopy(backlog_consume)
-    backlog_consume = []
-    for t in temp_consume:
-        for dst in stats[t]:
-            req_rep = stats[t][dst][0] - stats[t][dst][1]
-            if req_rep >= 10:
-                attacks.append({"timestamp": t, "dst": dst, "req": stats[t][dst][0], "rep": stats[t][dst][1],
-                                "flow_count": req_rep})
-        del stats[t]
-
+"""
 
 stats = dict()
 
 
 def main():
-    save_dict()
+    # save_dict()
     # consume_completed_timestamps()
     # consume_time_exceed_timestamps()
     server = Host(address=('localhost', 4242))
-    asyncore.loop()
+    try:
+        asyncore.loop()
+    except asyncore.ExitNow, e:
+        pass
+    print "all complete"
 
 
 if __name__ == "__main__":
