@@ -47,7 +47,7 @@ class Client(asyncore.dispatcher):
         self.total_reqs = 0
         self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
-        self.fh_flow = open("flow_check/" + self.name, "a")
+        # self.fh_flow = open("flow_check/" + self.name, "a")
         self.current_flows = self.prepare_flows(size=100)
         flows = deepcopy(self.current_flows)
         self.say(flows)
@@ -85,7 +85,7 @@ class Client(asyncore.dispatcher):
 
                 if self.current_flows == False:
                     # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
-                    self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
+                    # self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
                     self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
                     self.say("close")
                     sleep(2)
@@ -241,9 +241,6 @@ class Client(asyncore.dispatcher):
                 # stash this
                 continue
             """
-
-            if dst == "207.75.112.0:53":
-                self.reqs2 += flow_count
 
             if dst not in dsts:
                 dsts[dst] = {"q": 0, "p": 0}
