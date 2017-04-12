@@ -187,6 +187,7 @@ class RemoteClient(asyncore.dispatcher):
                         remaining_flows_flag = True
                 if not remaining_flows_flag:
                     self.host.consume_time_exceed_timestamps(current_timestamp)
+                    print closed_clients
                     return ""
                 else:
                     heap_element = heappop(heap)
@@ -246,6 +247,15 @@ class Host(asyncore.dispatcher):
 
     def handle_read(self):
         pass
+
+    def writable(self):
+        ''' It has point to call handle_write only when there's something in outbox
+            Having this method always returning true will cause 100% CPU usage
+        '''
+        return False
+
+    def readable(self):
+        return False
 
     def handle_close(self):
         global reports_count

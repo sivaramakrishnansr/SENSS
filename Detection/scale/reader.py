@@ -62,6 +62,12 @@ class Client(asyncore.dispatcher):
             message = message[sent_bytes:]
         print "sent"
 
+    def writable(self):
+        ''' It has point to call handle_write only when there's something in outbox
+            Having this method always returning true will cause 100% CPU usage
+        '''
+        return False
+
     """
     def handle_write(self):
         if not self.outbox:
