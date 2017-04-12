@@ -83,7 +83,7 @@ class Client(asyncore.dispatcher):
     def handle_read(self):
         message = self.recv(1000)
         message_list = message.split("\t")
-        self.fh_flow.write(str(message_list) + "\n")
+        # self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
             if message == self.name:
                 self.self_reqs += 1
@@ -122,7 +122,7 @@ class Client(asyncore.dispatcher):
                 self.total_reqs += 1
                 if current_last:
                     if int(flow.last) < current_last:
-                        self.fh_flow.write("exceed\n")
+                        # self.fh_flow.write("exceed\n")
                         get_next_flow(current_last=current_last)
                         return
                 flow_tuple = (
