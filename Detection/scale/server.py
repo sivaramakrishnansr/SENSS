@@ -201,7 +201,7 @@ class Host(asyncore.dispatcher):
             # TODO: There might be some timestamps in previous and next log file iterations
             print data
             print "not load json"
-            self.host.consume_time_exceed_timestamps(current_timestamp)
+            self.consume_time_exceed_timestamps(current_timestamp)
             if data == "Done":
                 print "all done"
             print "done"
@@ -231,7 +231,7 @@ class Host(asyncore.dispatcher):
                         del all_data[reader][0]
                         remaining_flows_flag = True
                 if not remaining_flows_flag:
-                    self.host.consume_time_exceed_timestamps(current_timestamp)
+                    self.consume_time_exceed_timestamps(current_timestamp)
                     print closed_clients
                     return
                 else:
@@ -240,7 +240,7 @@ class Host(asyncore.dispatcher):
                 current_timestamp = heap_element[0]
             elif heap_element[0] > current_timestamp:
                 # detect attacks
-                self.host.consume_time_exceed_timestamps(current_timestamp)
+                self.consume_time_exceed_timestamps(current_timestamp)
                 current_timestamp = heap_element[0]
             data = current_data[heap_element[1]]
             if current_timestamp not in stats:
@@ -273,8 +273,8 @@ class Host(asyncore.dispatcher):
                     else:
                         reports_count -= 1
                         if reports_count == 0:
-                            self.host.all_close()
-                            self.host.consume_time_exceed_timestamps(current_timestamp)
+                            self.all_close()
+                            self.consume_time_exceed_timestamps(current_timestamp)
 
     def consume_time_exceed_timestamps(self, timestamp):
         global stats
