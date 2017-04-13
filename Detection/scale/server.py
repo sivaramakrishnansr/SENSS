@@ -107,7 +107,7 @@ class RemoteClient(asyncore.dispatcher):
             # print len(data)
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
-            result = self.client_message_handle(data, reader_name=self.name, load_json=True)
+            self.host.client_message_handle(data, reader_name=self.name, load_json=True)
             self.rb = ""
         except ValueError as e:
             # print e
@@ -116,7 +116,7 @@ class RemoteClient(asyncore.dispatcher):
                 closed_clients.append(self.name)
                 print "close"
                 # reports_count -= 1
-                result = self.client_message_handle("close", force_get_next=True)
+                self.host.client_message_handle("close", force_get_next=True)
             elif client_message == "Done":
                 self.host.all_close()
                 raise asyncore.ExitNow()
@@ -128,13 +128,6 @@ class RemoteClient(asyncore.dispatcher):
                 self.host.all_close()
                 result = self.client_message_handle(client_message)
             """
-        if result == "all_close":
-            self.host.all_close()
-            self.host.consume_time_exceed_timestamps(current_timestamp)
-            print result
-            return
-        # print result
-        self.host.broadcast(result)
 
     def handle_write(self):
         if not self.outbox:
@@ -142,93 +135,6 @@ class RemoteClient(asyncore.dispatcher):
         message = self.outbox.popleft()
         message += "\t"
         self.send(message)
-
-    def client_message_handle(self, data, reader_name=None, load_json=False, force_get_next=False):
-        global stats, new_start, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
-        try:
-            if new_start:
-                print "new"
-                new_start = False
-        except:
-            pass
-        # new_start = False
-        if not load_json and not force_get_next:
-            # TODO: There might be some timestamps in previous and next log file iterations
-            print data
-            print "not load json"
-            self.host.consume_time_exceed_timestamps(current_timestamp)
-            if data == "Done":
-                print "all done"
-            print "done"
-            new_start = True
-            return ""
-        if not force_get_next:
-            # prev_dict_save = int(time.time())
-            t = int(all_data[reader_name][0][0])
-            heappush(heap, (t, reader_name))
-            current_data[reader_name] = all_data[reader_name][0][1]
-            del all_data[reader_name][0]
-        if len(heap) < reports_count and data != "close":
-            print "reader: " + str(reader_name)
-            print len(all_data[reader_name])
-            return ""
-
-        while True:
-            try:
-                heap_element = heappop(heap)
-            except:
-                remaining_flows_flag = False
-                for reader in all_data:
-                    if len(all_data[reader]) > 0:
-                        t = int(all_data[reader][0][0])
-                        heappush(heap, (t, reader))
-                        current_data[reader] = all_data[reader][0][1]
-                        del all_data[reader][0]
-                        remaining_flows_flag = True
-                if not remaining_flows_flag:
-                    self.host.consume_time_exceed_timestamps(current_timestamp)
-                    print closed_clients
-                    return ""
-                else:
-                    heap_element = heappop(heap)
-            if current_timestamp == 0:
-                current_timestamp = heap_element[0]
-            elif heap_element[0] > current_timestamp:
-                # detect attacks
-                self.host.consume_time_exceed_timestamps(current_timestamp)
-                current_timestamp = heap_element[0]
-            data = current_data[heap_element[1]]
-            if current_timestamp not in stats:
-                stats[current_timestamp] = dict()
-
-            for dst in data:
-                if dst in stats[current_timestamp]:
-                    stats[current_timestamp][dst][0] += data[dst]['q']
-                    stats[current_timestamp][dst][1] += data[dst]['p']
-                else:
-                    stats[current_timestamp][dst] = [data[dst]['q'], data[dst]['p']]
-
-            try:
-                t = int(all_data[heap_element[1]][0][0])
-                heappush(heap, (t, heap_element[1]))
-                current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
-                del all_data[heap_element[1]][0]
-            except IndexError as e:
-                continue
-
-            if len(all_data[heap_element[1]]) <= 90:
-                if heap_element[1] not in closed_clients:
-                    return heap_element[1]
-                else:
-                    if len(all_data[heap_element[1]]) > 0:
-                        t = int(all_data[heap_element[1]][0][0])
-                        heappush(heap, (t, heap_element[1]))
-                        current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
-                        del all_data[heap_element[1]][0]
-                    else:
-                        reports_count -= 1
-                        if reports_count == 0:
-                            return "all_close"
 
 
 class Host(asyncore.dispatcher):
@@ -260,7 +166,7 @@ class Host(asyncore.dispatcher):
     def handle_close(self):
         global reports_count
         print "closed"
-        reports_count -= 1
+        print reports_count
 
     def broadcast(self, message):
         for remote_client in self.remote_clients:
@@ -281,6 +187,94 @@ class Host(asyncore.dispatcher):
         closed_clients = []
         reports_count = 29
         new_start = False
+
+    def client_message_handle(self, data, reader_name=None, load_json=False, force_get_next=False):
+        global stats, new_start, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
+        try:
+            if new_start:
+                print "new"
+                new_start = False
+        except:
+            pass
+        # new_start = False
+        if not load_json and not force_get_next:
+            # TODO: There might be some timestamps in previous and next log file iterations
+            print data
+            print "not load json"
+            self.host.consume_time_exceed_timestamps(current_timestamp)
+            if data == "Done":
+                print "all done"
+            print "done"
+            new_start = True
+            return
+        if not force_get_next:
+            # prev_dict_save = int(time.time())
+            t = int(all_data[reader_name][0][0])
+            heappush(heap, (t, reader_name))
+            current_data[reader_name] = all_data[reader_name][0][1]
+            del all_data[reader_name][0]
+        if len(heap) < reports_count and data != "close":
+            print "reader: " + str(reader_name)
+            print len(all_data[reader_name])
+            return
+
+        while True:
+            try:
+                heap_element = heappop(heap)
+            except:
+                remaining_flows_flag = False
+                for reader in all_data:
+                    if len(all_data[reader]) > 0:
+                        t = int(all_data[reader][0][0])
+                        heappush(heap, (t, reader))
+                        current_data[reader] = all_data[reader][0][1]
+                        del all_data[reader][0]
+                        remaining_flows_flag = True
+                if not remaining_flows_flag:
+                    self.host.consume_time_exceed_timestamps(current_timestamp)
+                    print closed_clients
+                    return
+                else:
+                    heap_element = heappop(heap)
+            if current_timestamp == 0:
+                current_timestamp = heap_element[0]
+            elif heap_element[0] > current_timestamp:
+                # detect attacks
+                self.host.consume_time_exceed_timestamps(current_timestamp)
+                current_timestamp = heap_element[0]
+            data = current_data[heap_element[1]]
+            if current_timestamp not in stats:
+                stats[current_timestamp] = dict()
+
+            for dst in data:
+                if dst in stats[current_timestamp]:
+                    stats[current_timestamp][dst][0] += data[dst]['q']
+                    stats[current_timestamp][dst][1] += data[dst]['p']
+                else:
+                    stats[current_timestamp][dst] = [data[dst]['q'], data[dst]['p']]
+
+            try:
+                t = int(all_data[heap_element[1]][0][0])
+                heappush(heap, (t, heap_element[1]))
+                current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
+                del all_data[heap_element[1]][0]
+            except IndexError as e:
+                continue
+
+            if len(all_data[heap_element[1]]) <= 90:
+                if heap_element[1] not in closed_clients:
+                    self.broadcast(heap_element[1])
+                else:
+                    if len(all_data[heap_element[1]]) > 0:
+                        t = int(all_data[heap_element[1]][0][0])
+                        heappush(heap, (t, heap_element[1]))
+                        current_data[heap_element[1]] = all_data[heap_element[1]][0][1]
+                        del all_data[heap_element[1]][0]
+                    else:
+                        reports_count -= 1
+                        if reports_count == 0:
+                            self.host.all_close()
+                            self.host.consume_time_exceed_timestamps(current_timestamp)
 
     def consume_time_exceed_timestamps(self, timestamp):
         global stats
