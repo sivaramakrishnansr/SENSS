@@ -91,26 +91,22 @@ class RemoteClient(asyncore.dispatcher):
 
     def handle_read(self):
         global reports_count, all_data, closed_clients, current_timestamp
-        result = ""
+
         client_message = self.recv(999999999)
-        # print "response"
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
                 self.rb = client_message
             data = json.loads(client_message)
-            # print "loaded"
             if self.name is None:
                 self.name = data[0]['reader']
             if self.name not in all_data:
                 all_data[self.name] = []
-            # print len(data)
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
-            self.host.client_message_handle(data, reader_name=self.name, load_json=True)
+            self.host.client_message_handle(data, reader_name=self.name)
             self.rb = ""
         except ValueError as e:
-            # print e
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
@@ -123,11 +119,6 @@ class RemoteClient(asyncore.dispatcher):
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
-            """
-            else:
-                self.host.all_close()
-                result = self.client_message_handle(client_message)
-            """
 
     def handle_write(self):
         if not self.outbox:
@@ -155,13 +146,7 @@ class Host(asyncore.dispatcher):
         pass
 
     def writable(self):
-        ''' It has point to call handle_write only when there's something in outbox
-            Having this method always returning true will cause 100% CPU usage
-        '''
         return False
-
-    #def readable(self):
-        #return False
 
     def handle_close(self):
         global reports_count
@@ -173,7 +158,7 @@ class Host(asyncore.dispatcher):
             remote_client.say(message)
 
     def all_close(self):
-        global heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
+        global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
         self.remote_clients = []
         self.attack_fh.close()
         self.hour_count += 1
@@ -181,6 +166,7 @@ class Host(asyncore.dispatcher):
 
         # Initialize global variables
         heap = []
+        stats = []
         current_data = {}
         current_timestamp = 0
         all_data = {}
@@ -188,34 +174,17 @@ class Host(asyncore.dispatcher):
         reports_count = 29
         new_start = False
 
-    def client_message_handle(self, data, reader_name=None, load_json=False, force_get_next=False):
+    def client_message_handle(self, data, reader_name=None, force_get_next=False):
         global stats, new_start, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
-        try:
-            if new_start:
-                print "new"
-                new_start = False
-        except:
-            pass
-        # new_start = False
-        if not load_json and not force_get_next:
-            # TODO: There might be some timestamps in previous and next log file iterations
-            print data
-            print "not load json"
-            self.consume_time_exceed_timestamps(current_timestamp)
-            if data == "Done":
-                print "all done"
-            print "done"
-            new_start = True
-            return
+
         if not force_get_next:
-            # prev_dict_save = int(time.time())
             t = int(all_data[reader_name][0][0])
             heappush(heap, (t, reader_name))
             current_data[reader_name] = all_data[reader_name][0][1]
             del all_data[reader_name][0]
         if len(heap) < reports_count and data != "close":
             print "reader: " + str(reader_name)
-            print len(all_data[reader_name])
+            print reports_count
             return
 
         while True:
@@ -231,8 +200,9 @@ class Host(asyncore.dispatcher):
                         del all_data[reader][0]
                         remaining_flows_flag = True
                 if not remaining_flows_flag:
-                    self.consume_time_exceed_timestamps(current_timestamp)
+                    self.consume_all_timestamps()
                     print closed_clients
+                    self.all_close()
                     return
                 else:
                     heap_element = heappop(heap)
@@ -280,6 +250,18 @@ class Host(asyncore.dispatcher):
         global stats
         print "t: " + str(timestamp)
         if timestamp in stats:
+            for dst in stats[timestamp]:
+                req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
+                if req_rep >= 10:
+                    # timestamp dst req rep flow_count
+                    self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
+                        stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
+            del stats[timestamp]
+
+    def consume_all_timestamps(self):
+        global stats
+        for timestamp in stats:
+            print "t: " + str(timestamp)
             for dst in stats[timestamp]:
                 req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
                 if req_rep >= 10:
