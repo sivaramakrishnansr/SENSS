@@ -60,7 +60,7 @@ class Client(asyncore.dispatcher):
         while message != "":
             sent_bytes = self.send(message)
             message = message[sent_bytes:]
-        print "sent"
+        #print "sent"
 
     def writable(self):
         ''' It has point to call handle_write only when there's something in outbox
@@ -227,7 +227,7 @@ class Client(asyncore.dispatcher):
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
                 if len(aggregated_dsts) >= size:
                     # print self.name + " : " + str(aggregated_dsts[0]['time'])
-                    print self.name + str(len(aggregated_dsts))
+                    #print self.name + str(len(aggregated_dsts))
                     mes = json.dumps(aggregated_dsts)
                     mes += "\n"
                     return mes
@@ -296,7 +296,7 @@ def main():
             asyncore.loop(timeout=1)
         except asyncore.ExitNow, e:
             pass
-        print "close"
+        #print "close"
 
 
 if __name__ == "__main__":

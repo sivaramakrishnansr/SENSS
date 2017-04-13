@@ -254,8 +254,8 @@ class Host(asyncore.dispatcher):
         '''
         return False
 
-    def readable(self):
-        return False
+    #def readable(self):
+        #return False
 
     def handle_close(self):
         global reports_count
