@@ -234,6 +234,7 @@ class Host(asyncore.dispatcher):
             if len(all_data[heap_element[1]]) <= 90:
                 if heap_element[1] not in closed_clients:
                     self.broadcast(heap_element[1])
+                    return
                 else:
                     if len(all_data[heap_element[1]]) > 0:
                         t = int(all_data[heap_element[1]][0][0])
