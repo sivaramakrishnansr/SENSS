@@ -154,6 +154,7 @@ class Host(asyncore.dispatcher):
         print reports_count
 
     def broadcast(self, message):
+        print message
         for remote_client in self.remote_clients:
             remote_client.say(message)
 
@@ -166,7 +167,7 @@ class Host(asyncore.dispatcher):
 
         # Initialize global variables
         heap = []
-        stats = []
+        stats = dict()
         current_data = {}
         current_timestamp = 0
         all_data = {}
@@ -269,7 +270,8 @@ class Host(asyncore.dispatcher):
                     # timestamp dst req rep flow_count
                     self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
                         stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
-            del stats[timestamp]
+        del stats
+        stats = dict()
 
 
 """
