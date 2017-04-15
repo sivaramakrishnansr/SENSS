@@ -93,13 +93,15 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, all_data, closed_clients, current_timestamp
 
         client_message = self.recv(999999999)
+        if self.name == "WSUb":
+            print "got WSUb"
         self.host.message_resend_flag = False
         self.host.resend_count = 0
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
                 self.rb = client_message
-            if current_timestamp >= 1453355524 and self.name == "WSUb":
+            if current_timestamp == 1453355525 and self.name == "WSUb":
                 print client_message
             data = json.loads(client_message)
             if self.name is None:
@@ -183,6 +185,7 @@ class Host(asyncore.dispatcher):
         for remote_client in self.remote_clients:
             remote_client.say(message)
         self.message_resend_flag = [message, cur_timestamp]
+        print "Timer Start"
         Timer(5.0, self.resend_message, [message, cur_timestamp]).start()
 
     def all_close(self):
