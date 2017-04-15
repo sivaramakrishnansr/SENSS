@@ -137,6 +137,7 @@ class Host(asyncore.dispatcher):
         self.remote_clients = []
         self.hour_count = 0
         self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+        self.file_write_flag = False
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
@@ -161,9 +162,12 @@ class Host(asyncore.dispatcher):
     def all_close(self):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
         self.remote_clients = []
-        self.attack_fh.close()
-        self.hour_count += 1
-        self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+
+        if self.file_write_flag:
+            self.attack_fh.close()
+            self.hour_count += 1
+            self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+            self.file_write_flag = False
 
         # Initialize global variables
         heap = []
@@ -255,6 +259,7 @@ class Host(asyncore.dispatcher):
             for dst in stats[timestamp]:
                 req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
                 if req_rep >= 10:
+                    self.file_write_flag = True
                     # timestamp dst req rep flow_count
                     self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
                         stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
@@ -267,6 +272,7 @@ class Host(asyncore.dispatcher):
             for dst in stats[timestamp]:
                 req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
                 if req_rep >= 10:
+                    self.file_write_flag = True
                     # timestamp dst req rep flow_count
                     self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
                         stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
