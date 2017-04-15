@@ -99,6 +99,8 @@ class RemoteClient(asyncore.dispatcher):
             if self.rb != "":
                 client_message = self.rb + client_message
                 self.rb = client_message
+            if current_timestamp >= 1453355524 and self.name == "WSUb":
+                print client_message
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data[0]['reader']
