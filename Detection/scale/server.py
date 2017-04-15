@@ -104,8 +104,8 @@ class RemoteClient(asyncore.dispatcher):
                 all_data[self.name] = []
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
-            self.host.client_message_handle(data, reader_name=self.name)
             self.rb = ""
+            self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
@@ -119,6 +119,10 @@ class RemoteClient(asyncore.dispatcher):
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
+            else:
+                print "something wrong"
+                print client_message
+                print self.rb
 
     def handle_write(self):
         if not self.outbox:
