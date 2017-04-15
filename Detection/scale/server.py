@@ -120,6 +120,8 @@ class RemoteClient(asyncore.dispatcher):
             elif client_message == "Done":
                 self.host.all_close()
                 raise asyncore.ExitNow()
+            elif client_message == "OK":
+                self.host.all_close()
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message

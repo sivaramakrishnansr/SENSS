@@ -49,7 +49,7 @@ for $time (sort {$a cmp $b} keys %hash)
     #print "$i";
 #    if($break_flag == 0) {
         print "\n-------\n";
-#        system("python iteration_done.py");
+        system("python iteration_done.py");
         sleep(100);
 #    }
     #exit;
