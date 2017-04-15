@@ -93,6 +93,8 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, all_data, closed_clients, current_timestamp
 
         client_message = self.recv(999999999)
+        self.host.message_resend_flag = False
+        self.host.resend_count = 0
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
@@ -110,7 +112,7 @@ class RemoteClient(asyncore.dispatcher):
             client_message = client_message.strip()
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
-                print "close"
+                print str(self.name) + "close"
                 # reports_count -= 1
                 self.host.client_message_handle("close", force_get_next=True)
             elif client_message == "Done":
@@ -142,6 +144,8 @@ class Host(asyncore.dispatcher):
         self.hour_count = 0
         self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
         self.file_write_flag = False
+        self.message_resend_data = False
+        self.resend_count = 0
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
@@ -158,10 +162,24 @@ class Host(asyncore.dispatcher):
         print "closed"
         print reports_count
 
-    def broadcast(self, message):
+    def resend_message(self, reader, timestamp):
+        global closed_clients, reports_count
+        if self.message_resend_flag == [reader, timestamp]:
+            print "resend"
+            print closed_clients
+            self.resend_count += 1
+            if self.resend_count >= 2:
+                reports_count -= 1
+                self.client_message_handle("close", force_get_next=True)
+            else:
+                self.broadcast(reader, timestamp)
+
+    def broadcast(self, message, cur_timestamp):
         print message
         for remote_client in self.remote_clients:
             remote_client.say(message)
+        self.message_resend_flag = [message, cur_timestamp]
+        Timer(5.0, self.resend_message, [message, cur_timestamp]).start()
 
     def all_close(self):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
@@ -242,7 +260,7 @@ class Host(asyncore.dispatcher):
 
             if len(all_data[heap_element[1]]) <= 90:
                 if heap_element[1] not in closed_clients:
-                    self.broadcast(heap_element[1])
+                    self.broadcast(heap_element[1], deepcopy(current_timestamp))
                     return
                 else:
                     if len(all_data[heap_element[1]]) > 0:
