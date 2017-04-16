@@ -36,6 +36,7 @@ from collections import defaultdict, deque
 import gc
 from heapq import heappush, heappop
 from copy import deepcopy
+import BaseHTTPServer
 
 
 heap = []
@@ -113,9 +114,7 @@ class RemoteClient(asyncore.dispatcher):
             self.rb = ""
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
-            if self.name == "WSUb":
-                print client_message
-            client_message = client_message.strip()
+            """
             client_message_split = client_message.split("][")
             if len(client_message_split) >= 2:
                 combined_client_message = ", ".join(client_message_split)
@@ -129,6 +128,7 @@ class RemoteClient(asyncore.dispatcher):
                     return
                 except ValueError as e1:
                     pass
+            """
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
                 print str(self.name) + "close"
@@ -156,7 +156,7 @@ class RemoteClient(asyncore.dispatcher):
 
 
 class Host(asyncore.dispatcher):
-    def __init__(self, address=('localhost', 4242)):
+    def __init__(self, address=('localhost', 4242), http_address=('localhost', 8082)):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.bind(address)
@@ -165,8 +165,9 @@ class Host(asyncore.dispatcher):
         self.hour_count = 0
         self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
         self.file_write_flag = False
-        self.message_resend_data = False
+        self.message_resend_flag = False
         self.resend_count = 0
+        self.reader_init_flag = False
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
@@ -206,6 +207,9 @@ class Host(asyncore.dispatcher):
     def all_close(self):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
         self.remote_clients = []
+        self.reader_init_flag = False
+        self.message_resend_flag = False
+        self.resend_count = 0
 
         if self.file_write_flag:
             self.attack_fh.close()
@@ -231,10 +235,13 @@ class Host(asyncore.dispatcher):
             heappush(heap, (t, reader_name))
             current_data[reader_name] = all_data[reader_name][0][1]
             del all_data[reader_name][0]
-        if len(heap) < reports_count and data != "close":
-            print "reader: " + str(reader_name)
-            print reports_count
-            return
+        if not self.reader_init_flag:
+            if len(heap) < reports_count and data != "close":
+                print "reader: " + str(reader_name)
+                print reports_count
+                return
+            elif len(heap) == reports_count and data != "close":
+                self.reader_init_flag = True
 
         while True:
             try:
@@ -366,7 +373,7 @@ def main():
     # save_dict()
     # consume_completed_timestamps()
     # consume_time_exceed_timestamps()
-    server = Host(address=('localhost', 4242))
+    server = Host(address=('localhost', 4242), http_address=('localhost', 8082))
     try:
         asyncore.loop()
     except asyncore.ExitNow, e:
