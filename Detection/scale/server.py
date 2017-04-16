@@ -113,7 +113,22 @@ class RemoteClient(asyncore.dispatcher):
             self.rb = ""
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
+            if self.name == "WSUb":
+                print client_message
             client_message = client_message.strip()
+            client_message_split = client_message.split("][")
+            if len(client_message_split) >= 2:
+                combined_client_message = ", ".join(client_message_split)
+                combined_client_message += "\n"
+                try:
+                    data = json.loads(combined_client_message)
+                    for single_data in data:
+                        all_data[self.name].append((single_data['time'], single_data['destinations']))
+                    self.rb = ""
+                    self.host.client_message_handle(data, reader_name=self.name)
+                    return
+                except ValueError as e1:
+                    pass
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
                 print str(self.name) + "close"
