@@ -94,16 +94,32 @@ class RemoteClient(asyncore.dispatcher):
         global reports_count, all_data, closed_clients, current_timestamp
 
         client_message = self.recv(999999999)
-        if self.name == "WSUb":
-            print "got WSUb"
         self.host.message_resend_flag = False
         self.host.resend_count = 0
+        if self.name is None:
+            self.name = client_message.strip()
+            return
+        if client_message == "file":
+            with open("reader_dumps/" + self.name, "r") as reader_json_file:
+                data = json.load(reader_json_file)
+                self.host.client_message_handle(data, reader_name=self.name)
+        elif client_message == "close" or client_message == "":
+            closed_clients.append(self.name)
+            print str(self.name) + "close"
+            # reports_count -= 1
+            self.host.client_message_handle("close", force_get_next=True)
+        elif client_message == "Done":
+            self.host.all_close()
+            raise asyncore.ExitNow()
+        elif client_message == "OK":
+            self.host.all_close()
+        """
         try:
             if self.rb != "":
                 client_message = self.rb + client_message
                 self.rb = client_message
-            if current_timestamp == 1453355525 and self.name == "WSUb":
-                print client_message
+            # if current_timestamp == 1453355525 and self.name == "WSUb":
+            #     print client_message
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data[0]['reader']
@@ -114,21 +130,6 @@ class RemoteClient(asyncore.dispatcher):
             self.rb = ""
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
-            """
-            client_message_split = client_message.split("][")
-            if len(client_message_split) >= 2:
-                combined_client_message = ", ".join(client_message_split)
-                combined_client_message += "\n"
-                try:
-                    data = json.loads(combined_client_message)
-                    for single_data in data:
-                        all_data[self.name].append((single_data['time'], single_data['destinations']))
-                    self.rb = ""
-                    self.host.client_message_handle(data, reader_name=self.name)
-                    return
-                except ValueError as e1:
-                    pass
-            """
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
                 print str(self.name) + "close"
@@ -146,6 +147,7 @@ class RemoteClient(asyncore.dispatcher):
                 print "something wrong"
                 print client_message
                 print self.rb
+        """
 
     def handle_write(self):
         if not self.outbox:
@@ -206,6 +208,8 @@ class Host(asyncore.dispatcher):
 
     def all_close(self):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
+
+        print "all close"
         self.remote_clients = []
         self.reader_init_flag = False
         self.message_resend_flag = False

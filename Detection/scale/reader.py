@@ -48,6 +48,7 @@ class Client(asyncore.dispatcher):
         self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
         # self.fh_flow = open("flow_check/" + self.name, "a")
+        self.send(self.name)
         self.current_flows = self.prepare_flows(size=100)
         flows = deepcopy(self.current_flows)
         self.say(flows)
@@ -57,9 +58,14 @@ class Client(asyncore.dispatcher):
 
     def say(self, message):
         # self.outbox.append(message)
+        with open("reader_dumps/" + self.name, "w") as fh_reader_dump:
+            json.dump(message, fh_reader_dump)
+        """
         while message != "":
             sent_bytes = self.send(message)
             message = message[sent_bytes:]
+        """
+        self.send("file")
         #print "sent"
 
     def writable(self):
