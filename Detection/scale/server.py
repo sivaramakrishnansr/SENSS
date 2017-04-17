@@ -103,9 +103,11 @@ class RemoteClient(asyncore.dispatcher):
         if client_message == "file":
             with open("reader_dumps/" + self.name, "r") as reader_json_file:
                 data = json.load(reader_json_file)
+                data = json.loads(data)
                 if self.name not in all_data:
                     all_data[self.name] = []
                 for single_data in data:
+                    print single_data
                     all_data[self.name].append((single_data['time'], single_data['destinations']))
                 self.host.client_message_handle(data, reader_name=self.name)
         elif client_message == "close" or client_message == "":
