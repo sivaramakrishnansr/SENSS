@@ -144,6 +144,7 @@ class RemoteClient(asyncore.dispatcher):
         except ValueError as e:
             if client_message == "close" or client_message == "":
                 closed_clients.append(self.name)
+                reports_count -= 1
                 print str(self.name) + "close"
                 # reports_count -= 1
                 self.host.client_message_handle("close", force_get_next=True)
@@ -306,11 +307,12 @@ class Host(asyncore.dispatcher):
             except IndexError as e:
                 continue
 
-            if len(all_data[heap_element[1]]) <= 90:
+            if len(all_data[heap_element[1]]) == 0:
                 if heap_element[1] not in closed_clients:
                     self.broadcast(heap_element[1], deepcopy(current_timestamp))
                     return
                 else:
+                    """
                     if len(all_data[heap_element[1]]) > 0:
                         t = int(all_data[heap_element[1]][0][0])
                         heappush(heap, (t, heap_element[1]))
@@ -321,6 +323,8 @@ class Host(asyncore.dispatcher):
                         if reports_count == 0:
                             self.all_close()
                             self.consume_time_exceed_timestamps(current_timestamp)
+                    """
+                    continue
 
     def consume_time_exceed_timestamps(self, timestamp):
         global stats

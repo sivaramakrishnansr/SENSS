@@ -49,7 +49,7 @@ class Client(asyncore.dispatcher):
         self.self_reqs = 0
         self.fh = open("reader_print.txt", "a")
         # self.fh_flow = open("flow_check/" + self.name, "a")
-        self.current_flows = [self.prepare_flows(size=100)]
+        self.current_flows = [self.prepare_flows(size=10)]
         self.say(self.current_flows[0])
         del self.current_flows[0]
         self.timestamps_processed = 0
