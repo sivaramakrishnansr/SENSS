@@ -12,6 +12,7 @@ from collections import deque
 from heapq import heappush, heappop
 from time import sleep
 from copy import deepcopy
+import thread
 
 nodes = 0
 WELL_KNOWN_PORTS = [19, 22, 23, 25, 53, 80, 443]
@@ -49,12 +50,19 @@ class Client(asyncore.dispatcher):
         self.fh = open("reader_print.txt", "a")
         # self.fh_flow = open("flow_check/" + self.name, "a")
         self.send(self.name)
-        self.current_flows = self.prepare_flows(size=100)
+        self.current_flows = [self.prepare_flows(size=100)]
         flows = deepcopy(self.current_flows)
         self.say(flows)
-        self.current_flows = ""
+        del self.current_flows[0]
         self.timestamps_processed = 0
-        self.current_flows = self.prepare_flows()
+        thread.start_new_thread(self.get_flows, ())
+
+    def get_flows(self):
+        single_flow = self.prepare_flows()
+        while single_flow != False:
+            self.current_flows.append(single_flow)
+            single_flow = self.prepare_flows()
+        self.current_flows.append("close")
 
     def say(self, message):
         # self.outbox.append(message)
@@ -95,15 +103,24 @@ class Client(asyncore.dispatcher):
                 self.self_reqs += 1
                 # print self.name + " : " + str(self.self_reqs)
 
-                if self.current_flows == False:
-                    # self.fh.write(self.name + " " + str(self.reqs1) + " " + str(self.reps1) + "\n")
-                    # self.fh.write(self.name + " " + str(self.reqs2) + " " + str(self.reps2) + "\n")
-                    self.fh.write(self.name + " " + str(self.total_reqs) + "\n")
-                    self.say("close")
-                    sleep(2)
-                    self.close()
-                    raise asyncore.ExitNow()
+                if len(self.current_flows) > 0:
+                    self.say(self.current_flows[0])
+                    if self.current_flows[0] == "close":
+                        sleep(2)
+                        self.close()
+                        raise asyncore.ExitNow()
+                    del self.current_flows[0]
+                else:
+                    while len(self.current_flows) == 0:
+                        sleep(1)
+                    self.say(self.current_flows[0])
+                    if self.current_flows[0] == "close":
+                        sleep(2)
+                        self.close()
+                        raise asyncore.ExitNow()
+                    del self.current_flows[0]
 
+                """
                 if self.current_flows != "":
                     flows = deepcopy(self.current_flows)
                     self.say(flows)
@@ -111,13 +128,13 @@ class Client(asyncore.dispatcher):
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
                 else:
-                    while self.current_flows == "":
-                        sleep(1)
+
                     flows = deepcopy(self.current_flows)
                     self.say(flows)
                     self.current_flows = ""
                     self.current_flows = self.prepare_flows()
                     # result = self.prepare_flows()
+                """
 
     def prepare_flows(self, size=10):
         global HEAP_SIZE
