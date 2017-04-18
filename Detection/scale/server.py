@@ -181,6 +181,7 @@ class Host(asyncore.dispatcher):
         self.message_resend_flag = False
         self.resend_count = 0
         self.reader_init_flag = False
+        self.remote_client_mapping = {}
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
@@ -211,8 +212,12 @@ class Host(asyncore.dispatcher):
 
     def broadcast(self, message, cur_timestamp):
         print message
-        for remote_client in self.remote_clients:
-            remote_client.say(message)
+        if message in self.remote_client_mapping:
+            self.remote_client_mapping[message].say(message)
+        else:
+            for remote_client in self.remote_clients:
+                self.remote_client_mapping[remote_client.name] = remote_client
+            self.remote_client_mapping[message].say(message)
         self.message_resend_flag = [message, cur_timestamp]
         Timer(5.0, self.resend_message, [message, cur_timestamp]).start()
 

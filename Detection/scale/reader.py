@@ -59,7 +59,12 @@ class Client(asyncore.dispatcher):
         single_flow = self.prepare_flows()
         while single_flow != False:
             self.current_flows.append(single_flow)
-            single_flow = self.prepare_flows()
+            if len(self.current_flows) <= 10:
+                single_flow = self.prepare_flows()
+            else:
+                while len(self.current_flows) >= 5:
+                    sleep(2)
+                single_flow = self.prepare_flows()
         self.current_flows.append("close")
 
     def say(self, message):
