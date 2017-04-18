@@ -51,8 +51,7 @@ class Client(asyncore.dispatcher):
         # self.fh_flow = open("flow_check/" + self.name, "a")
         self.send(self.name)
         self.current_flows = [self.prepare_flows(size=100)]
-        flows = deepcopy(self.current_flows)
-        self.say(flows)
+        self.say(self.current_flows[0])
         del self.current_flows[0]
         self.timestamps_processed = 0
         thread.start_new_thread(self.get_flows, ())
