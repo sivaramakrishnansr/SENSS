@@ -80,6 +80,7 @@ class RemoteClient(asyncore.dispatcher):
         self.outbox = deque()
         self.name = None
         self.rb = ""
+        self.close_flag = False
 
     def writable(self):
         ''' It has point to call handle_write only when there's something in outbox
@@ -127,11 +128,14 @@ class RemoteClient(asyncore.dispatcher):
             self.host.all_close()
         """
         try:
+            if self.close_flag:
+                self.close()
+                return
             if self.rb != "":
                 client_message = self.rb + client_message
                 self.rb = client_message
             # if current_timestamp == 1453355525 and self.name == "WSUb":
-            #     print client_message
+            # print client_message
             data = json.loads(client_message)
             if self.name is None:
                 self.name = data[0]['reader']
@@ -140,13 +144,15 @@ class RemoteClient(asyncore.dispatcher):
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
             self.rb = ""
-	    #if self.name == "WSUb":
-		#print "got WSUb"
+            #if self.name == "WSUb":
+            #print "got WSUb"
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
-            if client_message == "close" or client_message == "":
-                closed_clients.append(self.name)
-                reports_count -= 1
+            if client_message == "close":
+                self.close_flag = True
+                if self.name not in closed_clients:
+                    closed_clients.append(self.name)
+                    reports_count -= 1
                 print str(self.name) + "close"
                 # reports_count -= 1
                 self.host.client_message_handle("close", force_get_next=True)
@@ -214,7 +220,7 @@ class Host(asyncore.dispatcher):
                 self.broadcast(reader, timestamp)
 
     def broadcast(self, message, cur_timestamp):
-        #print message
+        # print message
         if message in self.remote_client_mapping:
             self.remote_client_mapping[message].say(message)
         else:
@@ -337,8 +343,9 @@ class Host(asyncore.dispatcher):
                 if req_rep >= 10:
                     self.file_write_flag = True
                     # timestamp dst req rep flow_count
-                    self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
-                        stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
+                    self.attack_fh.write(
+                        str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
+                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
             del stats[timestamp]
 
     def consume_all_timestamps(self):
@@ -350,8 +357,9 @@ class Host(asyncore.dispatcher):
                 if req_rep >= 10:
                     self.file_write_flag = True
                     # timestamp dst req rep flow_count
-                    self.attack_fh.write(str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
-                        stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
+                    self.attack_fh.write(
+                        str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
+                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
         del stats
         stats = dict()
 

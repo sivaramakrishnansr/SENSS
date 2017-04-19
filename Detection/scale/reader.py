@@ -70,12 +70,12 @@ class Client(asyncore.dispatcher):
     def say(self, message):
         # self.outbox.append(message)
         # with open("reader_dumps/" + self.name, "w") as fh_reader_dump:
-        #     json.dump(message, fh_reader_dump)
+        # json.dump(message, fh_reader_dump)
         while message != "":
             sent_bytes = self.send(message)
             message = message[sent_bytes:]
-	#if self.name == "WSUb":
-            #print "sent"
+        #if self.name == "WSUb":
+        #print "sent"
 
     def writable(self):
         ''' It has point to call handle_write only when there's something in outbox
@@ -100,8 +100,8 @@ class Client(asyncore.dispatcher):
         message_list = message.split("\t")
         # self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
-	    #if self.name == "WSUb":
-		#print "request"
+            # if self.name == "WSUb":
+            #print "request"
             if message == self.name:
                 self.self_reqs += 1
                 # print self.name + " : " + str(self.self_reqs)
@@ -247,7 +247,7 @@ class Client(asyncore.dispatcher):
                     self.reps1 += dsts['198.108.0.0:53']['p']
                 """
                 # if "207.75.112.0:53" in dsts:
-                #self.reqs2 += dsts['207.75.112.0:53']['q']
+                # self.reqs2 += dsts['207.75.112.0:53']['q']
                 #self.reps2 += dsts['207.75.112.0:53']['p']
 
                 aggregated_dsts.append({'reader': self.name, 'time': start, 'destinations': dsts})
@@ -322,7 +322,7 @@ def main():
             asyncore.loop(timeout=1)
         except asyncore.ExitNow, e:
             pass
-        #print "close"
+            # print "close"
 
 
 if __name__ == "__main__":
