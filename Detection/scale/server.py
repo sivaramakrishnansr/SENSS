@@ -140,6 +140,8 @@ class RemoteClient(asyncore.dispatcher):
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
             self.rb = ""
+	    #if self.name == "WSUb":
+		#print "got WSUb"
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
             if client_message == "close" or client_message == "":
@@ -212,7 +214,7 @@ class Host(asyncore.dispatcher):
                 self.broadcast(reader, timestamp)
 
     def broadcast(self, message, cur_timestamp):
-        print message
+        #print message
         if message in self.remote_client_mapping:
             self.remote_client_mapping[message].say(message)
         else:
@@ -220,7 +222,7 @@ class Host(asyncore.dispatcher):
                 self.remote_client_mapping[remote_client.name] = remote_client
             self.remote_client_mapping[message].say(message)
         self.message_resend_flag = [message, cur_timestamp]
-        Timer(5.0, self.resend_message, [message, cur_timestamp]).start()
+        Timer(10.0, self.resend_message, [message, cur_timestamp]).start()
 
     def all_close(self):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start

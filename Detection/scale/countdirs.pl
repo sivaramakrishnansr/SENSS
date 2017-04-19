@@ -26,14 +26,14 @@ for $time (sort {$a cmp $b} keys %hash)
     %fds=();
     my @pids = ();
     $break_flag = 0;
-    #$index = $index + 1;
-    #if($index <= 3){ next; }
+    $index = $index + 1;
+    if($index <= 6){ next; }
     for $file (keys %{$hash{$time}})
     {
-        if(index($file, "22.0400") == -1) {
-            $break_flag = 1;
-            last;
-        }
+        #if(index($file, "21.0500") == -1) {
+            #$break_flag = 1;
+            #last;
+        #}
         die "could not fork" unless defined(my $pid = fork);
         unless ($pid) { #child execs
             exec "python reader.py -f flow-tools $file";
@@ -50,11 +50,11 @@ for $time (sort {$a cmp $b} keys %hash)
     	waitpid $pid, 0;
     }
     #print "$i";
-    if($break_flag == 0) {
+    #if($break_flag == 0) {
         print "\n-------\n";
         system("python iteration_done.py");
         sleep(100);
-    }
+    #}
     #exit;
 }
 system("python all_done.py");

@@ -74,7 +74,8 @@ class Client(asyncore.dispatcher):
         while message != "":
             sent_bytes = self.send(message)
             message = message[sent_bytes:]
-        #print "sent"
+	#if self.name == "WSUb":
+            #print "sent"
 
     def writable(self):
         ''' It has point to call handle_write only when there's something in outbox
@@ -99,6 +100,8 @@ class Client(asyncore.dispatcher):
         message_list = message.split("\t")
         # self.fh_flow.write(str(message_list) + "\n")
         for message in message_list:
+	    #if self.name == "WSUb":
+		#print "request"
             if message == self.name:
                 self.self_reqs += 1
                 # print self.name + " : " + str(self.self_reqs)
