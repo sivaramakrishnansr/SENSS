@@ -154,6 +154,7 @@ class RemoteClient(asyncore.dispatcher):
                     closed_clients.append(self.name)
                     reports_count -= 1
                 print str(self.name) + "close"
+                self.host.remove_client(self)
                 # reports_count -= 1
                 self.host.client_message_handle("close", force_get_next=True)
             elif client_message == "Done":
@@ -183,7 +184,7 @@ class Host(asyncore.dispatcher):
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.bind(address)
         self.listen(29)
-        self.remote_clients = []
+        self.remote_clients = set()
         self.hour_count = 0
         self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
         self.file_write_flag = False
@@ -194,7 +195,7 @@ class Host(asyncore.dispatcher):
 
     def handle_accept(self):
         client_socket, addr = self.accept()  # For the remote client.
-        self.remote_clients.append(RemoteClient(self, client_socket, addr))
+        self.remote_clients.add(RemoteClient(self, client_socket, addr))
 
     def handle_read(self):
         pass
@@ -206,6 +207,9 @@ class Host(asyncore.dispatcher):
         global reports_count
         print "closed"
         print reports_count
+
+    def remove_client(self, client):
+        self.remote_clients.remove(client)
 
     def resend_message(self, reader, timestamp):
         global closed_clients, reports_count
@@ -219,8 +223,12 @@ class Host(asyncore.dispatcher):
             else:
                 self.broadcast(reader, timestamp)
 
-    def broadcast(self, message, cur_timestamp):
+    def broadcast(self, message, cur_timestamp, send_all=False):
         # print message
+        if send_all:
+            for remote_client in self.remote_clients:
+                remote_client.say(message)
+            return
         if message in self.remote_client_mapping:
             self.remote_client_mapping[message].say(message)
         else:
@@ -234,7 +242,7 @@ class Host(asyncore.dispatcher):
         global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
 
         print "all close"
-        self.remote_clients = []
+        self.remote_clients = set()
         self.reader_init_flag = False
         self.message_resend_flag = False
         self.resend_count = 0
@@ -284,9 +292,14 @@ class Host(asyncore.dispatcher):
                         del all_data[reader][0]
                         remaining_flows_flag = True
                 if not remaining_flows_flag:
+                    active_reader_list = [client.name for client in self.remote_clients]
+                    active_reader_list = "\t".join(active_reader_list)
+                    self.broadcast(active_reader_list, None, send_all=True)
+                    """
                     self.consume_all_timestamps()
                     print closed_clients
                     self.all_close()
+                    """
                     return
                 else:
                     heap_element = heappop(heap)
