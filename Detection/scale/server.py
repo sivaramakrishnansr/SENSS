@@ -47,6 +47,7 @@ closed_clients = []
 
 reports_count = 29
 new_start = False
+hour_count = 0
 
 '''
 # Old Detection Module
@@ -162,6 +163,7 @@ class RemoteClient(asyncore.dispatcher):
                 raise asyncore.ExitNow()
             elif client_message == "OK":
                 self.host.all_close()
+                raise asyncore.ExitNow()
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
@@ -180,13 +182,14 @@ class RemoteClient(asyncore.dispatcher):
 
 class Host(asyncore.dispatcher):
     def __init__(self, address=('localhost', 4242), http_address=('localhost', 8082)):
+        global hour_count
+
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.bind(address)
         self.listen(29)
         self.remote_clients = set()
-        self.hour_count = 0
-        self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+        self.attack_fh = open("attacks-" + str(hour_count), "a", buffering=0)
         self.file_write_flag = False
         self.message_resend_flag = False
         self.resend_count = 0
@@ -239,7 +242,7 @@ class Host(asyncore.dispatcher):
         Timer(10.0, self.resend_message, [message, cur_timestamp]).start()
 
     def all_close(self):
-        global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start
+        global stats, heap, current_data, current_timestamp, all_data, closed_clients, reports_count, new_start, hour_count
 
         print "all close"
         self.remote_clients = set()
@@ -249,8 +252,8 @@ class Host(asyncore.dispatcher):
 
         if self.file_write_flag:
             self.attack_fh.close()
-            self.hour_count += 1
-            self.attack_fh = open("attacks-" + str(self.hour_count), "a", buffering=0)
+            hour_count += 1
+            self.attack_fh = open("attacks-" + str(hour_count), "a", buffering=0)
             self.file_write_flag = False
 
         # Initialize global variables
@@ -419,12 +422,13 @@ def main():
     # save_dict()
     # consume_completed_timestamps()
     # consume_time_exceed_timestamps()
-    server = Host(address=('localhost', 4242), http_address=('localhost', 8082))
-    try:
-        asyncore.loop()
-    except asyncore.ExitNow, e:
-        pass
-    print "all complete"
+    while True:
+        server = Host(address=('localhost', 4242), http_address=('localhost', 8082))
+        try:
+            asyncore.loop()
+        except asyncore.ExitNow, e:
+            time.sleep(20)
+        print "all complete"
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ for $time (sort {$a cmp $b} keys %hash)
     my @pids = ();
     $break_flag = 0;
     $index = $index + 1;
-    if($index <= 6){ next; }
+    if($index <= 30){ next; }
     for $file (keys %{$hash{$time}})
     {
         #if(index($file, "21.0500") == -1) {
@@ -53,7 +53,7 @@ for $time (sort {$a cmp $b} keys %hash)
     #if($break_flag == 0) {
     print "\n-------\n";
     system("python iteration_done.py");
-    sleep(100);
+    sleep(50);
     #}
     #exit;
 }
