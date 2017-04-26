@@ -27,7 +27,7 @@ for $time (sort {$a cmp $b} keys %hash)
     my @pids = ();
     $break_flag = 0;
     $index = $index + 1;
-    if($index <= 30){ next; }
+    if($index <= 44){ next; }
     for $file (keys %{$hash{$time}})
     {
         #if(index($file, "21.0500") == -1) {

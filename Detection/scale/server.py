@@ -160,10 +160,8 @@ class RemoteClient(asyncore.dispatcher):
                 self.host.client_message_handle("close", force_get_next=True)
             elif client_message == "Done":
                 self.host.all_close()
-                raise asyncore.ExitNow()
             elif client_message == "OK":
                 self.host.all_close()
-                raise asyncore.ExitNow()
             elif len(client_message) >= 20:
                 if self.rb == "":
                     self.rb += client_message
@@ -186,6 +184,7 @@ class Host(asyncore.dispatcher):
 
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
         self.bind(address)
         self.listen(29)
         self.remote_clients = set()
@@ -265,6 +264,8 @@ class Host(asyncore.dispatcher):
         closed_clients = []
         reports_count = 29
         new_start = False
+        self.close()
+        raise asyncore.ExitNow()
 
     def client_message_handle(self, data, reader_name=None, force_get_next=False):
         global stats, new_start, heap, reports_count, current_data, current_timestamp, all_data, closed_clients
@@ -422,13 +423,13 @@ def main():
     # save_dict()
     # consume_completed_timestamps()
     # consume_time_exceed_timestamps()
+    port = 4242
     while True:
-        server = Host(address=('localhost', 4242), http_address=('localhost', 8082))
+        server = Host(address=('localhost', port), http_address=('localhost', 8082))
         try:
             asyncore.loop()
         except asyncore.ExitNow, e:
-            time.sleep(20)
-        print "all complete"
+            time.sleep(80)
 
 
 if __name__ == "__main__":
