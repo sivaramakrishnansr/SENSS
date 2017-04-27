@@ -18,17 +18,46 @@ sub wanted {
 
 find(\&wanted, $ARGV[0]);
 $d=scalar(keys %hash);
-for $time (sort {$a<=>$b} keys %hash)
+$index = 0;
+for $time (sort {$a cmp $b} keys %hash)
 {
     $i = 0;
     $start = 0;
     %fds=();
+    my @pids = ();
+    $break_flag = 0;
+    $index = $index + 1;
+    if($index <= 44){ next; }
     for $file (keys %{$hash{$time}})
     {
-	system("python reader.py -f flow-tools $file &");
-	# wait here for all 29 to finish
+        #if(index($file, "21.0500") == -1) {
+            #$break_flag = 1;
+            #last;
+        #}
+        die "could not fork" unless defined(my $pid = fork);
+        unless ($pid) { #child execs
+            exec "python reader.py -f flow-tools $file";
+            #print $file, "\n";
+            #exec "python tempsleep.py";
+            die "exec failed";
+        }
+        push @pids, $pid; #parent stores children's pids
+        # system("python reader.py -f flow-tools $file &");
+        print +(split '/', $file )[10], "\n";
     }
+    #wait for all children to finish
+    for my $pid (@pids) {
+    	waitpid $pid, 0;
+    }
+    #print "$i";
+    #if($break_flag == 0) {
+    print "\n-------\n";
+    system("python iteration_done.py");
+    sleep(50);
+    #}
+    #exit;
 }
+system("python all_done.py");
 
 sub printStats
 {
