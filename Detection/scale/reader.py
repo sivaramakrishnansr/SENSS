@@ -275,11 +275,15 @@ class Client(asyncore.dispatcher):
             """
 
             if dst not in dsts:
-                dsts[dst] = {"q": 0, "p": 0, "psrc": set(), "qsrc": set()}
+                dsts[dst] = {"q": 0, "p": 0, "psrc": list(), "qsrc": list()}
             if success_count:
                 dsts[dst]['p'] = dsts[dst]['p'] + flow_count
+                if src not in dsts[dst]['psrc']:
+                    dsts[dst]['psrc'].append(src)
             else:
                 dsts[dst]['q'] = dsts[dst]['q'] + flow_count
+                if src not in dsts[dst]['qsrc']:
+                    dsts[dst]['qsrc'].append(src)
 
                 # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
         """
