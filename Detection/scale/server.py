@@ -145,8 +145,8 @@ class RemoteClient(asyncore.dispatcher):
             for single_data in data:
                 all_data[self.name].append((single_data['time'], single_data['destinations']))
             self.rb = ""
-            #if self.name == "WSUb":
-            #print "got WSUb"
+            # if self.name == "WSUb":
+            # print "got WSUb"
             self.host.client_message_handle(data, reader_name=self.name)
         except ValueError as e:
             if client_message == "close":
@@ -321,8 +321,16 @@ class Host(asyncore.dispatcher):
                 if dst in stats[current_timestamp]:
                     stats[current_timestamp][dst][0] += data[dst]['q']
                     stats[current_timestamp][dst][1] += data[dst]['p']
+                    for source in data[dst]['qsrc']:
+                        stats[current_timestamp][dst][2].add(source)
+                    for source in data[dst]['psrc']:
+                        stats[current_timestamp][dst][3].add(source)
                 else:
-                    stats[current_timestamp][dst] = [data[dst]['q'], data[dst]['p']]
+                    stats[current_timestamp][dst] = [data[dst]['q'], data[dst]['p'], set(), set()]
+                    for source in data[dst]['qsrc']:
+                        stats[current_timestamp][dst][2].add(source)
+                    for source in data[dst]['psrc']:
+                        stats[current_timestamp][dst][3].add(source)
 
             try:
                 t = int(all_data[heap_element[1]][0][0])
@@ -359,10 +367,12 @@ class Host(asyncore.dispatcher):
                 req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
                 if req_rep >= 10:
                     self.file_write_flag = True
-                    # timestamp dst req rep flow_count
+                    # timestamp dst req rep flow_count req_source_count res_source_count req-res_source_count
                     self.attack_fh.write(
                         str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
-                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
+                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\t" + str(
+                            len(stats[timestamp][dst][2])) + "\t" + str(len(stats[timestamp][dst][3])) + "\t" + str(
+                            len(stats[timestamp][dst][2]) - len(stats[timestamp][dst][3])) + "\n")
             del stats[timestamp]
 
     def consume_all_timestamps(self):
@@ -373,11 +383,12 @@ class Host(asyncore.dispatcher):
                 req_rep = stats[timestamp][dst][0] - stats[timestamp][dst][1]
                 if req_rep >= 10:
                     self.file_write_flag = True
-                    # timestamp dst req rep flow_count
+                    # timestamp dst req rep flow_count req_source_count res_source_count req-res_source_count
                     self.attack_fh.write(
                         str(timestamp) + "\t" + dst + "\t" + str(stats[timestamp][dst][0]) + "\t" + str(
-                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\n")
-        del stats
+                            stats[timestamp][dst][1]) + "\t" + str(req_rep) + "\t" + str(
+                            len(stats[timestamp][dst][2])) + "\t" + str(len(stats[timestamp][dst][3])) + "\t" + str(
+                            len(stats[timestamp][dst][2]) - len(stats[timestamp][dst][3])) + "\n")
         stats = dict()
 
 
