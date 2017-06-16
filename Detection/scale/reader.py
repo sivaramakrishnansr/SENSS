@@ -36,6 +36,7 @@ class DestInfo():
 
 
 def getFlows(infile):
+    flow_dir = infile.split("/")[6]
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -101,39 +102,49 @@ def getFlows(infile):
             char = " <- "
         # 1453395538.07 1453395578.14 164.76.136.0:51601 <- 54.230.88.0:80 5 260 0
         if (start == 0):
-            start = time1
+            start = time2
             stop = time1
 
             avg = time1
-            dsts[int(start)] = dict()
+            dsts = dict()
         elif (time1 - stop > 1):
             avg = 0.9 * avg + 0.1 * time1
             if (avg - stop > 1):
                 stop = avg
-            #stash this
+            # stash this
             continue
-        elif (time1 - start > 1):  #reporting interval, currently 1 sec
-            mes = json.dumps(dsts)
+        elif (time2 - start > 1):  # reporting interval, currently 1 sec
+            mes = json.dumps({'reader': infile.split('/')[6], 'time': start, 'destinations': dsts})
             mes = mes + "\n"
             try:
                 sock.sendall(mes)
             finally:
                 pass
             # sock.recv(1024) # blocking call
-            #for d in dsts[int(start)]:
+            # for d in dsts[int(start)]:
             #    print str(time1) + " " + str(d) + " " + str(dsts[int(start)][d])
             #exit(0)
-            start = time1
+            start = time2
             dsts = dict()
-            dsts[int(start)] = dict()
+            # dsts[int(start)] = dict()
         stop = time1
-        if dst not in dsts[int(start)]:
-            dsts[int(start)][dst] = 0
+        if dst not in dsts:
+            dsts[dst] = 0
         if (sc):
-            dsts[int(start)][dst] = dsts[int(start)][dst] - fc
+            dsts[dst] = dsts[dst] - fc
         else:
-            dsts[int(start)][dst] = dsts[int(start)][dst] + fc
-            #print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
+            dsts[dst] = dsts[dst] + fc
+            # print str(time1) + " " + str(time2) + " " + str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
+    """
+    for t in sorted(dsts.iterkeys()):
+        mes = json.dumps({'reader': infile.split('/')[6], 'time': t, 'destinations': dsts[t]})
+        mes = mes + "\n"
+        try:
+            print "send " + str(infile.split("/")[6])
+            sock.sendall(mes)
+        finally:
+            pass
+    """
 
 
 def main():
