@@ -18,7 +18,7 @@ sub wanted {
 
 find(\&wanted, $ARGV[0]);
 $d=scalar(keys %hash);
-for $time (sort {$a<=>$b} keys %hash)
+for $time (sort {$a cmp $b} keys %hash)
 {
     #$i = 0;
 	print $time;
