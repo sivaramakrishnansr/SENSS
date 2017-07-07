@@ -34,46 +34,48 @@ def getFlows(infile):
     
     for flow in flows:
         flip=0
+        time1 = flow.first
+        time2 = flow.last
         if (laststat == 0):
             laststat = flow.last;
-        if flow.dstport in WELL_KNOWN_PORTS and flow.srcport not in WELL_KNOWN_PORTS:
-            src = flow.srcaddr
-            dst = flow.dstaddr
-            sport = flow.srcport
-            dport = flow.dstport
-        elif flow.dstport not in WELL_KNOWN_PORTS and flow.srcport in WELL_KNOWN_PORTS:
-            src = flow.dstaddr
-            dst = flow.srcaddr
-            sport = flow.dstport
-            dport = flow.srcport
+        #if flow.dstport in WELL_KNOWN_PORTS and flow.srcport not in WELL_KNOWN_PORTS:
+        src = flow.srcaddr
+        dst = flow.dstaddr
+        sport = flow.srcport
+        dport = flow.dstport
+        if flow.dstport not in WELL_KNOWN_PORTS and flow.srcport in WELL_KNOWN_PORTS:
+        #    src = flow.dstaddr
+        #    dst = flow.srcaddr
+        #    sport = flow.dstport
+        #    dport = flow.srcport
             flip = 1
-        else:
-            continue
+        #else:
+        #    continue
         if flow.tcp_flags > 63:
             flags = bitarray('{0:06b}'.format(flow.tcp_flags & 63))
         else:
             flags = bitarray('{0:06b}'.format(flow.tcp_flags))
-        sc=0
-        uc=0
+        sc = 0
+        uc = 0
         if (flow.prot == 6):
             if (flags & SYN_ACK_PSH == SYN_ACK_PSH):
-                sc=1
+                sc = 1
             else:
-                uc=1
+                uc = 1
         elif(flow.prot == 17):
             if (flip == 1):
-                sc=1
+                sc = 1
             else:
-                uc=1
+                uc = 1
         else:
             continue
-        dst = str(dst) + ":" + str(dport)
-        src = str(src) + ":" + str(sport)
+        #dst = str(dst) + ":" + str(dport)
+        #src = str(src) + ":" + str(sport)
         char = " -> "
         if (flip):
             char = " <- "
-        if (dst == "198.108.0.0:53"):
-            print str(src) + char + str(dst) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc)
+        if (dst == "207.75.112.0" or src == "207.75.112.0"):
+            print str(time1) + " " + str(time2) + " " + str(src) + ":" + str(sport) + char + str(dst) + ":" + str(dport) + " " + str(flow.dPkts)+ " " + str(flow.dOctets) + " " + str(sc);
 
             
 

@@ -2,56 +2,33 @@
 
 use File::Find;
 
+$|=1;
 our %flows=();
 our %hash=();
 sub wanted {
     if (-f) {
-	if ($File::Find::name =~ /\/ft-v05/)
+	if ($File::Find::name =~ /\/ft/)
 	{
-	    $fname = $File::Find::name;
-	    $fname =~ /(.*)(\/ft-v05\.)(.*\.\d\d)(.*)/;
-	    $time = $3;	    
-	    $hash{$time}{$fname} = 1;
+	    $hash{$File::Find::name} = 1;
 	}
     }
 }
 
 find(\&wanted, $ARGV[0]);
 $d=scalar(keys %hash);
-for $time (sort {$a cmp $b} keys %hash)
+for $file (sort keys %hash)
 {
-    $i = 0;
-    $start = 0;
-    %fds=();
-    my @pids = ();
-    for $file (keys %{$hash{$time}})
+    my @items = split /\//, $file;
+    $dir = "";
+    for $item (@items)
     {
-        die "could not fork" unless defined(my $pid = fork);
-        unless ($pid) { #child execs
-            exec "python reader.py -f flow-tools $file";
-            #print $file, "\n";
-            #exec "python tempsleep.py";
-            die "exec failed";
-        }
-        push @pids, $pid; #parent stores children's pids
-        # system("python reader.py -f flow-tools $file &");
-        print +(split '/', $file )[10], "\n";
+	if ($item =~ /WSU/ || $item =~ /EQX/ || $item =~ /CHI/  )
+	{
+	    $dir = $item;
+	    last;
+	}
     }
-    #wait for all children to finish
-    for my $pid (@pids) {
-    	waitpid $pid, 0;
-    }
-    #print "$i";
-    print "\n-------\n";
-    system("python iteration_done.py");
-    sleep(100)
-    #exit;
+    $cmd = "python extract_flows.py $file -f flow-tools >> $dir.out";
+    print "$cmd\n";
+    system("$cmd");
 }
-system("python all_done.py");
-
-sub printStats
-{
-    $time = shift;
-    print "Stats for $time\n";
-}
-
