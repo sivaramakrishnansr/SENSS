@@ -1,4 +1,7 @@
 all: reader
 
-reader: reader.c
-	gcc -o reader reader.c
+reader: reader.cc iprange.cc
+	g++ -g -o reader reader.cc iprange.cc
+
+clean:
+	rm reader
