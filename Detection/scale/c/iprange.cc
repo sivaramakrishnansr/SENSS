@@ -1,5 +1,4 @@
 #include "iprange.hh"
-#include <stdio.h>
 
 iprange::iprange(unsigned int a, unsigned int b)
 {
