@@ -6,7 +6,7 @@ class cell
 {
 public:
   cell();
-  void insert(int, int, int, int);
+  void add(int, int, int, int);
   
   double Gbytes[2][2];
   double Gpkts[2][2];

@@ -12,10 +12,7 @@
 
 using namespace std;
 map<iprange,int> blocks;
-double PERIOD=1;
-const int CHUNK=1000;
-int FOREIGN=0;
-int HOME=1;
+const int CHUNK=10;
 
 flow flows[CHUNK];
 int numflows=0;
@@ -23,40 +20,43 @@ int numflows=0;
 records home, foreign;
 map<double, int> times;
 
-unsigned int ip2int(const char* input)
-{
-  char ip[17];
-  strncpy(ip, input, strlen(input));
-  char* word = strtok(ip, ".");
-  int result=atoi(word);
-  while ((word = strtok(NULL, ".")) != NULL)
-    {
-      result = result*256+atoi(word);
-    }
-  return result;
-}
-
-unsigned int min(unsigned int addr, int masklen)
-{
-  return addr & (~0 << (32-masklen));
-}
-
-unsigned int max(unsigned int addr, int masklen)
-{
-  int toor = (1 << (32-masklen))-1;
-  return (addr & (~0 << (32-masklen))) | toor;
-}
-
 int ours=0, ourd=0, neither=0, both=0;
 int processed=0;
-
+double curT=0;
 /* Process by double-buffering because of reordering. 
 This way we can find the most frequent time and only
 process flows related to it */
 
+void processflow(flow f)
+{
+  int mask = 32;
+  iprange srange(min(f.saddr,mask), max(f.saddr,mask));
+  iprange drange(min(f.daddr,mask), max(f.daddr,mask));
+      
+  map<iprange,int>::iterator sit = blocks.find(srange);
+  map<iprange,int>::iterator dit = blocks.find(drange);
+  if (sit == blocks.end() && dit != blocks.end())
+    {
+	  ourd++;
+	  // Destination is ours, records may or may not be
+	  home.update(f,1,1);
+	  foreign.update(f,0,0);
+	}
+      else if (sit != blocks.end() && dit == blocks.end())
+	{
+	  ours++;
+	  // Source is ours, records may or may not be
+	  home.update(f,0,1);
+	  foreign.update(f,1,0);
+	}
+      else if (sit == blocks.end() && dit == blocks.end())
+	neither++;
+      else
+	both++;
+}
+
 void reprocess()
 {
-
   int max = 0;
   double maxT = 0;
   for (map<double,int>::iterator it = times.begin(); it != times.end(); it++)
@@ -67,39 +67,39 @@ void reprocess()
 	  maxT = it->first;
 	}
     }
-  printf("Max %d maxT %lf\n", max, maxT);
-  
+  if (maxT > curT)
+    {
+      curT = maxT;
+      printf("CurT %lf home %d foreign %d\n", curT, home.size(), foreign.size());
+    }
+  times.clear();
+  // See which flows we can fully process and which we have to keep
+  int start=0;
   for (int i=0; i<numflows; i++)
     {
-      /*
-      int mask = 32;
-      // Use different masks for home and foreign
-      iprange srange(min(flows[i].saddr,mask), max(flows[i].saddr,mask));
-      iprange drange(min(flows[i].daddr,mask), max(flows[i].daddr,mask));
-      
-      map<iprange,int>::iterator sit = blocks.find(srange);
-      map<iprange,int>::iterator dit = blocks.find(drange);
-      if (sit == blocks.end() && dit != blocks.end())
+      // Ignore, drop
+      if (flows[i].first < curT && flows[i].last < curT)
 	{
-	  // TODO: Change this so it's variable mask for foreign and home
-	  ourd++;
-	  //store(FOREIGN, srange, 0, 0, pkts, bytes, first, last);
-	  //foreign.insert(srange,0,0,pkts,bytes);
 	}
-      else if (sit != blocks.end() && dit == blocks.end())
+      // Fully process, this is the last second
+      else if (flows[i].first <= curT && flows[i].last <= curT)
 	{
-	  ours++;
-	  //store(HOME, srange, 0, 0, pkts, bytes, first, last);
-	  // TODO: Change this so it's variable mask for foreign and home
-	  //home.insert(srange,0,0,pkts,bytes);
+	  processflow(flows[i]);
 	}
-      else if (sit == blocks.end() && dit == blocks.end())
-	neither++;
-      else
-	both++;
-      */
+      // Partially process, drop to save space
+      else if (flows[i].first <= curT && flows[i].last > curT)
+	{
+	  //TODO: should really keep for at least a while
+	  processflow(flows[i]);
+	  //flows[start++] = flows[i];
+	}
+      // Don't process, keep
+      else if (flows[i].first > curT && flows[i].last > curT)
+	{
+	  flows[start++] = flows[i];
+	}
     }
-  numflows = 0;
+  numflows = start;
 }
 
 
@@ -158,7 +158,7 @@ void process(char* buffer)
   times[first]++;
   times[last]++;
   
-  flows[numflows++].init(first, last, saddr, daddr, pkts, bytes, proto, flags);
+  flows[numflows++].init(first, last, saddr, daddr, sport, dport, pkts, bytes, proto, flags);
 
   if (numflows == CHUNK)
     {

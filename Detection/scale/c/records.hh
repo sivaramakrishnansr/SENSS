@@ -5,6 +5,7 @@
 #include "cell.hh"
 #include "iprange.hh"
 #include "flow.hh"
+#include "config.hh"
 
 using namespace std;
 
@@ -12,7 +13,8 @@ class records
 {
 public:
   records();
-  void insert(iprange, int, int, int, int);
+  void update(const flow&, int, int);
+  int size();
   
   map<iprange,cell> stats;
 };

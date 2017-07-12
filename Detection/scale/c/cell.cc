@@ -7,7 +7,7 @@ cell::cell()
       Gbytes[i][j] = Gpkts[i][j] = 0;
 }
 
-void cell::insert(int i, int j, int p, int b)
+void cell::add(int i, int j, int p, int b)
 {
   Gbytes[i][j] += b/1000000000.0;
   Gpkts[i][j] += p/1000000000.0;
