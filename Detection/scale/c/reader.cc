@@ -22,7 +22,7 @@ map<double, int> times;
 
 int ours=0, ourd=0, neither=0, both=0;
 int processed=0;
-double curT=0;
+double curT=0, prevT=0;
 /* Process by double-buffering because of reordering. 
 This way we can find the most frequent time and only
 process flows related to it */
@@ -40,19 +40,27 @@ void processflow(flow f)
 	  ourd++;
 	  // Destination is ours, records may or may not be
 	  home.update(f,1,1);
-	  foreign.update(f,0,0);
+	  foreign.update(f,1,0);
 	}
       else if (sit != blocks.end() && dit == blocks.end())
 	{
 	  ours++;
 	  // Source is ours, records may or may not be
 	  home.update(f,0,1);
-	  foreign.update(f,1,0);
+	  foreign.update(f,0,0);
 	}
       else if (sit == blocks.end() && dit == blocks.end())
 	neither++;
       else
 	both++;
+}
+
+void report(double time)
+{
+  printf("Home ");
+  home.report(time);
+  printf("Foreign ");
+  foreign.report(time);
 }
 
 void reprocess()
@@ -67,6 +75,7 @@ void reprocess()
 	  maxT = it->first;
 	}
     }
+  prevT = curT;
   if (maxT > curT)
     {
       curT = maxT;
@@ -78,16 +87,18 @@ void reprocess()
   for (int i=0; i<numflows; i++)
     {
       // Ignore, drop
-      if (flows[i].first < curT && flows[i].last < curT)
+      if (flows[i].first < prevT && flows[i].last < prevT)
 	{
 	}
       // Fully process, this is the last second
-      else if (flows[i].first <= curT && flows[i].last <= curT)
+      else if ((flows[i].first <= curT && flows[i].last <= curT) ||
+	       (flows[i].first <= prevT && flows[i].last <= prevT))
 	{
 	  processflow(flows[i]);
 	}
       // Partially process, drop to save space
-      else if (flows[i].first <= curT && flows[i].last > curT)
+      else if ((flows[i].first <= curT && flows[i].last > curT) ||
+	       (flows[i].first <= prevT && flows[i].last > prevT))
 	{
 	  //TODO: should really keep for at least a while
 	  processflow(flows[i]);
@@ -100,6 +111,11 @@ void reprocess()
 	}
     }
   numflows = start;
+  // Time to report
+  if (prevT < curT)
+    {
+      report(prevT);
+    }
 }
 
 
@@ -220,5 +236,10 @@ int main()
       process(buffer);
     }
   printf("Ours %d ourd %d neither %d both %d\n", ours, ourd, neither, both);
+  unsigned int add = ip2int("207.75.112.0");
+  iprange range(min(add,24), max(add,24));
+  cell c = home.stats[range];
+  const char* co = c.tostr();
+  printf("For 207.75.112.0 stats are %s\n", co);
 }
 

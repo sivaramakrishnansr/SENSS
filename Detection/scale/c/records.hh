@@ -14,6 +14,7 @@ class records
 public:
   records();
   void update(const flow&, int, int);
+  void report(double);
   int size();
   
   map<iprange,cell> stats;
