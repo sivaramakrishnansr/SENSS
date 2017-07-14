@@ -39,15 +39,15 @@ void processflow(flow f)
     {
 	  ourd++;
 	  // Destination is ours, records may or may not be
-	  home.update(f,1,1);
-	  foreign.update(f,1,0);
+	  //home.update(f,1,1);
+	  //foreign.update(f,1,0);
 	}
       else if (sit != blocks.end() && dit == blocks.end())
 	{
 	  ours++;
 	  // Source is ours, records may or may not be
-	  home.update(f,0,1);
-	  foreign.update(f,0,0);
+	  // home.update(f,0,1);
+	  //foreign.update(f,0,0);
 	}
       else if (sit == blocks.end() && dit == blocks.end())
 	neither++;
@@ -67,6 +67,12 @@ void reprocess()
 {
   int max = 0;
   double maxT = 0;
+
+  // Inserted for testing
+  numflows = 0;
+  times.clear();
+  return;
+    
   for (map<double,int>::iterator it = times.begin(); it != times.end(); it++)
     {
       if (times[it->first] > max)
@@ -171,10 +177,10 @@ void process(char* buffer)
   last = floor(last/PERIOD*100)/100;
   unsigned int saddr = ip2int(src);
   unsigned int daddr = ip2int(dst);
-  times[first]++;
-  times[last]++;
+  //times[first]++;
+  //times[last]++;
   
-  flows[numflows++].init(first, last, saddr, daddr, sport, dport, pkts, bytes, proto, flags);
+  //flows[numflows++].init(first, last, saddr, daddr, sport, dport, pkts, bytes, proto, flags);
 
   if (numflows == CHUNK)
     {

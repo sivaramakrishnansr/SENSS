@@ -12,13 +12,19 @@ bool isservice(int port)
 
 unsigned int ip2int(const char* input)
 {
-  char ip[17];
-  strncpy(ip, input, strlen(input));
-  char* word = strtok(ip, ".");
-  int result=atoi(word);
-  while ((word = strtok(NULL, ".")) != NULL)
+  int result = 0;
+  int octet = 0;
+  for (int i=0; i<strlen(input); i++)
     {
-      result = result*256+atoi(word);
+      if (input[i] == '.')
+	{
+	  result = result*256 + octet;
+	  octet = 0;
+	}
+      else
+	{
+	  octet = octet*10 + input[i] - '0';
+	}
     }
   return result;
 }
