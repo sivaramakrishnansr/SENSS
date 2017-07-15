@@ -46,7 +46,7 @@ void processflow(flow f)
 	{
 	  ours++;
 	  // Source is ours, records may or may not be
-	  // home.update(f,0,1);
+	  //home.update(f,0,1);
 	  //foreign.update(f,0,0);
 	}
       else if (sit == blocks.end() && dit == blocks.end())
@@ -68,11 +68,6 @@ void reprocess()
   int max = 0;
   double maxT = 0;
 
-  // Inserted for testing
-  numflows = 0;
-  times.clear();
-  return;
-    
   for (map<double,int>::iterator it = times.begin(); it != times.end(); it++)
     {
       if (times[it->first] > max)
@@ -128,15 +123,16 @@ void reprocess()
 
 void process(char* buffer)
 {
-  char src[17], dst[17];
+  char src[17], dst[17], word[200];
   int sport, dport, proto, flags, pkts, bytes;
   double first, last;
-  char* word = strtok(buffer, ",");
-  int i=0;
-  while ((word = strtok(NULL, ",")) != NULL)
+  int w=0, wi=0;
+  for (int i=0; i<strlen(buffer);i++)
+    {
+      if (buffer[i] == ',')
 	{
-	  i++;
-	  switch(i)
+	  word[wi] = 0;
+	  switch(w)
 	    {
 	    case 4:
 	      pkts=atoi(word);
@@ -171,16 +167,23 @@ void process(char* buffer)
 	    default:
 	      break;
 	    }
+	  wi=0;
+	  w++;
 	}
+      else
+	{
+	  word[wi++] = buffer[i];
+	}
+    }
   // Work with first and last, rounded down using period
   first = floor(first/PERIOD*100)/100;
   last = floor(last/PERIOD*100)/100;
   unsigned int saddr = ip2int(src);
   unsigned int daddr = ip2int(dst);
-  //times[first]++;
-  //times[last]++;
+  times[first]++;
+  times[last]++;
   
-  //flows[numflows++].init(first, last, saddr, daddr, sport, dport, pkts, bytes, proto, flags);
+  flows[numflows++].init(first, last, saddr, daddr, sport, dport, pkts, bytes, proto, flags);
 
   if (numflows == CHUNK)
     {
@@ -242,10 +245,5 @@ int main()
       process(buffer);
     }
   printf("Ours %d ourd %d neither %d both %d\n", ours, ourd, neither, both);
-  unsigned int add = ip2int("207.75.112.0");
-  iprange range(min(add,24), max(add,24));
-  cell c = home.stats[range];
-  const char* co = c.tostr();
-  printf("For 207.75.112.0 stats are %s\n", co);
 }
 

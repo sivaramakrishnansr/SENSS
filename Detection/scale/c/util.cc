@@ -1,5 +1,29 @@
 #include "util.hh"
 
+
+string sha256(const string str)
+{
+  unsigned char hash[SHA256_DIGEST_LENGTH];
+  SHA256_CTX sha256;
+  SHA256_Init(&sha256);
+  SHA256_Update(&sha256, str.c_str(), str.size());
+  SHA256_Final(hash, &sha256);
+  stringstream ss;
+  for(int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+      ss << hex << setw(2) << setfill('0') << (int)hash[i];
+    }
+  return ss.str();
+}
+
+int getindex(unsigned int ip, int i)
+{
+  stringstream ss;
+  ss << ip << i;
+  sha256(ss.str());
+  return 3;
+}
+
 bool isservice(int port)
 {
   // TODO: this needs to be more comprehensive

@@ -17,7 +17,7 @@ public:
   void report(double);
   int size();
   
-  map<iprange,cell> stats;
+  cell** stats;
 };
 
 #endif
