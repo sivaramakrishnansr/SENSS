@@ -12,12 +12,15 @@ using namespace std;
 class records
 {
 public:
-  records();
-  void update(const flow&, int, int);
-  void report(double);
-  int size();
-  
-  cell** stats;
+    records();
+
+    void update(const flow &, int, int);
+
+    void report(double);
+
+    int size();
+
+    cell **stats;
 };
 
 #endif

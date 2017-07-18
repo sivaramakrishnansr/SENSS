@@ -2,26 +2,26 @@
 
 flow::flow()
 {
-  saddr = daddr = 0;
+    saddr = daddr = 0;
 }
 
-flow::flow(double f, double l, unsigned int s, unsigned int d, int sp, int dp, int p, int b, int pr, int fl)
+flow::flow(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl)
 {
-  init(f, l, s, d, sp, dp, p, b, pr, fl);
+    init(f, l, s, d, sp, dp, p, b, pr, fl);
 };
 
-void flow::init(double f, double l, unsigned int s, unsigned int d, int sp, int dp, int p, int b, int pr, int fl)
+void flow::init(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl)
 {
-  first = f;
-  last = l;
-  saddr = s;
-  daddr = d;
-  sport = sp;
-  dport = dp;
-  pkts = p;
-  bytes = b;
-  proto = pr;
-  flags = fl;
+    pkts = p;
+    bytes = b;
+    first = f;
+    last = l;
+    saddr = s;
+    daddr = d;
+    sport = sp;
+    dport = dp;
+    proto = pr;
+    flags = fl;
 };
 
 

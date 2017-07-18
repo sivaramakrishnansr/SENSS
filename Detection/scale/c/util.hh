@@ -13,10 +13,15 @@
 using namespace std;
 
 string sha256(const string str);
+
 int getindex(unsigned int, int);
+
 bool isservice(int port);
-unsigned int ip2int(const char* input);
-unsigned int min(const unsigned int & addr, const int & masklen);
-unsigned int max(const unsigned int & addr, const int & masklen);
+
+unsigned int ip2int(const char *input);
+
+unsigned int min(const unsigned int &addr, const int &masklen);
+
+unsigned int max(const unsigned int &addr, const int &masklen);
 
 #endif
