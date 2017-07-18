@@ -7,5 +7,4 @@ static double PERIOD = 1;
 static int BINCOUNT = 4;
 static int BINSIZE = 256;
 
-
 #endif

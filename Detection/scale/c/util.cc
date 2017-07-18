@@ -1,52 +1,36 @@
 #include <fstream>
 #include "util.hh"
 
-int getindex(unsigned int ip, int i)
-{
-    stringstream ss;
-    ss << ip << i;
-    sha256(ss.str());
-    return 3;
+void init(int port) {
+  // TODO: this needs to be more comprehensive. Should read
+  // ports from services.txt
+
+  if (port == 80 || port == 53 || port == 443 || port == 22) {
+    return true;
+  }
+  return false;
 }
 
-bool isservice(int port)
-{
-    // TODO: this needs to be more comprehensive. Should read
-    // ports from services.txt
-
-    if (port == 80 || port == 53 || port == 443 || port == 22)
-    {
-        return true;
+unsigned int ip2int(const char *input) {
+  int result = 0;
+  int octet = 0;
+  for (int i = 0; i < strlen(input); i++) {
+    if (input[i] == '.') {
+      result = result * 256 + octet;
+      octet = 0;
+    } else {
+      octet = octet * 10 + input[i] - '0';
     }
-    return false;
+  }
+  return result;
 }
 
-unsigned int ip2int(const char *input)
-{
-    int result = 0;
-    int octet = 0;
-    for (int i = 0; i < strlen(input); i++)
-    {
-        if (input[i] == '.')
-        {
-            result = result * 256 + octet;
-            octet = 0;
-        } else
-        {
-            octet = octet * 10 + input[i] - '0';
-        }
-    }
-    return result;
+unsigned int min(const unsigned int &addr, const int &masklen) {
+  return addr & (~0 << (32 - masklen));
 }
 
-unsigned int min(const unsigned int &addr, const int &masklen)
-{
-    return addr & (~0 << (32 - masklen));
-}
-
-unsigned int max(const unsigned int &addr, const int &masklen)
-{
-    int toor = (1 << (32 - masklen)) - 1;
-    return (addr & (~0 << (32 - masklen))) | toor;
+unsigned int max(const unsigned int &addr, const int &masklen) {
+  int toor = (1 << (32 - masklen)) - 1;
+  return (addr & (~0 << (32 - masklen))) | toor;
 }
 

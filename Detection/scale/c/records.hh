@@ -9,18 +9,17 @@
 
 using namespace std;
 
-class records
-{
-public:
-    records();
+class records {
+ public:
+  records();
 
-    void update(const flow &, int, int);
+  void update(const flow &, int, int);
 
-    void report(double);
+  void report(double);
 
-    int size();
+  int size();
 
-    cell **stats;
+  cell **stats;
 };
 
 #endif

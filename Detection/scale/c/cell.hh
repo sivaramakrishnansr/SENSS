@@ -1,20 +1,17 @@
 #ifndef __CELL_HH
 #define __CELL_HH
 
+class cell {
+ public:
+  cell();
 
-class cell
-{
-public:
-    cell();
+  void add(int, int, int, int);
 
-    void add(int, int, int, int);
+  const char *tostr();
 
-    const char *tostr();
-
-    double Gbytes[2][2];
-    double Gpkts[2][2];
-    char output[100];
+  double Gbytes[2][2];
+  double Gpkts[2][2];
+  char output[100];
 };
-
 
 #endif
