@@ -57,9 +57,7 @@ void processflow(flow f)
 
 void report(double time)
 {
-  printf("Home ");
   home.report(time);
-  printf("Foreign ");
   foreign.report(time);
 }
 

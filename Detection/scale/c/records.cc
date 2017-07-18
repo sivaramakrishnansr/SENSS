@@ -89,5 +89,16 @@ int records::size()
 
 void records::report(double time)
 {
-  //stats.clear();
+  /* TODO: this is just for testing, but instead
+     we should read all the records and send over the net
+     to the collector */
+  unsigned int add = ip2int("207.75.112.0");
+  iprange range(min(add,24), max(add,24));
+  if (stats.find(range) != stats.end())
+    {
+      const char* co = stats[range].tostr();
+      printf("%lf For 207.75.112.0 stats are %s\n", time, co);
+    }
+  // This should stay
+  stats.clear();
 }

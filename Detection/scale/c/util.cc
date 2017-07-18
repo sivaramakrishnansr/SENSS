@@ -26,7 +26,8 @@ int getindex(unsigned int ip, int i)
 
 bool isservice(int port)
 {
-  // TODO: this needs to be more comprehensive
+  // TODO: this needs to be more comprehensive. Should read
+  // ports from services.txt
   if (port == 80 || port == 53 || port == 443 || port == 22)
     {
       return true;

@@ -1,0 +1,4 @@
+scale/c/data
+.idea/
+CMakeLists.txt
+cmake-build-debug
