@@ -1,14 +1,29 @@
 #include <fstream>
 #include "util.hh"
 
-void init(int port) {
-  // TODO: this needs to be more comprehensive. Should read
-  // ports from services.txt
+void InitServicesSet() {
+  ifstream ifs("services", ifstream::in);
 
-  if (port == 80 || port == 53 || port == 443 || port == 22) {
-    return true;
+  string line;
+  while(ifs.good()){
+
+    getline(ifs, line);
+    if(line[0] == '#'){
+      continue;
+    }
+
+    int i = line.find_first_of(" ");
+    int j = line.find_first_of("#") - 1;
+    while(line[i] == ' ')
+      i++;
+    while(line[j] == ' ')
+      j--;
+    service.insert(stoi(line.substr(i, j-i+1)));
+
+
   }
-  return false;
+
+
 }
 
 unsigned int ip2int(const char *input) {

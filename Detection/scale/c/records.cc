@@ -19,9 +19,9 @@ void records::update(const flow &f, int dstours, int recordours) {
       isreq = 0;
     else
       isreq = 1;
-  } else if (isservice(f.sport) && !isservice(f.dport))
+  } else if (service.find(f.sport) != service.end() && service.find(f.dport) == service.end())
     isreq = 0;
-  else if (!isservice(f.sport) && isservice(f.dport))
+  else if (service.find(f.sport) == service.end() && service.find(f.dport) != service.end())
     isreq = 1;
   else {
     // Regard all other traffic as requests

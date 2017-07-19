@@ -8,13 +8,13 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
-#include <unordered_map>
+#include <set>
 
 using namespace std;
 
 int getindex(unsigned int, int);
 
-bool isservice(int port);
+void InitServicesSet();
 
 unsigned int ip2int(const char *input);
 
@@ -22,6 +22,6 @@ unsigned int min(const unsigned int &addr, const int &masklen);
 
 unsigned int max(const unsigned int &addr, const int &masklen);
 
-unordered_map<string, int> services;
+set<int> service;
 
 #endif

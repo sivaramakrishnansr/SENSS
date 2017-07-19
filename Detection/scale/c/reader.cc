@@ -6,6 +6,7 @@
 #include "iprange.hh"
 #include "records.hh"
 #include "flow.hh"
+#include "util.hh"
 
 using namespace std;
 
@@ -167,7 +168,11 @@ void loadblocks() {
 int main() {
   // Read in blocks
   loadblocks();
-
+  // Initialise services set
+  InitServicesSet();
+//  for(auto it : service){
+//    cout<<it<<endl;
+//  }
   // Print them out just for kicks
   for (map<iprange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
     printf("Block %u %u\n", it->first.min, it->first.max);
