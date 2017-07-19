@@ -1,8 +1,7 @@
 #include "cell.hh"
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+
 
 cell::cell() {
   for (int i = 0; i < 2; i++)

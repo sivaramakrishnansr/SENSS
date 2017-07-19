@@ -1,31 +1,30 @@
 #include <fstream>
 #include "util.hh"
 
+set<int> service;
+
 void InitServicesSet() {
   ifstream ifs("services", ifstream::in);
-
   string line;
   while(ifs.good()){
-
     getline(ifs, line);
-    if(line[0] == '#'){
-      continue;
+    stringstream ss(line);
+    while(getline(ss, line, '\t')){
+      if(line[0] == '#'){
+        break;
+      }
+      if((isdigit(line[0])) && (line.find("udp") != string::npos || line.find("tcp") != string::npos)){
+        service.insert(stoi(line));
+        break;
+      }
     }
-
-    int i = line.find_first_of(" ");
-    int j = line.find_first_of("#") - 1;
-    while(line[i] == ' ')
-      i++;
-    while(line[j] == ' ')
-      j--;
-    j = j-2;
-    string proto = line.substr(j, 3);
-    if(proto == "udp" || proto == "tcp"){
-      service.insert(stoi(line.substr(i, j-i-1)));
-    }
-
   }
+}
 
+bool IsService(int port){
+  if(service.find(port) != service.end())
+    return true;
+  return false;
 }
 
 unsigned int ip2int(const char *input) {

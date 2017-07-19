@@ -2,10 +2,9 @@
 #include <fstream>
 #include <map>
 #include <math.h>
-
+#include <zconf.h>
 #include "iprange.hh"
 #include "records.hh"
-#include "flow.hh"
 #include "util.hh"
 
 using namespace std;
@@ -15,7 +14,6 @@ const int CHUNK = 10;
 
 flow flows[CHUNK];
 int numflows = 0;
-
 records home, foreign;
 map<double, int> times;
 
@@ -136,6 +134,8 @@ void process(char *buffer) {
   }
 }
 
+
+
 void loadblocks() {
   string buffer;
   ifstream blockfile;
@@ -170,9 +170,6 @@ int main() {
   loadblocks();
   // Initialise services set
   InitServicesSet();
-//  for(auto it : service){
-//    cout<<it<<endl;
-//  }
   // Print them out just for kicks
   for (map<iprange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
     printf("Block %u %u\n", it->first.min, it->first.max);

@@ -1,11 +1,9 @@
 #ifndef __FLOW_HH
 #define __FLOW_HH
 
-#include "util.hh"
-
 class flow {
  public:
-
+  flow() = default;
   flow(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);
 
   void init(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);

@@ -1,4 +1,6 @@
 #include "records.hh"
+#include "util.hh"
+
 
 void records::update(const flow &f, int dstours, int recordours) {
   double ps = (f.last - f.first) / PERIOD + 1;
@@ -12,9 +14,9 @@ void records::update(const flow &f, int dstours, int recordours) {
       isreq = 0;
     else
       isreq = 1;
-  } else if (service.find(f.sport) != service.end() && service.find(f.dport) == service.end())
+  } else if (IsService(f.sport) && !IsService(f.dport))
     isreq = 0;
-  else if (service.find(f.sport) == service.end() && service.find(f.dport) != service.end())
+  else if (!IsService(f.sport) && IsService(f.dport))
     isreq = 1;
   else {
     // Regard all other traffic as requests
