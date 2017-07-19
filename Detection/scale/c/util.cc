@@ -18,11 +18,13 @@ void InitServicesSet() {
       i++;
     while(line[j] == ' ')
       j--;
-    service.insert(stoi(line.substr(i, j-i+1)));
-
+    j = j-2;
+    string proto = line.substr(j, 3);
+    if(proto == "udp" || proto == "tcp"){
+      service.insert(stoi(line.substr(i, j-i-1)));
+    }
 
   }
-
 
 }
 
