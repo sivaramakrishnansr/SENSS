@@ -110,8 +110,8 @@ void Process(char *buffer) {
   }
 
   // Work with first and last, rounded down using period
-  first = floor(first / PERIOD * 100) / 100;
-  last = floor(last / PERIOD * 100) / 100;
+  first = floor(first / kPeriod * 100) / 100;
+  last = floor(last / kPeriod * 100) / 100;
   unsigned int saddr = IpToInt(field[4]);
   unsigned int daddr = IpToInt(field[5]);
   times[first]++;
@@ -170,6 +170,7 @@ int main() {
   // Initialise services set
   InitServicesSet();
   // Print them out just for kicks
+
   for (map<IpRange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
     printf("Block %u %u\n", it->first.min, it->first.max);
   }

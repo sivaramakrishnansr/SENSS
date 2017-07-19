@@ -3,7 +3,7 @@
 
 
 void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
-  double ps = (f.last - f.first) / PERIOD + 1;
+  double ps = (f.last - f.first) / kPeriod + 1;
   double pkts = f.pkts / ps;
   double bytes = f.bytes / ps;
   int issrc;
@@ -24,12 +24,12 @@ void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
   }
   if (dstours) {
     // Our destination
-    IpRange srange(Min(f.saddr, foreign_mask), Max(f.saddr, foreign_mask));
-    IpRange drange(Min(f.daddr, home_mask), Max(f.daddr, home_mask));
+    IpRange srange(Min(f.saddr, kForeignMask), Max(f.saddr, kForeignMask));
+    IpRange drange(Min(f.daddr, kHomeMask), Max(f.daddr, kHomeMask));
     if (recordours) {
       // Our destination, our records, reply pkt
       issrc = 0;
-      for (int i = 0; i < BINCOUNT; i++) {
+      for (int i = 0; i < kBinCount; i++) {
         stats[drange].Add(issrc, isreq, pkts, bytes);
       }
     } else {
@@ -39,8 +39,8 @@ void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
     }
   } else {
     // Our source
-    IpRange srange(Min(f.saddr, home_mask), Max(f.saddr, home_mask));
-    IpRange drange(Min(f.daddr, foreign_mask), Max(f.daddr, foreign_mask));
+    IpRange srange(Min(f.saddr, kHomeMask), Max(f.saddr, kHomeMask));
+    IpRange drange(Min(f.daddr, kForeignMask), Max(f.daddr, kForeignMask));
     if (recordours) {
       // Our source, our records
       issrc = 1;
