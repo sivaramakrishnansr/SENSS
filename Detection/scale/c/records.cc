@@ -2,7 +2,7 @@
 #include "util.hh"
 
 
-void records::update(const flow &f, int dstours, int recordours) {
+void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
   double ps = (f.last - f.first) / PERIOD + 1;
   double pkts = f.pkts / ps;
   double bytes = f.bytes / ps;
@@ -24,47 +24,47 @@ void records::update(const flow &f, int dstours, int recordours) {
   }
   if (dstours) {
     // Our destination
-    iprange srange(min(f.saddr,foreign_mask), max(f.saddr,foreign_mask));
-    iprange drange(min(f.daddr,home_mask), max(f.daddr,home_mask));
+    IpRange srange(Min(f.saddr, foreign_mask), Max(f.saddr, foreign_mask));
+    IpRange drange(Min(f.daddr, home_mask), Max(f.daddr, home_mask));
     if (recordours) {
       // Our destination, our records, reply pkt
       issrc = 0;
       for (int i = 0; i < BINCOUNT; i++) {
-        stats[drange].add(issrc, isreq, pkts, bytes);
+        stats[drange].Add(issrc, isreq, pkts, bytes);
       }
     } else {
       // Our destination, foreign records, reply pkt
       issrc = 1;
-      stats[srange].add(issrc, isreq, pkts, bytes);
+      stats[srange].Add(issrc, isreq, pkts, bytes);
     }
   } else {
     // Our source
-    iprange srange(min(f.saddr, home_mask), max(f.saddr, home_mask));
-    iprange drange(min(f.daddr, foreign_mask), max(f.daddr, foreign_mask));
+    IpRange srange(Min(f.saddr, home_mask), Max(f.saddr, home_mask));
+    IpRange drange(Min(f.daddr, foreign_mask), Max(f.daddr, foreign_mask));
     if (recordours) {
       // Our source, our records
       issrc = 1;
-      stats[srange].add(issrc, isreq, pkts, bytes);
+      stats[srange].Add(issrc, isreq, pkts, bytes);
     } else {
       // Our source, foreign records
       issrc = 0;
-      stats[drange].add(issrc, isreq, pkts, bytes);
+      stats[drange].Add(issrc, isreq, pkts, bytes);
     }
   }
 }
 
-int records::size() {
+int FlowRecord::Size() {
   return 1; //stats.size();
 }
 
-void records::report(double time) {
+void FlowRecord::Report(double time) {
   /* TODO: this is just for testing, but instead
      we should read all the records and send over the net
      to the collector */
-  unsigned int add = ip2int("207.75.112.0");
-  iprange range(min(add, 24), max(add, 24));
+  unsigned int add = IpToInt("207.75.112.0");
+  IpRange range(Min(add, 24), Max(add, 24));
   if (stats.find(range) != stats.end()) {
-    const char *co = stats[range].tostr();
+    const char *co = stats[range].ToString();
     printf("%lf For 207.75.112.0 stats are %s\n", time, co);
   }
   // This should stay

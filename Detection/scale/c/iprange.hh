@@ -1,17 +1,17 @@
 #ifndef __IPRANGE_HH
 #define __IPRANGE_HH
 
-class iprange {
+class IpRange {
  public:
-  iprange(unsigned int, unsigned int);
+  IpRange(unsigned int, unsigned int);
 
   /*  friend bool operator== (const iprange &i1, const iprange &i2);
       friend bool operator^ (const iprange &i1, const iprange &i2);*/
-  bool contains(const iprange &i) const;
+  bool Contains(const IpRange &i) const;
 
-  void update(unsigned int, unsigned int);
+  void Update(unsigned int, unsigned int);
 
-  friend bool operator<(const iprange &i1, const iprange &i2);
+  friend bool operator<(const IpRange &i1, const IpRange &i2);
 
   /*  friend bool operator> (const iprange &i1, const iprange &i2); */
 

@@ -10,17 +10,15 @@
 
 using namespace std;
 
-int getindex(unsigned int, int);
-
 void InitServicesSet();
 
 bool IsService(int port);
 
-unsigned int ip2int(const char *input);
+unsigned int IpToInt(const char *input);
 
-unsigned int min(const unsigned int &addr, const int &masklen);
+unsigned int Min(const unsigned int &addr, const int &masklen);
 
-unsigned int max(const unsigned int &addr, const int &masklen);
+unsigned int Max(const unsigned int &addr, const int &masklen);
 
 
 

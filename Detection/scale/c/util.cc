@@ -28,7 +28,7 @@ bool IsService(int port){
   return false;
 }
 
-unsigned int ip2int(const char *input) {
+unsigned int IpToInt(const char *input) {
   int result = 0;
   int octet = 0;
   for (int i = 0; i < strlen(input); i++) {
@@ -42,11 +42,11 @@ unsigned int ip2int(const char *input) {
   return result;
 }
 
-unsigned int min(const unsigned int &addr, const int &masklen) {
+unsigned int Min(const unsigned int &addr, const int &masklen) {
   return addr & (~0 << (32 - masklen));
 }
 
-unsigned int max(const unsigned int &addr, const int &masklen) {
+unsigned int Max(const unsigned int &addr, const int &masklen) {
   int toor = (1 << (32 - masklen)) - 1;
   return (addr & (~0 << (32 - masklen))) | toor;
 }

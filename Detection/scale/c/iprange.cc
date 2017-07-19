@@ -1,11 +1,11 @@
 #include "iprange.hh"
 
-iprange::iprange(unsigned int a, unsigned int b) {
+IpRange::IpRange(unsigned int a, unsigned int b) {
   min = a;
   max = b;
 }
 
-void iprange::update(unsigned int a, unsigned int b) {
+void IpRange::Update(unsigned int a, unsigned int b) {
   min = a;
   max = b;
 }
@@ -18,20 +18,20 @@ bool operator== (const iprange &i1, const iprange &i2)
 
 bool operator^ (const iprange &i1, const iprange &i2)
 {
-  return (i1.min <= i2.min && i1.max >= i2.max);
+  return (i1.min <= i2.Min && i1.max >= i2.max);
 }
 */
-bool iprange::contains(const iprange &i) const {
+bool IpRange::Contains(const IpRange &i) const {
   return (min <= i.min && max >= i.max);
 }
 
-bool operator<(const iprange &i1, const iprange &i2) {
-  return (i1.max < i2.min) && (!i1.contains(i2));
+bool operator<(const IpRange &i1, const IpRange &i2) {
+  return (i1.max < i2.min) && (!i1.Contains(i2));
 }
 
 /*
 bool operator> (const iprange &i1, const iprange &i2)
 {
-  return (i1.min < i2.max);
+  return (i1.Min < i2.max);
 }
 */

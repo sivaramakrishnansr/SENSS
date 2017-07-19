@@ -9,16 +9,16 @@
 
 using namespace std;
 
-class records {
+class FlowRecord {
  public:
 
-  void update(const flow &, int, int);
+  void Update(const Flow &, int, int);
 
-  void report(double);
+  void Report(double);
 
-  int size();
+  int Size();
 
-  map<iprange,cell> stats;
+  map<IpRange,Cell> stats;
 };
 
 #endif

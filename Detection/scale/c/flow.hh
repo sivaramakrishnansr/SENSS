@@ -1,12 +1,12 @@
 #ifndef __FLOW_HH
 #define __FLOW_HH
 
-class flow {
+class Flow {
  public:
-  flow() = default;
-  flow(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);
+  Flow() = default;
+  Flow(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);
 
-  void init(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);
+  void Init(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl);
 
   unsigned int saddr = 0, daddr = 0;
   double first, last;
