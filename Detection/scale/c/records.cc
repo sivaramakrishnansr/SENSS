@@ -1,11 +1,4 @@
 #include "records.hh"
-#include "util.hh"
-
-records::records() {
-  stats = new cell *[BINCOUNT];
-  for (int i = 0; i < BINCOUNT; i++)
-    stats[i] = new cell[BINSIZE];
-}
 
 void records::update(const flow &f, int dstours, int recordours) {
   double ps = (f.last - f.first) / PERIOD + 1;
@@ -15,7 +8,7 @@ void records::update(const flow &f, int dstours, int recordours) {
   int isreq;
   if (f.proto == 6) {
     // TCP conns w push get to be counted as successful
-    if (f.flags & 16)
+    if (f.flags & 8)
       isreq = 0;
     else
       isreq = 1;
@@ -29,24 +22,18 @@ void records::update(const flow &f, int dstours, int recordours) {
   }
   if (dstours) {
     // Our destination
-    unsigned int src = min(f.saddr, foreign_mask);
-    unsigned int dst = min(f.daddr, home_mask);
-    int indexes[2][BINCOUNT];
-    for (int i = 0; i < BINCOUNT; i++) {
-      indexes[0][i] = getindex(src, i);
-      indexes[1][i] = getindex(dst, i);
-    }
-
+    iprange srange(min(f.saddr,foreign_mask), max(f.saddr,foreign_mask));
+    iprange drange(min(f.daddr,home_mask), max(f.daddr,home_mask));
     if (recordours) {
       // Our destination, our records, reply pkt
       issrc = 0;
       for (int i = 0; i < BINCOUNT; i++) {
-        stats[i][indexes[1][i]].add(issrc, isreq, pkts, bytes);
+        stats[drange].add(issrc, isreq, pkts, bytes);
       }
     } else {
       // Our destination, foreign records, reply pkt
       issrc = 1;
-      //stats[srange].add(issrc, isreq, pkts, bytes);
+      stats[srange].add(issrc, isreq, pkts, bytes);
     }
   } else {
     // Our source
@@ -55,11 +42,11 @@ void records::update(const flow &f, int dstours, int recordours) {
     if (recordours) {
       // Our source, our records
       issrc = 1;
-      //stats[srange].add(issrc, isreq, pkts, bytes);
+      stats[srange].add(issrc, isreq, pkts, bytes);
     } else {
       // Our source, foreign records
       issrc = 0;
-      //stats[drange].add(issrc, isreq, pkts, bytes);
+      stats[drange].add(issrc, isreq, pkts, bytes);
     }
   }
 }

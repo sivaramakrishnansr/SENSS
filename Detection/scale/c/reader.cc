@@ -140,8 +140,8 @@ void loadblocks() {
   string buffer;
   ifstream blockfile;
   blockfile.open("blocks", ios::in);
+
   while (getline(blockfile, buffer)) {
-    char copy[255];
     char ip[17];
     int mask;
     int pos = buffer.find("/");

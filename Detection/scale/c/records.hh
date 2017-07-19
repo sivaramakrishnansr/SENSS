@@ -11,7 +11,6 @@ using namespace std;
 
 class records {
  public:
-  records();
 
   void update(const flow &, int, int);
 
@@ -19,7 +18,7 @@ class records {
 
   int size();
 
-  cell **stats;
+  map<iprange,cell> stats;
 };
 
 #endif
