@@ -1,9 +1,7 @@
 #ifndef __UTIL_HH
 #define __UTIL_HH
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstring>
 #include <string>
 #include <sstream>
 #include <iomanip>

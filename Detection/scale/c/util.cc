@@ -8,11 +8,12 @@ void InitServicesSet() {
   string line;
   while(ifs.good()){
     getline(ifs, line);
+    //Skip if the line begins with # i.e. a comment
+    if(line[0] == '#'){
+      continue;
+    }
     stringstream ss(line);
     while(getline(ss, line, '\t')){
-      if(line[0] == '#'){
-        break;
-      }
       if((isdigit(line[0])) && (line.find("udp") != string::npos || line.find("tcp") != string::npos)){
         service.insert(stoi(line));
         break;
