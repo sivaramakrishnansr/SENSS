@@ -1,6 +1,5 @@
 #include "cell.hh"
 
-#include <stdio.h>
 
 
 Cell::Cell() {
@@ -14,8 +13,11 @@ void Cell::Add(int i, int j, int p, int b) {
   Gpkts[i][j] += p / 1000000000.0;
 }
 
-const char *Cell::ToString() {
-  sprintf(output, "%lf (%lf) %lf (%lf) %lf (%lf) %lf (%lf)", Gpkts[0][0], Gbytes[0][0], Gpkts[0][1], Gbytes[0][1],
-          Gpkts[1][0], Gbytes[1][0], Gpkts[1][1], Gbytes[1][1]);
+std::string Cell::ToString() {
+  for(int i = 0; i < 2; i++){
+    for(int j = 0; j < 2; j++){
+      output += std::to_string(Gpkts[i][j]) + " " + std::to_string(Gbytes[i][j]) + " ";
+    }
+  }
   return output;
 }
