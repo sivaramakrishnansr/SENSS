@@ -1,0 +1,30 @@
+syntax = "proto3";
+package Collector;
+
+message FlowStats{
+	repeated FlowKeyValue entries = 1;
+}
+message FlowKeyValue{
+	IpRange key = 1;
+	Vector value = 2;
+}
+
+message IpRange{
+	uint32 min = 1;
+	uint32 max = 2;
+}
+
+message Vector{
+	repeated Record record = 1;
+}
+
+message Record{
+	map<string, Cell> record_elem = 1;
+}
+
+message Cell{
+	int32 rows = 2;
+	int32 cols = 3;
+	repeated double data = 4 [packed=true];
+	repeated string output = 1;
+}
