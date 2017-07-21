@@ -1,5 +1,5 @@
 #include <fstream>
-#include "util.hh"
+#include "util.h"
 
 set<int> service;
 

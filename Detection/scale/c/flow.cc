@@ -1,4 +1,4 @@
-#include "flow.hh"
+#include "flow.h"
 
 
 Flow::Flow(int p, int b, double f, double l, unsigned int s, unsigned int d, int sp, int dp, int pr, int fl) {

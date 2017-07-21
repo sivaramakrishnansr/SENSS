@@ -1,15 +1,17 @@
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <iostream>
 #include <fstream>
 #include <map>
 #include <math.h>
-#include <zconf.h>
-#include "iprange.hh"
-#include "records.hh"
-#include "util.hh"
+#include "reader.h"
+#include "records.h"
+#include "util.h"
 
 using namespace std;
 
-map<IpRange, int> blocks;
+
 const int CHUNK = 10;
 
 Flow flows[CHUNK];
@@ -24,7 +26,7 @@ double curT = 0, prevT = 0;
 This way we can find the most frequent time and only
 process flows related to it */
 
-void ProcessFlow(Flow f) {
+void Reader::ProcessFlowHelper(Flow f) {
   int mask = 32;
   IpRange srange(Min(f.saddr, mask), Max(f.saddr, mask));
   IpRange drange(Min(f.daddr, mask), Max(f.daddr, mask));
@@ -47,12 +49,12 @@ void ProcessFlow(Flow f) {
     both++;
 }
 
-void Report(double time) {
+void Reader::Report(double time) {
   home.Report(time);
   foreign.Report(time);
 }
 
-void ReProcess() {
+void Reader::ProcessFlow() {
   int max = 0;
   double maxT = 0;
 
@@ -77,13 +79,13 @@ void ReProcess() {
       // Fully process, this is the last second
     else if ((flows[i].first <= curT && flows[i].last <= curT) ||
         (flows[i].first <= prevT && flows[i].last <= prevT)) {
-      ProcessFlow(flows[i]);
+      ProcessFlowHelper(flows[i]);
     }
       // Partially process, drop to save space
     else if ((flows[i].first <= curT && flows[i].last > curT) ||
         (flows[i].first <= prevT && flows[i].last > prevT)) {
       //TODO: should really keep for at least a while
-      ProcessFlow(flows[i]);
+      ProcessFlowHelper(flows[i]);
       //flows[start++] = flows[i];
     }
       // Don't process, keep
@@ -98,7 +100,7 @@ void ReProcess() {
   }
 }
 
-void Process(char *buffer) {
+void Reader::ReadFlow(char *buffer) {
 
   int sport = 0, dport = 0, prot = 0, flags = 0, pkts = 0, bytes = 0, i = 0;
   double first = 0, last = 0;
@@ -129,13 +131,11 @@ void Process(char *buffer) {
   flows[numflows++].Init(pkts, bytes, first, last, saddr, daddr, sport, dport, prot, flags);
 
   if (numflows == CHUNK) {
-    ReProcess();
+    ProcessFlow();
   }
 }
 
-
-
-void LoadBlocks() {
+void Reader::LoadBlocks() {
   string buffer;
   ifstream blockfile;
   blockfile.open("blocks", ios::in);
@@ -161,23 +161,47 @@ void LoadBlocks() {
       blocks[range] = 1;
     }
   }
+}
+// Connect the client to the server whose address is specified by servaddr
+int Reader::ConnectClient(const char * servaddr){
 
+
+  int clifd, r, len;
+  struct sockaddr_un remote;
+  remote.sun_family = AF_UNIX;
+  strcpy(remote.sun_path, kServerAddress);
+  len = strlen(remote.sun_path) + sizeof(remote.sun_family);
+
+  clifd = socket(AF_UNIX, SOCK_STREAM, 0);
+  if(clifd < 0) {
+    perror("client socket");
+    return -1;
+  }
+
+  r = connect(clifd, (struct sockaddr *)&remote, len);
+  if(r < 0){
+    perror("client connect");
+    return -1;
+  }
+
+  return clifd;
 }
 
 int main() {
   // Read in blocks
-  LoadBlocks();
+  Reader reader;
+  reader.LoadBlocks();
   // Initialise services set
   InitServicesSet();
   // Print them out just for kicks
 
-  for (map<IpRange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
-    printf("Block %u %u\n", it->first.min, it->first.max);
-  }
+//  for (map<IpRange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
+//    printf("Block %u %u\n", it->first.min, it->first.max);
+//  }
 
   char buffer[256];
   while (fgets(buffer, 255, stdin)) {
-    Process(buffer);
+    reader.ReadFlow(buffer);
   }
   printf("Ours %d ourd %d neither %d both %d\n", ours, ourd, neither, both);
 }

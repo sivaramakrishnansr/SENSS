@@ -1,4 +1,4 @@
-#include "iprange.hh"
+#include "iprange.h"
 
 IpRange::IpRange(unsigned int a, unsigned int b) {
   min = a;

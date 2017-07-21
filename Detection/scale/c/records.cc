@@ -1,5 +1,7 @@
-#include "records.hh"
-#include "util.hh"
+
+#include "records.h"
+#include "map.pb.h"
+#include "util.h"
 
 
 void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
@@ -64,8 +66,8 @@ void FlowRecord::Report(double time) {
   unsigned int add = IpToInt("207.75.112.0");
   IpRange range(Min(add, 24), Max(add, 24));
   if (stats.find(range) != stats.end()) {
-    const char *co = stats[range].ToString();
-    printf("%lf For 207.75.112.0 stats are %s\n", time, co);
+    string co = stats[range].ToString();
+    printf("%lf For 207.75.112.0 stats are %s\n", time, co.c_str());
   }
   // This should stay
   stats.clear();

@@ -28,11 +28,9 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
-#include <google/protobuf/map.h>  // IWYU pragma: export
-#include <google/protobuf/map_field_inl.h>
 #include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
-namespace Collector {
+namespace Detection {
 class Cell;
 class CellDefaultTypeInternal;
 extern CellDefaultTypeInternal _Cell_default_instance_;
@@ -45,18 +43,9 @@ extern FlowStatsDefaultTypeInternal _FlowStats_default_instance_;
 class IpRange;
 class IpRangeDefaultTypeInternal;
 extern IpRangeDefaultTypeInternal _IpRange_default_instance_;
-class Record;
-class RecordDefaultTypeInternal;
-extern RecordDefaultTypeInternal _Record_default_instance_;
-class Record_RecordElemEntry;
-class Record_RecordElemEntryDefaultTypeInternal;
-extern Record_RecordElemEntryDefaultTypeInternal _Record_RecordElemEntry_default_instance_;
-class Vector;
-class VectorDefaultTypeInternal;
-extern VectorDefaultTypeInternal _Vector_default_instance_;
-}  // namespace Collector
+}  // namespace Detection
 
-namespace Collector {
+namespace Detection {
 
 namespace protobuf_map_2eproto {
 // Internal implementation detail -- do not call these.
@@ -74,7 +63,7 @@ void InitDefaults();
 
 // ===================================================================
 
-class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.FlowStats) */ {
+class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowStats) */ {
  public:
   FlowStats();
   virtual ~FlowStats();
@@ -138,29 +127,29 @@ class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point
 
   // accessors -------------------------------------------------------
 
-  // repeated .Collector.FlowKeyValue entries = 1;
+  // repeated .Detection.FlowKeyValue entries = 1;
   int entries_size() const;
   void clear_entries();
   static const int kEntriesFieldNumber = 1;
-  const ::Collector::FlowKeyValue& entries(int index) const;
-  ::Collector::FlowKeyValue* mutable_entries(int index);
-  ::Collector::FlowKeyValue* add_entries();
-  ::google::protobuf::RepeatedPtrField< ::Collector::FlowKeyValue >*
+  const ::Detection::FlowKeyValue& entries(int index) const;
+  ::Detection::FlowKeyValue* mutable_entries(int index);
+  ::Detection::FlowKeyValue* add_entries();
+  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
       mutable_entries();
-  const ::google::protobuf::RepeatedPtrField< ::Collector::FlowKeyValue >&
+  const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
       entries() const;
 
-  // @@protoc_insertion_point(class_scope:Collector.FlowStats)
+  // @@protoc_insertion_point(class_scope:Detection.FlowStats)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::Collector::FlowKeyValue > entries_;
+  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue > entries_;
   mutable int _cached_size_;
   friend struct protobuf_map_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
 
-class FlowKeyValue : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.FlowKeyValue) */ {
+class FlowKeyValue : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowKeyValue) */ {
  public:
   FlowKeyValue();
   virtual ~FlowKeyValue();
@@ -224,36 +213,36 @@ class FlowKeyValue : public ::google::protobuf::Message /* @@protoc_insertion_po
 
   // accessors -------------------------------------------------------
 
-  // .Collector.IpRange key = 1;
+  // .Detection.IpRange key = 1;
   bool has_key() const;
   void clear_key();
   static const int kKeyFieldNumber = 1;
-  const ::Collector::IpRange& key() const;
-  ::Collector::IpRange* mutable_key();
-  ::Collector::IpRange* release_key();
-  void set_allocated_key(::Collector::IpRange* key);
+  const ::Detection::IpRange& key() const;
+  ::Detection::IpRange* mutable_key();
+  ::Detection::IpRange* release_key();
+  void set_allocated_key(::Detection::IpRange* key);
 
-  // .Collector.Vector value = 2;
+  // .Detection.Cell value = 2;
   bool has_value() const;
   void clear_value();
   static const int kValueFieldNumber = 2;
-  const ::Collector::Vector& value() const;
-  ::Collector::Vector* mutable_value();
-  ::Collector::Vector* release_value();
-  void set_allocated_value(::Collector::Vector* value);
+  const ::Detection::Cell& value() const;
+  ::Detection::Cell* mutable_value();
+  ::Detection::Cell* release_value();
+  void set_allocated_value(::Detection::Cell* value);
 
-  // @@protoc_insertion_point(class_scope:Collector.FlowKeyValue)
+  // @@protoc_insertion_point(class_scope:Detection.FlowKeyValue)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::Collector::IpRange* key_;
-  ::Collector::Vector* value_;
+  ::Detection::IpRange* key_;
+  ::Detection::Cell* value_;
   mutable int _cached_size_;
   friend struct protobuf_map_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
 
-class IpRange : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.IpRange) */ {
+class IpRange : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.IpRange) */ {
  public:
   IpRange();
   virtual ~IpRange();
@@ -329,7 +318,7 @@ class IpRange : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::uint32 max() const;
   void set_max(::google::protobuf::uint32 value);
 
-  // @@protoc_insertion_point(class_scope:Collector.IpRange)
+  // @@protoc_insertion_point(class_scope:Detection.IpRange)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -340,205 +329,7 @@ class IpRange : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 };
 // -------------------------------------------------------------------
 
-class Vector : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.Vector) */ {
- public:
-  Vector();
-  virtual ~Vector();
-
-  Vector(const Vector& from);
-
-  inline Vector& operator=(const Vector& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const Vector& default_instance();
-
-  static inline const Vector* internal_default_instance() {
-    return reinterpret_cast<const Vector*>(
-               &_Vector_default_instance_);
-  }
-  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    3;
-
-  void Swap(Vector* other);
-
-  // implements Message ----------------------------------------------
-
-  inline Vector* New() const PROTOBUF_FINAL { return New(NULL); }
-
-  Vector* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const Vector& from);
-  void MergeFrom(const Vector& from);
-  void Clear() PROTOBUF_FINAL;
-  bool IsInitialized() const PROTOBUF_FINAL;
-
-  size_t ByteSizeLong() const PROTOBUF_FINAL;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
-  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(Vector* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return NULL;
-  }
-  inline void* MaybeArenaPtr() const {
-    return NULL;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // repeated .Collector.Record record = 1;
-  int record_size() const;
-  void clear_record();
-  static const int kRecordFieldNumber = 1;
-  const ::Collector::Record& record(int index) const;
-  ::Collector::Record* mutable_record(int index);
-  ::Collector::Record* add_record();
-  ::google::protobuf::RepeatedPtrField< ::Collector::Record >*
-      mutable_record();
-  const ::google::protobuf::RepeatedPtrField< ::Collector::Record >&
-      record() const;
-
-  // @@protoc_insertion_point(class_scope:Collector.Vector)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::Collector::Record > record_;
-  mutable int _cached_size_;
-  friend struct protobuf_map_2eproto::TableStruct;
-};
-// -------------------------------------------------------------------
-
-
-// -------------------------------------------------------------------
-
-class Record : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.Record) */ {
- public:
-  Record();
-  virtual ~Record();
-
-  Record(const Record& from);
-
-  inline Record& operator=(const Record& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const Record& default_instance();
-
-  static inline const Record* internal_default_instance() {
-    return reinterpret_cast<const Record*>(
-               &_Record_default_instance_);
-  }
-  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    5;
-
-  void Swap(Record* other);
-
-  // implements Message ----------------------------------------------
-
-  inline Record* New() const PROTOBUF_FINAL { return New(NULL); }
-
-  Record* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const Record& from);
-  void MergeFrom(const Record& from);
-  void Clear() PROTOBUF_FINAL;
-  bool IsInitialized() const PROTOBUF_FINAL;
-
-  size_t ByteSizeLong() const PROTOBUF_FINAL;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
-  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(Record* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
-    return NULL;
-  }
-  inline void* MaybeArenaPtr() const {
-    return NULL;
-  }
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
-
-  // nested types ----------------------------------------------------
-
-
-  // accessors -------------------------------------------------------
-
-  // map<string, .Collector.Cell> record_elem = 1;
-  int record_elem_size() const;
-  void clear_record_elem();
-  static const int kRecordElemFieldNumber = 1;
-  const ::google::protobuf::Map< ::std::string, ::Collector::Cell >&
-      record_elem() const;
-  ::google::protobuf::Map< ::std::string, ::Collector::Cell >*
-      mutable_record_elem();
-
-  // @@protoc_insertion_point(class_scope:Collector.Record)
- private:
-
-  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  public:
-  class Record_RecordElemEntry : public ::google::protobuf::internal::MapEntry<Record_RecordElemEntry, 
-      ::std::string, ::Collector::Cell,
-      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
-      ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-      0 > {
-  public:
-    typedef ::google::protobuf::internal::MapEntry<Record_RecordElemEntry, 
-      ::std::string, ::Collector::Cell,
-      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
-      ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-      0 > SuperType;
-    Record_RecordElemEntry();
-    Record_RecordElemEntry(::google::protobuf::Arena* arena);
-    void MergeFrom(const ::google::protobuf::Message& other) PROTOBUF_FINAL;
-    void MergeFrom(const Record_RecordElemEntry& other);
-    static const Message* internal_default_instance() { return reinterpret_cast<const Message*>(&_Record_RecordElemEntry_default_instance_); }
-    ::google::protobuf::Metadata GetMetadata() const;
-  };
-  ::google::protobuf::internal::MapField<
-      Record_RecordElemEntry,
-      ::std::string, ::Collector::Cell,
-      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
-      ::google::protobuf::internal::WireFormatLite::TYPE_MESSAGE,
-      0 > record_elem_;
-  private:
-  mutable int _cached_size_;
-  friend struct protobuf_map_2eproto::TableStruct;
-};
-// -------------------------------------------------------------------
-
-class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Collector.Cell) */ {
+class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.Cell) */ {
  public:
   Cell();
   virtual ~Cell();
@@ -558,7 +349,7 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
                &_Cell_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    6;
+    3;
 
   void Swap(Cell* other);
 
@@ -648,7 +439,7 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   ::google::protobuf::int32 cols() const;
   void set_cols(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:Collector.Cell)
+  // @@protoc_insertion_point(class_scope:Detection.Cell)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -668,33 +459,33 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // FlowStats
 
-// repeated .Collector.FlowKeyValue entries = 1;
+// repeated .Detection.FlowKeyValue entries = 1;
 inline int FlowStats::entries_size() const {
   return entries_.size();
 }
 inline void FlowStats::clear_entries() {
   entries_.Clear();
 }
-inline const ::Collector::FlowKeyValue& FlowStats::entries(int index) const {
-  // @@protoc_insertion_point(field_get:Collector.FlowStats.entries)
+inline const ::Detection::FlowKeyValue& FlowStats::entries(int index) const {
+  // @@protoc_insertion_point(field_get:Detection.FlowStats.entries)
   return entries_.Get(index);
 }
-inline ::Collector::FlowKeyValue* FlowStats::mutable_entries(int index) {
-  // @@protoc_insertion_point(field_mutable:Collector.FlowStats.entries)
+inline ::Detection::FlowKeyValue* FlowStats::mutable_entries(int index) {
+  // @@protoc_insertion_point(field_mutable:Detection.FlowStats.entries)
   return entries_.Mutable(index);
 }
-inline ::Collector::FlowKeyValue* FlowStats::add_entries() {
-  // @@protoc_insertion_point(field_add:Collector.FlowStats.entries)
+inline ::Detection::FlowKeyValue* FlowStats::add_entries() {
+  // @@protoc_insertion_point(field_add:Detection.FlowStats.entries)
   return entries_.Add();
 }
-inline ::google::protobuf::RepeatedPtrField< ::Collector::FlowKeyValue >*
+inline ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
 FlowStats::mutable_entries() {
-  // @@protoc_insertion_point(field_mutable_list:Collector.FlowStats.entries)
+  // @@protoc_insertion_point(field_mutable_list:Detection.FlowStats.entries)
   return &entries_;
 }
-inline const ::google::protobuf::RepeatedPtrField< ::Collector::FlowKeyValue >&
+inline const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
 FlowStats::entries() const {
-  // @@protoc_insertion_point(field_list:Collector.FlowStats.entries)
+  // @@protoc_insertion_point(field_list:Detection.FlowStats.entries)
   return entries_;
 }
 
@@ -702,7 +493,7 @@ FlowStats::entries() const {
 
 // FlowKeyValue
 
-// .Collector.IpRange key = 1;
+// .Detection.IpRange key = 1;
 inline bool FlowKeyValue::has_key() const {
   return this != internal_default_instance() && key_ != NULL;
 }
@@ -710,27 +501,27 @@ inline void FlowKeyValue::clear_key() {
   if (GetArenaNoVirtual() == NULL && key_ != NULL) delete key_;
   key_ = NULL;
 }
-inline const ::Collector::IpRange& FlowKeyValue::key() const {
-  // @@protoc_insertion_point(field_get:Collector.FlowKeyValue.key)
+inline const ::Detection::IpRange& FlowKeyValue::key() const {
+  // @@protoc_insertion_point(field_get:Detection.FlowKeyValue.key)
   return key_ != NULL ? *key_
-                         : *::Collector::IpRange::internal_default_instance();
+                         : *::Detection::IpRange::internal_default_instance();
 }
-inline ::Collector::IpRange* FlowKeyValue::mutable_key() {
+inline ::Detection::IpRange* FlowKeyValue::mutable_key() {
   
   if (key_ == NULL) {
-    key_ = new ::Collector::IpRange;
+    key_ = new ::Detection::IpRange;
   }
-  // @@protoc_insertion_point(field_mutable:Collector.FlowKeyValue.key)
+  // @@protoc_insertion_point(field_mutable:Detection.FlowKeyValue.key)
   return key_;
 }
-inline ::Collector::IpRange* FlowKeyValue::release_key() {
-  // @@protoc_insertion_point(field_release:Collector.FlowKeyValue.key)
+inline ::Detection::IpRange* FlowKeyValue::release_key() {
+  // @@protoc_insertion_point(field_release:Detection.FlowKeyValue.key)
   
-  ::Collector::IpRange* temp = key_;
+  ::Detection::IpRange* temp = key_;
   key_ = NULL;
   return temp;
 }
-inline void FlowKeyValue::set_allocated_key(::Collector::IpRange* key) {
+inline void FlowKeyValue::set_allocated_key(::Detection::IpRange* key) {
   delete key_;
   key_ = key;
   if (key) {
@@ -738,10 +529,10 @@ inline void FlowKeyValue::set_allocated_key(::Collector::IpRange* key) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:Collector.FlowKeyValue.key)
+  // @@protoc_insertion_point(field_set_allocated:Detection.FlowKeyValue.key)
 }
 
-// .Collector.Vector value = 2;
+// .Detection.Cell value = 2;
 inline bool FlowKeyValue::has_value() const {
   return this != internal_default_instance() && value_ != NULL;
 }
@@ -749,27 +540,27 @@ inline void FlowKeyValue::clear_value() {
   if (GetArenaNoVirtual() == NULL && value_ != NULL) delete value_;
   value_ = NULL;
 }
-inline const ::Collector::Vector& FlowKeyValue::value() const {
-  // @@protoc_insertion_point(field_get:Collector.FlowKeyValue.value)
+inline const ::Detection::Cell& FlowKeyValue::value() const {
+  // @@protoc_insertion_point(field_get:Detection.FlowKeyValue.value)
   return value_ != NULL ? *value_
-                         : *::Collector::Vector::internal_default_instance();
+                         : *::Detection::Cell::internal_default_instance();
 }
-inline ::Collector::Vector* FlowKeyValue::mutable_value() {
+inline ::Detection::Cell* FlowKeyValue::mutable_value() {
   
   if (value_ == NULL) {
-    value_ = new ::Collector::Vector;
+    value_ = new ::Detection::Cell;
   }
-  // @@protoc_insertion_point(field_mutable:Collector.FlowKeyValue.value)
+  // @@protoc_insertion_point(field_mutable:Detection.FlowKeyValue.value)
   return value_;
 }
-inline ::Collector::Vector* FlowKeyValue::release_value() {
-  // @@protoc_insertion_point(field_release:Collector.FlowKeyValue.value)
+inline ::Detection::Cell* FlowKeyValue::release_value() {
+  // @@protoc_insertion_point(field_release:Detection.FlowKeyValue.value)
   
-  ::Collector::Vector* temp = value_;
+  ::Detection::Cell* temp = value_;
   value_ = NULL;
   return temp;
 }
-inline void FlowKeyValue::set_allocated_value(::Collector::Vector* value) {
+inline void FlowKeyValue::set_allocated_value(::Detection::Cell* value) {
   delete value_;
   value_ = value;
   if (value) {
@@ -777,7 +568,7 @@ inline void FlowKeyValue::set_allocated_value(::Collector::Vector* value) {
   } else {
     
   }
-  // @@protoc_insertion_point(field_set_allocated:Collector.FlowKeyValue.value)
+  // @@protoc_insertion_point(field_set_allocated:Detection.FlowKeyValue.value)
 }
 
 // -------------------------------------------------------------------
@@ -789,13 +580,13 @@ inline void IpRange::clear_min() {
   min_ = 0u;
 }
 inline ::google::protobuf::uint32 IpRange::min() const {
-  // @@protoc_insertion_point(field_get:Collector.IpRange.min)
+  // @@protoc_insertion_point(field_get:Detection.IpRange.min)
   return min_;
 }
 inline void IpRange::set_min(::google::protobuf::uint32 value) {
   
   min_ = value;
-  // @@protoc_insertion_point(field_set:Collector.IpRange.min)
+  // @@protoc_insertion_point(field_set:Detection.IpRange.min)
 }
 
 // uint32 max = 2;
@@ -803,71 +594,13 @@ inline void IpRange::clear_max() {
   max_ = 0u;
 }
 inline ::google::protobuf::uint32 IpRange::max() const {
-  // @@protoc_insertion_point(field_get:Collector.IpRange.max)
+  // @@protoc_insertion_point(field_get:Detection.IpRange.max)
   return max_;
 }
 inline void IpRange::set_max(::google::protobuf::uint32 value) {
   
   max_ = value;
-  // @@protoc_insertion_point(field_set:Collector.IpRange.max)
-}
-
-// -------------------------------------------------------------------
-
-// Vector
-
-// repeated .Collector.Record record = 1;
-inline int Vector::record_size() const {
-  return record_.size();
-}
-inline void Vector::clear_record() {
-  record_.Clear();
-}
-inline const ::Collector::Record& Vector::record(int index) const {
-  // @@protoc_insertion_point(field_get:Collector.Vector.record)
-  return record_.Get(index);
-}
-inline ::Collector::Record* Vector::mutable_record(int index) {
-  // @@protoc_insertion_point(field_mutable:Collector.Vector.record)
-  return record_.Mutable(index);
-}
-inline ::Collector::Record* Vector::add_record() {
-  // @@protoc_insertion_point(field_add:Collector.Vector.record)
-  return record_.Add();
-}
-inline ::google::protobuf::RepeatedPtrField< ::Collector::Record >*
-Vector::mutable_record() {
-  // @@protoc_insertion_point(field_mutable_list:Collector.Vector.record)
-  return &record_;
-}
-inline const ::google::protobuf::RepeatedPtrField< ::Collector::Record >&
-Vector::record() const {
-  // @@protoc_insertion_point(field_list:Collector.Vector.record)
-  return record_;
-}
-
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
-// Record
-
-// map<string, .Collector.Cell> record_elem = 1;
-inline int Record::record_elem_size() const {
-  return record_elem_.size();
-}
-inline void Record::clear_record_elem() {
-  record_elem_.Clear();
-}
-inline const ::google::protobuf::Map< ::std::string, ::Collector::Cell >&
-Record::record_elem() const {
-  // @@protoc_insertion_point(field_map:Collector.Record.record_elem)
-  return record_elem_.GetMap();
-}
-inline ::google::protobuf::Map< ::std::string, ::Collector::Cell >*
-Record::mutable_record_elem() {
-  // @@protoc_insertion_point(field_mutable_map:Collector.Record.record_elem)
-  return record_elem_.MutableMap();
+  // @@protoc_insertion_point(field_set:Detection.IpRange.max)
 }
 
 // -------------------------------------------------------------------
@@ -879,13 +612,13 @@ inline void Cell::clear_rows() {
   rows_ = 0;
 }
 inline ::google::protobuf::int32 Cell::rows() const {
-  // @@protoc_insertion_point(field_get:Collector.Cell.rows)
+  // @@protoc_insertion_point(field_get:Detection.Cell.rows)
   return rows_;
 }
 inline void Cell::set_rows(::google::protobuf::int32 value) {
   
   rows_ = value;
-  // @@protoc_insertion_point(field_set:Collector.Cell.rows)
+  // @@protoc_insertion_point(field_set:Detection.Cell.rows)
 }
 
 // int32 cols = 3;
@@ -893,13 +626,13 @@ inline void Cell::clear_cols() {
   cols_ = 0;
 }
 inline ::google::protobuf::int32 Cell::cols() const {
-  // @@protoc_insertion_point(field_get:Collector.Cell.cols)
+  // @@protoc_insertion_point(field_get:Detection.Cell.cols)
   return cols_;
 }
 inline void Cell::set_cols(::google::protobuf::int32 value) {
   
   cols_ = value;
-  // @@protoc_insertion_point(field_set:Collector.Cell.cols)
+  // @@protoc_insertion_point(field_set:Detection.Cell.cols)
 }
 
 // repeated double data = 4 [packed = true];
@@ -910,25 +643,25 @@ inline void Cell::clear_data() {
   data_.Clear();
 }
 inline double Cell::data(int index) const {
-  // @@protoc_insertion_point(field_get:Collector.Cell.data)
+  // @@protoc_insertion_point(field_get:Detection.Cell.data)
   return data_.Get(index);
 }
 inline void Cell::set_data(int index, double value) {
   data_.Set(index, value);
-  // @@protoc_insertion_point(field_set:Collector.Cell.data)
+  // @@protoc_insertion_point(field_set:Detection.Cell.data)
 }
 inline void Cell::add_data(double value) {
   data_.Add(value);
-  // @@protoc_insertion_point(field_add:Collector.Cell.data)
+  // @@protoc_insertion_point(field_add:Detection.Cell.data)
 }
 inline const ::google::protobuf::RepeatedField< double >&
 Cell::data() const {
-  // @@protoc_insertion_point(field_list:Collector.Cell.data)
+  // @@protoc_insertion_point(field_list:Detection.Cell.data)
   return data_;
 }
 inline ::google::protobuf::RepeatedField< double >*
 Cell::mutable_data() {
-  // @@protoc_insertion_point(field_mutable_list:Collector.Cell.data)
+  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.data)
   return &data_;
 }
 
@@ -940,64 +673,64 @@ inline void Cell::clear_output() {
   output_.Clear();
 }
 inline const ::std::string& Cell::output(int index) const {
-  // @@protoc_insertion_point(field_get:Collector.Cell.output)
+  // @@protoc_insertion_point(field_get:Detection.Cell.output)
   return output_.Get(index);
 }
 inline ::std::string* Cell::mutable_output(int index) {
-  // @@protoc_insertion_point(field_mutable:Collector.Cell.output)
+  // @@protoc_insertion_point(field_mutable:Detection.Cell.output)
   return output_.Mutable(index);
 }
 inline void Cell::set_output(int index, const ::std::string& value) {
-  // @@protoc_insertion_point(field_set:Collector.Cell.output)
+  // @@protoc_insertion_point(field_set:Detection.Cell.output)
   output_.Mutable(index)->assign(value);
 }
 #if LANG_CXX11
 inline void Cell::set_output(int index, ::std::string&& value) {
-  // @@protoc_insertion_point(field_set:Collector.Cell.output)
+  // @@protoc_insertion_point(field_set:Detection.Cell.output)
   output_.Mutable(index)->assign(std::move(value));
 }
 #endif
 inline void Cell::set_output(int index, const char* value) {
   GOOGLE_DCHECK(value != NULL);
   output_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:Collector.Cell.output)
+  // @@protoc_insertion_point(field_set_char:Detection.Cell.output)
 }
 inline void Cell::set_output(int index, const char* value, size_t size) {
   output_.Mutable(index)->assign(
     reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:Collector.Cell.output)
+  // @@protoc_insertion_point(field_set_pointer:Detection.Cell.output)
 }
 inline ::std::string* Cell::add_output() {
-  // @@protoc_insertion_point(field_add_mutable:Collector.Cell.output)
+  // @@protoc_insertion_point(field_add_mutable:Detection.Cell.output)
   return output_.Add();
 }
 inline void Cell::add_output(const ::std::string& value) {
   output_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:Collector.Cell.output)
+  // @@protoc_insertion_point(field_add:Detection.Cell.output)
 }
 #if LANG_CXX11
 inline void Cell::add_output(::std::string&& value) {
   output_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:Collector.Cell.output)
+  // @@protoc_insertion_point(field_add:Detection.Cell.output)
 }
 #endif
 inline void Cell::add_output(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   output_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:Collector.Cell.output)
+  // @@protoc_insertion_point(field_add_char:Detection.Cell.output)
 }
 inline void Cell::add_output(const char* value, size_t size) {
   output_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:Collector.Cell.output)
+  // @@protoc_insertion_point(field_add_pointer:Detection.Cell.output)
 }
 inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
 Cell::output() const {
-  // @@protoc_insertion_point(field_list:Collector.Cell.output)
+  // @@protoc_insertion_point(field_list:Detection.Cell.output)
   return output_;
 }
 inline ::google::protobuf::RepeatedPtrField< ::std::string>*
 Cell::mutable_output() {
-  // @@protoc_insertion_point(field_mutable_list:Collector.Cell.output)
+  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.output)
   return &output_;
 }
 
@@ -1008,17 +741,11 @@ Cell::mutable_output() {
 
 // -------------------------------------------------------------------
 
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
-// -------------------------------------------------------------------
-
 
 // @@protoc_insertion_point(namespace_scope)
 
 
-}  // namespace Collector
+}  // namespace Detection
 
 // @@protoc_insertion_point(global_scope)
 

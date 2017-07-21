@@ -2,8 +2,8 @@
 // Created by Abdul Qadeer on 7/19/17.
 //
 
-#include "collector.hh"
-
+#include "collector.h"
+#include "map.pb.h"
 
 void Collector::StartServer() {
 
@@ -20,7 +20,8 @@ void Collector::StartServer() {
   strcpy(local.sun_path, "sock/server");
   unlink(local.sun_path);
   len =  strlen(local.sun_path) + sizeof(local.sun_family);
-  r = bind(serv_fd, (struct sockaddr *)&local, len);
+
+  r = ::bind(serv_fd, (struct sockaddr *)&local, len);
   if(r < 0){
     perror("server bind");
     return;
@@ -58,5 +59,19 @@ void Collector::StartServer() {
 
 void Collector::ProcessClient(int cli_fd){
 
+  size_t i = 0;
+  char buf[8096];
+  size_t r;
+  Detection::FlowStats stats;
+  string binary_data;
+
+//  while((r = read(cli_fd, buf, 1)) > 0){
+//    binary_data.append(buf, r);
+//  }
+  stats.ParseFromFileDescriptor(cli_fd);
+  for(auto i : stats.entries()){
+    cout<<i.key().min();
+  }
 
 }
+
