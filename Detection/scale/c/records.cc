@@ -1,6 +1,4 @@
-
 #include "records.h"
-#include "map.pb.h"
 #include "util.h"
 
 
@@ -59,7 +57,7 @@ int FlowRecord::Size() {
   return 1; //stats.size();
 }
 
-void FlowRecord::Report(double time) {
+void FlowRecord::Report(double time, int clifd) {
   /* TODO: this is just for testing, but instead
      we should read all the records and send over the net
      to the collector */
@@ -69,6 +67,40 @@ void FlowRecord::Report(double time) {
     string co = stats[range].ToString();
     printf("%lf For 207.75.112.0 stats are %s\n", time, co.c_str());
   }
+
+  Detection::FlowStats * to_send = new Detection::FlowStats();
+  PopulateStatsToSend(to_send);
+
+  to_send->SerializeToFileDescriptor(clifd);
   // This should stay
   stats.clear();
+}
+
+/*
+ * Protobuf classes manage their own memory, so no need to use new and delete for allocated pointers
+ */
+void FlowRecord::PopulateStatsToSend(Detection::FlowStats *flow_stats) {
+
+  for(auto it : stats) {
+
+    Detection::FlowKeyValue * flow_key_value = flow_stats->add_entry();
+
+    // Populate IpRange message
+    Detection::IpRange * ip_range = flow_key_value->mutable_key();
+    ip_range->set_max(it.first.max);
+    ip_range->set_min(it.first.min);
+
+    // Populate Cell message
+    Detection::Cell * cell = flow_key_value->mutable_value();
+    cell->set_rows(2);
+    cell->set_cols(2);
+    for(int i = 0; i < 2; i++){
+      for(int j = 0; j < 2; j++){
+        cell->add_bytes(it.second.Gbytes[i][j]);
+        cell->add_pkts(it.second.Gpkts[i][j]);
+      }
+    }
+
+  }
+
 }

@@ -127,23 +127,23 @@ class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point
 
   // accessors -------------------------------------------------------
 
-  // repeated .Detection.FlowKeyValue entries = 1;
-  int entries_size() const;
-  void clear_entries();
-  static const int kEntriesFieldNumber = 1;
-  const ::Detection::FlowKeyValue& entries(int index) const;
-  ::Detection::FlowKeyValue* mutable_entries(int index);
-  ::Detection::FlowKeyValue* add_entries();
+  // repeated .Detection.FlowKeyValue entry = 1;
+  int entry_size() const;
+  void clear_entry();
+  static const int kEntryFieldNumber = 1;
+  const ::Detection::FlowKeyValue& entry(int index) const;
+  ::Detection::FlowKeyValue* mutable_entry(int index);
+  ::Detection::FlowKeyValue* add_entry();
   ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
-      mutable_entries();
+      mutable_entry();
   const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
-      entries() const;
+      entry() const;
 
   // @@protoc_insertion_point(class_scope:Detection.FlowStats)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue > entries_;
+  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue > entry_;
   mutable int _cached_size_;
   friend struct protobuf_map_2eproto::TableStruct;
 };
@@ -415,17 +415,29 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   const ::google::protobuf::RepeatedPtrField< ::std::string>& output() const;
   ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_output();
 
-  // repeated double data = 4 [packed = true];
-  int data_size() const;
-  void clear_data();
-  static const int kDataFieldNumber = 4;
-  double data(int index) const;
-  void set_data(int index, double value);
-  void add_data(double value);
+  // repeated double bytes = 4 [packed = true];
+  int bytes_size() const;
+  void clear_bytes();
+  static const int kBytesFieldNumber = 4;
+  double bytes(int index) const;
+  void set_bytes(int index, double value);
+  void add_bytes(double value);
   const ::google::protobuf::RepeatedField< double >&
-      data() const;
+      bytes() const;
   ::google::protobuf::RepeatedField< double >*
-      mutable_data();
+      mutable_bytes();
+
+  // repeated double pkts = 5 [packed = true];
+  int pkts_size() const;
+  void clear_pkts();
+  static const int kPktsFieldNumber = 5;
+  double pkts(int index) const;
+  void set_pkts(int index, double value);
+  void add_pkts(double value);
+  const ::google::protobuf::RepeatedField< double >&
+      pkts() const;
+  ::google::protobuf::RepeatedField< double >*
+      mutable_pkts();
 
   // int32 rows = 2;
   void clear_rows();
@@ -444,8 +456,10 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::RepeatedPtrField< ::std::string> output_;
-  ::google::protobuf::RepeatedField< double > data_;
-  mutable int _data_cached_byte_size_;
+  ::google::protobuf::RepeatedField< double > bytes_;
+  mutable int _bytes_cached_byte_size_;
+  ::google::protobuf::RepeatedField< double > pkts_;
+  mutable int _pkts_cached_byte_size_;
   ::google::protobuf::int32 rows_;
   ::google::protobuf::int32 cols_;
   mutable int _cached_size_;
@@ -459,34 +473,34 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 #if !PROTOBUF_INLINE_NOT_IN_HEADERS
 // FlowStats
 
-// repeated .Detection.FlowKeyValue entries = 1;
-inline int FlowStats::entries_size() const {
-  return entries_.size();
+// repeated .Detection.FlowKeyValue entry = 1;
+inline int FlowStats::entry_size() const {
+  return entry_.size();
 }
-inline void FlowStats::clear_entries() {
-  entries_.Clear();
+inline void FlowStats::clear_entry() {
+  entry_.Clear();
 }
-inline const ::Detection::FlowKeyValue& FlowStats::entries(int index) const {
-  // @@protoc_insertion_point(field_get:Detection.FlowStats.entries)
-  return entries_.Get(index);
+inline const ::Detection::FlowKeyValue& FlowStats::entry(int index) const {
+  // @@protoc_insertion_point(field_get:Detection.FlowStats.entry)
+  return entry_.Get(index);
 }
-inline ::Detection::FlowKeyValue* FlowStats::mutable_entries(int index) {
-  // @@protoc_insertion_point(field_mutable:Detection.FlowStats.entries)
-  return entries_.Mutable(index);
+inline ::Detection::FlowKeyValue* FlowStats::mutable_entry(int index) {
+  // @@protoc_insertion_point(field_mutable:Detection.FlowStats.entry)
+  return entry_.Mutable(index);
 }
-inline ::Detection::FlowKeyValue* FlowStats::add_entries() {
-  // @@protoc_insertion_point(field_add:Detection.FlowStats.entries)
-  return entries_.Add();
+inline ::Detection::FlowKeyValue* FlowStats::add_entry() {
+  // @@protoc_insertion_point(field_add:Detection.FlowStats.entry)
+  return entry_.Add();
 }
 inline ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
-FlowStats::mutable_entries() {
-  // @@protoc_insertion_point(field_mutable_list:Detection.FlowStats.entries)
-  return &entries_;
+FlowStats::mutable_entry() {
+  // @@protoc_insertion_point(field_mutable_list:Detection.FlowStats.entry)
+  return &entry_;
 }
 inline const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
-FlowStats::entries() const {
-  // @@protoc_insertion_point(field_list:Detection.FlowStats.entries)
-  return entries_;
+FlowStats::entry() const {
+  // @@protoc_insertion_point(field_list:Detection.FlowStats.entry)
+  return entry_;
 }
 
 // -------------------------------------------------------------------
@@ -635,34 +649,64 @@ inline void Cell::set_cols(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:Detection.Cell.cols)
 }
 
-// repeated double data = 4 [packed = true];
-inline int Cell::data_size() const {
-  return data_.size();
+// repeated double bytes = 4 [packed = true];
+inline int Cell::bytes_size() const {
+  return bytes_.size();
 }
-inline void Cell::clear_data() {
-  data_.Clear();
+inline void Cell::clear_bytes() {
+  bytes_.Clear();
 }
-inline double Cell::data(int index) const {
-  // @@protoc_insertion_point(field_get:Detection.Cell.data)
-  return data_.Get(index);
+inline double Cell::bytes(int index) const {
+  // @@protoc_insertion_point(field_get:Detection.Cell.bytes)
+  return bytes_.Get(index);
 }
-inline void Cell::set_data(int index, double value) {
-  data_.Set(index, value);
-  // @@protoc_insertion_point(field_set:Detection.Cell.data)
+inline void Cell::set_bytes(int index, double value) {
+  bytes_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Detection.Cell.bytes)
 }
-inline void Cell::add_data(double value) {
-  data_.Add(value);
-  // @@protoc_insertion_point(field_add:Detection.Cell.data)
+inline void Cell::add_bytes(double value) {
+  bytes_.Add(value);
+  // @@protoc_insertion_point(field_add:Detection.Cell.bytes)
 }
 inline const ::google::protobuf::RepeatedField< double >&
-Cell::data() const {
-  // @@protoc_insertion_point(field_list:Detection.Cell.data)
-  return data_;
+Cell::bytes() const {
+  // @@protoc_insertion_point(field_list:Detection.Cell.bytes)
+  return bytes_;
 }
 inline ::google::protobuf::RepeatedField< double >*
-Cell::mutable_data() {
-  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.data)
-  return &data_;
+Cell::mutable_bytes() {
+  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.bytes)
+  return &bytes_;
+}
+
+// repeated double pkts = 5 [packed = true];
+inline int Cell::pkts_size() const {
+  return pkts_.size();
+}
+inline void Cell::clear_pkts() {
+  pkts_.Clear();
+}
+inline double Cell::pkts(int index) const {
+  // @@protoc_insertion_point(field_get:Detection.Cell.pkts)
+  return pkts_.Get(index);
+}
+inline void Cell::set_pkts(int index, double value) {
+  pkts_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Detection.Cell.pkts)
+}
+inline void Cell::add_pkts(double value) {
+  pkts_.Add(value);
+  // @@protoc_insertion_point(field_add:Detection.Cell.pkts)
+}
+inline const ::google::protobuf::RepeatedField< double >&
+Cell::pkts() const {
+  // @@protoc_insertion_point(field_list:Detection.Cell.pkts)
+  return pkts_;
+}
+inline ::google::protobuf::RepeatedField< double >*
+Cell::mutable_pkts() {
+  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.pkts)
+  return &pkts_;
 }
 
 // repeated string output = 1;

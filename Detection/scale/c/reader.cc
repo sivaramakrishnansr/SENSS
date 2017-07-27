@@ -50,8 +50,10 @@ void Reader::ProcessFlowHelper(Flow f) {
 }
 
 void Reader::Report(double time) {
-  home.Report(time);
-  foreign.Report(time);
+
+  int clifd = ConnectClient(kServerAddress);
+  home.Report(time, clifd);
+  foreign.Report(time, clifd);
 }
 
 void Reader::ProcessFlow() {
@@ -106,9 +108,9 @@ void Reader::ReadFlow(char *buffer) {
   double first = 0, last = 0;
   char *p = strtok(buffer, ",");
   char *field[10];
-  while (!p) {
+  while (p) {
     field[i++] = p;
-    p = strtok(buffer, ",");
+    p = strtok(NULL, ",");
   }
 
   // Work with first and last, rounded down using period
@@ -199,10 +201,18 @@ int main() {
 //    printf("Block %u %u\n", it->first.min, it->first.max);
 //  }
 
+  // Verify that the version of the library that we linked against is
+  // compatible with the version of the headers we compiled against.
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+
   char buffer[256];
-  while (fgets(buffer, 255, stdin)) {
+  FILE * fp = fopen("data/test", "r");
+  while (fgets(buffer, 255, fp)) {
+    if(buffer[0] == '#')
+      continue;
     reader.ReadFlow(buffer);
   }
+  reader.ReadFlow(buffer);
   printf("Ours %d ourd %d neither %d both %d\n", ours, ourd, neither, both);
 }
 

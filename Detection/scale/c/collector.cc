@@ -69,7 +69,7 @@ void Collector::ProcessClient(int cli_fd){
 //    binary_data.append(buf, r);
 //  }
   stats.ParseFromFileDescriptor(cli_fd);
-  for(auto i : stats.entries()){
+  for(auto i : stats.entry()){
     cout<<i.key().min();
   }
 
