@@ -12,7 +12,10 @@
 
 class Reader{
 
+
+
  public:
+  static int clifd;
   std::map<IpRange, int> blocks;
 
   void ReadFlow(char *buffer);
@@ -20,7 +23,7 @@ class Reader{
   void Report(double time);
   void ProcessFlowHelper(Flow f);
   void LoadBlocks();
-  int ConnectClient(const char * servaddr);
+  void ConnectClient(const char * servaddr);
 };
 
 #endif //SENSS_READER_H

@@ -19,8 +19,8 @@ class Cell {
 
   std::string ToString();
 
-  double Gbytes[2][2];
-  double Gpkts[2][2];
+  double bytes[2][2];
+  double pkts[2][2];
   std::string output;
 };
 

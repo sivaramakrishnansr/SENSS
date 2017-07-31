@@ -60,6 +60,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FlowStats, entry_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FlowStats, time_),
   ~0u,  // no _has_bits_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FlowKeyValue, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -79,7 +80,6 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Cell, rows_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Cell, cols_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Cell, bytes_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Cell, pkts_),
@@ -88,9 +88,9 @@ const ::google::protobuf::uint32 TableStruct::offsets[] = {
 
 static const ::google::protobuf::internal::MigrationSchema schemas[] = {
   { 0, -1, sizeof(FlowStats)},
-  { 6, -1, sizeof(FlowKeyValue)},
-  { 13, -1, sizeof(IpRange)},
-  { 20, -1, sizeof(Cell)},
+  { 7, -1, sizeof(FlowKeyValue)},
+  { 14, -1, sizeof(IpRange)},
+  { 21, -1, sizeof(Cell)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -155,13 +155,13 @@ void InitDefaults() {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] = {
-      "\n\tmap.proto\022\tDetection\"3\n\tFlowStats\022&\n\005e"
-      "ntry\030\001 \003(\0132\027.Detection.FlowKeyValue\"O\n\014F"
-      "lowKeyValue\022\037\n\003key\030\001 \001(\0132\022.Detection.IpR"
-      "ange\022\036\n\005value\030\002 \001(\0132\017.Detection.Cell\"#\n\007"
-      "IpRange\022\013\n\003min\030\001 \001(\r\022\013\n\003max\030\002 \001(\r\"W\n\004Cel"
-      "l\022\014\n\004rows\030\002 \001(\005\022\014\n\004cols\030\003 \001(\005\022\021\n\005bytes\030\004"
-      " \003(\001B\002\020\001\022\020\n\004pkts\030\005 \003(\001B\002\020\001\022\016\n\006output\030\001 \003"
+      "\n\tmap.proto\022\tDetection\"A\n\tFlowStats\022&\n\005e"
+      "ntry\030\001 \003(\0132\027.Detection.FlowKeyValue\022\014\n\004t"
+      "ime\030\002 \001(\001\"O\n\014FlowKeyValue\022\037\n\003key\030\001 \001(\0132\022"
+      ".Detection.IpRange\022\036\n\005value\030\002 \001(\0132\017.Dete"
+      "ction.Cell\"#\n\007IpRange\022\013\n\003min\030\001 \001(\r\022\013\n\003ma"
+      "x\030\002 \001(\r\"I\n\004Cell\022\014\n\004cols\030\003 \001(\005\022\021\n\005bytes\030\004"
+      " \003(\001B\002\020\001\022\020\n\004pkts\030\005 \003(\001B\002\020\001\022\016\n\006output\030\001 \001"
       "(\tb\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
@@ -189,6 +189,7 @@ struct StaticDescriptorInitializer {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int FlowStats::kEntryFieldNumber;
+const int FlowStats::kTimeFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 FlowStats::FlowStats()
@@ -205,10 +206,12 @@ FlowStats::FlowStats(const FlowStats& from)
       entry_(from.entry_),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
+  time_ = from.time_;
   // @@protoc_insertion_point(copy_constructor:Detection.FlowStats)
 }
 
 void FlowStats::SharedCtor() {
+  time_ = 0;
   _cached_size_ = 0;
 }
 
@@ -246,6 +249,7 @@ FlowStats* FlowStats::New(::google::protobuf::Arena* arena) const {
 void FlowStats::Clear() {
 // @@protoc_insertion_point(message_clear_start:Detection.FlowStats)
   entry_.Clear();
+  time_ = 0;
 }
 
 bool FlowStats::MergePartialFromCodedStream(
@@ -264,6 +268,20 @@ bool FlowStats::MergePartialFromCodedStream(
             static_cast< ::google::protobuf::uint8>(10u)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                 input, add_entry()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // double time = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(17u)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &time_)));
         } else {
           goto handle_unusual;
         }
@@ -303,6 +321,11 @@ void FlowStats::SerializeWithCachedSizes(
       1, this->entry(i), output);
   }
 
+  // double time = 2;
+  if (this->time() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(2, this->time(), output);
+  }
+
   // @@protoc_insertion_point(serialize_end:Detection.FlowStats)
 }
 
@@ -317,6 +340,11 @@ void FlowStats::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageNoVirtualToArray(
         1, this->entry(i), deterministic, target);
+  }
+
+  // double time = 2;
+  if (this->time() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(2, this->time(), target);
   }
 
   // @@protoc_insertion_point(serialize_to_array_end:Detection.FlowStats)
@@ -336,6 +364,11 @@ size_t FlowStats::ByteSizeLong() const {
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->entry(i));
     }
+  }
+
+  // double time = 2;
+  if (this->time() != 0) {
+    total_size += 1 + 8;
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -368,6 +401,9 @@ void FlowStats::MergeFrom(const FlowStats& from) {
   (void) cached_has_bits;
 
   entry_.MergeFrom(from.entry_);
+  if (from.time() != 0) {
+    set_time(from.time());
+  }
 }
 
 void FlowStats::CopyFrom(const ::google::protobuf::Message& from) {
@@ -394,6 +430,7 @@ void FlowStats::Swap(FlowStats* other) {
 }
 void FlowStats::InternalSwap(FlowStats* other) {
   entry_.InternalSwap(&other->entry_);
+  std::swap(time_, other->time_);
   std::swap(_cached_size_, other->_cached_size_);
 }
 
@@ -433,6 +470,20 @@ const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
 FlowStats::entry() const {
   // @@protoc_insertion_point(field_list:Detection.FlowStats.entry)
   return entry_;
+}
+
+// double time = 2;
+void FlowStats::clear_time() {
+  time_ = 0;
+}
+double FlowStats::time() const {
+  // @@protoc_insertion_point(field_get:Detection.FlowStats.time)
+  return time_;
+}
+void FlowStats::set_time(double value) {
+  
+  time_ = value;
+  // @@protoc_insertion_point(field_set:Detection.FlowStats.time)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
@@ -1087,7 +1138,6 @@ void IpRange::set_max(::google::protobuf::uint32 value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
-const int Cell::kRowsFieldNumber;
 const int Cell::kColsFieldNumber;
 const int Cell::kBytesFieldNumber;
 const int Cell::kPktsFieldNumber;
@@ -1105,20 +1155,21 @@ Cell::Cell()
 Cell::Cell(const Cell& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL),
-      output_(from.output_),
       bytes_(from.bytes_),
       pkts_(from.pkts_),
       _cached_size_(0) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  ::memcpy(&rows_, &from.rows_,
-    reinterpret_cast<char*>(&cols_) -
-    reinterpret_cast<char*>(&rows_) + sizeof(cols_));
+  output_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.output().size() > 0) {
+    output_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.output_);
+  }
+  cols_ = from.cols_;
   // @@protoc_insertion_point(copy_constructor:Detection.Cell)
 }
 
 void Cell::SharedCtor() {
-  ::memset(&rows_, 0, reinterpret_cast<char*>(&cols_) -
-    reinterpret_cast<char*>(&rows_) + sizeof(cols_));
+  output_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  cols_ = 0;
   _cached_size_ = 0;
 }
 
@@ -1128,6 +1179,7 @@ Cell::~Cell() {
 }
 
 void Cell::SharedDtor() {
+  output_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void Cell::SetCachedSize(int size) const {
@@ -1155,11 +1207,10 @@ Cell* Cell::New(::google::protobuf::Arena* arena) const {
 
 void Cell::Clear() {
 // @@protoc_insertion_point(message_clear_start:Detection.Cell)
-  output_.Clear();
   bytes_.Clear();
   pkts_.Clear();
-  ::memset(&rows_, 0, reinterpret_cast<char*>(&cols_) -
-    reinterpret_cast<char*>(&rows_) + sizeof(cols_));
+  output_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  cols_ = 0;
 }
 
 bool Cell::MergePartialFromCodedStream(
@@ -1172,31 +1223,16 @@ bool Cell::MergePartialFromCodedStream(
     tag = p.first;
     if (!p.second) goto handle_unusual;
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated string output = 1;
+      // string output = 1;
       case 1: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(10u)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->add_output()));
+                input, this->mutable_output()));
           DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-            this->output(this->output_size() - 1).data(),
-            this->output(this->output_size() - 1).length(),
+            this->output().data(), this->output().length(),
             ::google::protobuf::internal::WireFormatLite::PARSE,
             "Detection.Cell.output"));
-        } else {
-          goto handle_unusual;
-        }
-        break;
-      }
-
-      // int32 rows = 2;
-      case 2: {
-        if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(16u)) {
-
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
-                 input, &rows_)));
         } else {
           goto handle_unusual;
         }
@@ -1280,19 +1316,14 @@ void Cell::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated string output = 1;
-  for (int i = 0, n = this->output_size(); i < n; i++) {
+  // string output = 1;
+  if (this->output().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->output(i).data(), this->output(i).length(),
+      this->output().data(), this->output().length(),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
       "Detection.Cell.output");
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      1, this->output(i), output);
-  }
-
-  // int32 rows = 2;
-  if (this->rows() != 0) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->rows(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->output(), output);
   }
 
   // int32 cols = 3;
@@ -1325,19 +1356,15 @@ void Cell::SerializeWithCachedSizes(
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  // repeated string output = 1;
-  for (int i = 0, n = this->output_size(); i < n; i++) {
+  // string output = 1;
+  if (this->output().size() > 0) {
     ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
-      this->output(i).data(), this->output(i).length(),
+      this->output().data(), this->output().length(),
       ::google::protobuf::internal::WireFormatLite::SERIALIZE,
       "Detection.Cell.output");
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteStringToArray(1, this->output(i), target);
-  }
-
-  // int32 rows = 2;
-  if (this->rows() != 0) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->rows(), target);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->output(), target);
   }
 
   // int32 cols = 3;
@@ -1377,14 +1404,6 @@ size_t Cell::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:Detection.Cell)
   size_t total_size = 0;
 
-  // repeated string output = 1;
-  total_size += 1 *
-      ::google::protobuf::internal::FromIntSize(this->output_size());
-  for (int i = 0, n = this->output_size(); i < n; i++) {
-    total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
-      this->output(i));
-  }
-
   // repeated double bytes = 4 [packed = true];
   {
     unsigned int count = this->bytes_size();
@@ -1415,11 +1434,11 @@ size_t Cell::ByteSizeLong() const {
     total_size += data_size;
   }
 
-  // int32 rows = 2;
-  if (this->rows() != 0) {
+  // string output = 1;
+  if (this->output().size() > 0) {
     total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->rows());
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->output());
   }
 
   // int32 cols = 3;
@@ -1458,11 +1477,11 @@ void Cell::MergeFrom(const Cell& from) {
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
-  output_.MergeFrom(from.output_);
   bytes_.MergeFrom(from.bytes_);
   pkts_.MergeFrom(from.pkts_);
-  if (from.rows() != 0) {
-    set_rows(from.rows());
+  if (from.output().size() > 0) {
+
+    output_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.output_);
   }
   if (from.cols() != 0) {
     set_cols(from.cols());
@@ -1492,10 +1511,9 @@ void Cell::Swap(Cell* other) {
   InternalSwap(other);
 }
 void Cell::InternalSwap(Cell* other) {
-  output_.InternalSwap(&other->output_);
   bytes_.InternalSwap(&other->bytes_);
   pkts_.InternalSwap(&other->pkts_);
-  std::swap(rows_, other->rows_);
+  output_.Swap(&other->output_);
   std::swap(cols_, other->cols_);
   std::swap(_cached_size_, other->_cached_size_);
 }
@@ -1507,20 +1525,6 @@ void Cell::InternalSwap(Cell* other) {
 
 #if PROTOBUF_INLINE_NOT_IN_HEADERS
 // Cell
-
-// int32 rows = 2;
-void Cell::clear_rows() {
-  rows_ = 0;
-}
-::google::protobuf::int32 Cell::rows() const {
-  // @@protoc_insertion_point(field_get:Detection.Cell.rows)
-  return rows_;
-}
-void Cell::set_rows(::google::protobuf::int32 value) {
-  
-  rows_ = value;
-  // @@protoc_insertion_point(field_set:Detection.Cell.rows)
-}
 
 // int32 cols = 3;
 void Cell::clear_cols() {
@@ -1596,73 +1600,57 @@ Cell::mutable_pkts() {
   return &pkts_;
 }
 
-// repeated string output = 1;
-int Cell::output_size() const {
-  return output_.size();
-}
+// string output = 1;
 void Cell::clear_output() {
-  output_.Clear();
+  output_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-const ::std::string& Cell::output(int index) const {
+const ::std::string& Cell::output() const {
   // @@protoc_insertion_point(field_get:Detection.Cell.output)
-  return output_.Get(index);
+  return output_.GetNoArena();
 }
-::std::string* Cell::mutable_output(int index) {
-  // @@protoc_insertion_point(field_mutable:Detection.Cell.output)
-  return output_.Mutable(index);
-}
-void Cell::set_output(int index, const ::std::string& value) {
+void Cell::set_output(const ::std::string& value) {
+  
+  output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:Detection.Cell.output)
-  output_.Mutable(index)->assign(value);
 }
 #if LANG_CXX11
-void Cell::set_output(int index, ::std::string&& value) {
-  // @@protoc_insertion_point(field_set:Detection.Cell.output)
-  output_.Mutable(index)->assign(std::move(value));
+void Cell::set_output(::std::string&& value) {
+  
+  output_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:Detection.Cell.output)
 }
 #endif
-void Cell::set_output(int index, const char* value) {
+void Cell::set_output(const char* value) {
   GOOGLE_DCHECK(value != NULL);
-  output_.Mutable(index)->assign(value);
+  
+  output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:Detection.Cell.output)
 }
-void Cell::set_output(int index, const char* value, size_t size) {
-  output_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
+void Cell::set_output(const char* value, size_t size) {
+  
+  output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
   // @@protoc_insertion_point(field_set_pointer:Detection.Cell.output)
 }
-::std::string* Cell::add_output() {
-  // @@protoc_insertion_point(field_add_mutable:Detection.Cell.output)
-  return output_.Add();
+::std::string* Cell::mutable_output() {
+  
+  // @@protoc_insertion_point(field_mutable:Detection.Cell.output)
+  return output_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-void Cell::add_output(const ::std::string& value) {
-  output_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:Detection.Cell.output)
+::std::string* Cell::release_output() {
+  // @@protoc_insertion_point(field_release:Detection.Cell.output)
+  
+  return output_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-#if LANG_CXX11
-void Cell::add_output(::std::string&& value) {
-  output_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:Detection.Cell.output)
-}
-#endif
-void Cell::add_output(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  output_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:Detection.Cell.output)
-}
-void Cell::add_output(const char* value, size_t size) {
-  output_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:Detection.Cell.output)
-}
-const ::google::protobuf::RepeatedPtrField< ::std::string>&
-Cell::output() const {
-  // @@protoc_insertion_point(field_list:Detection.Cell.output)
-  return output_;
-}
-::google::protobuf::RepeatedPtrField< ::std::string>*
-Cell::mutable_output() {
-  // @@protoc_insertion_point(field_mutable_list:Detection.Cell.output)
-  return &output_;
+void Cell::set_allocated_output(::std::string* output) {
+  if (output != NULL) {
+    
+  } else {
+    
+  }
+  output_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), output);
+  // @@protoc_insertion_point(field_set_allocated:Detection.Cell.output)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

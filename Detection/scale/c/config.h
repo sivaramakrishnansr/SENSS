@@ -8,5 +8,6 @@ static const int kBinCount = 4;
 static const int kBinSize = 256;
 static const int kReadTimeout = 100;
 static const char * kServerAddress = "sock/server";
+static const int kReaderCount = 29;
 
 #endif

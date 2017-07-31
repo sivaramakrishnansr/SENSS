@@ -4,6 +4,7 @@ package Detection;
 
 message FlowStats{
 	repeated FlowKeyValue entry = 1;
+	double time = 2;
 }
 
 message FlowKeyValue{
@@ -17,9 +18,8 @@ message IpRange{
 }
 
 message Cell{
-	int32 rows = 2;
 	int32 cols = 3;
 	repeated double bytes = 4 [packed=true];
 	repeated double pkts = 5 [packed=true];
-	repeated string output = 1;
+	string output = 1;
 }

@@ -8,6 +8,7 @@
 #include "reader.h"
 #include "records.h"
 #include "util.h"
+#include "collector.h"
 
 using namespace std;
 
@@ -18,6 +19,7 @@ Flow flows[CHUNK];
 int numflows = 0;
 FlowRecord home, foreign;
 map<double, int> times;
+int Reader::clifd = 0;
 
 int ours = 0, ourd = 0, neither = 0, both = 0;
 double curT = 0, prevT = 0;
@@ -36,13 +38,13 @@ void Reader::ProcessFlowHelper(Flow f) {
   if (sit == blocks.end() && dit != blocks.end()) {
     ourd++;
     // Destination is ours, records may or may not be
-    //home.update(f,1,1);
-    //foreign.update(f,1,0);
+    home.Update(f,1,1);
+    foreign.Update(f,1,0);
   } else if (sit != blocks.end() && dit == blocks.end()) {
     ours++;
     // Source is ours, records may or may not be
-    //home.update(f,0,1);
-    //foreign.update(f,0,0);
+    home.Update(f,0,1);
+    foreign.Update(f,0,0);
   } else if (sit == blocks.end() && dit == blocks.end())
     neither++;
   else
@@ -51,7 +53,6 @@ void Reader::ProcessFlowHelper(Flow f) {
 
 void Reader::Report(double time) {
 
-  int clifd = ConnectClient(kServerAddress);
   home.Report(time, clifd);
   foreign.Report(time, clifd);
 }
@@ -69,7 +70,7 @@ void Reader::ProcessFlow() {
   prevT = curT;
   if (maxT > curT) {
     curT = maxT;
-    printf("CurT %lf home %d foreign %d\n", curT, home.Size(), foreign.Size());
+    //printf("CurT %lf home %d foreign %d\n", curT, home.Size(), foreign.Size());
   }
   times.clear();
   // See which flows we can fully process and which we have to keep
@@ -114,8 +115,8 @@ void Reader::ReadFlow(char *buffer) {
   }
 
   // Work with first and last, rounded down using period
-  first = floor(first / kPeriod * 100) / 100;
-  last = floor(last / kPeriod * 100) / 100;
+  first = floor(atof(field[2]) / kPeriod * 100) / 100;
+  last = floor(atof(field[3]) / kPeriod * 100) / 100;
   unsigned int saddr = IpToInt(field[4]);
   unsigned int daddr = IpToInt(field[5]);
   times[first]++;
@@ -165,36 +166,38 @@ void Reader::LoadBlocks() {
   }
 }
 // Connect the client to the server whose address is specified by servaddr
-int Reader::ConnectClient(const char * servaddr){
+void Reader::ConnectClient(const char * servaddr){
 
 
-  int clifd, r, len;
+  int r, len;
   struct sockaddr_un remote;
   remote.sun_family = AF_UNIX;
   strcpy(remote.sun_path, kServerAddress);
-  len = strlen(remote.sun_path) + sizeof(remote.sun_family);
+  len = sizeof(remote.sun_path) + sizeof(remote.sun_family);
 
   clifd = socket(AF_UNIX, SOCK_STREAM, 0);
   if(clifd < 0) {
     perror("client socket");
-    return -1;
   }
 
   r = connect(clifd, (struct sockaddr *)&remote, len);
   if(r < 0){
     perror("client connect");
-    return -1;
   }
 
-  return clifd;
 }
 
 int main() {
   // Read in blocks
+  Collector collector;
+  //collector.StartServer();
   Reader reader;
   reader.LoadBlocks();
+  reader.ConnectClient(kServerAddress);
   // Initialise services set
   InitServicesSet();
+
+
   // Print them out just for kicks
 
 //  for (map<IpRange, int>::iterator it = blocks.begin(); it != blocks.end(); ++it) {
@@ -208,11 +211,13 @@ int main() {
   char buffer[256];
   FILE * fp = fopen("data/test", "r");
   while (fgets(buffer, 255, fp)) {
-    if(buffer[0] == '#')
+    if(buffer[0] == '#') // Skips comments
       continue;
     reader.ReadFlow(buffer);
   }
-  reader.ReadFlow(buffer);
   printf("Ours %d ourd %d neither %d both %d\n", ours, ourd, neither, both);
+  close(Reader::clifd);
+  // Delete all global objects allocated by libprotobuf.
+  google::protobuf::ShutdownProtobufLibrary();
 }
 
