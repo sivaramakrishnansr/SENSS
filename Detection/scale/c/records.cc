@@ -1,6 +1,30 @@
 #include "records.h"
 #include "util.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
+
+bool writeDelimitedTo(
+    const google::protobuf::MessageLite& message,
+    google::protobuf::io::ZeroCopyOutputStream* rawOutput) {
+  google::protobuf::io::CodedOutputStream output(rawOutput);
+
+  // Write the size.
+  const int size = message.ByteSize();
+  output.WriteVarint32(size);
+
+  uint8_t* buffer = output.GetDirectBufferForNBytesAndAdvance(size);
+  if (buffer != NULL) {
+    // Optimization:  The message fits in one buffer, so use the faster
+    // direct-to-array serialization path.
+    message.SerializeWithCachedSizesToArray(buffer);
+  } else {
+    // Slightly-slower path when the message is multiple buffers.
+    message.SerializeWithCachedSizes(&output);
+    if (output.HadError()) return false;
+  }
+
+  return true;
+}
 
 void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
   double ps = (f.last - f.first) / kPeriod + 1;
@@ -79,10 +103,15 @@ void FlowRecord::Report(double time, int clifd) {
   Detection::FlowStats * to_send = new Detection::FlowStats();
   PopulateStatsToSend(to_send);
   to_send->set_time(time);
-  to_send->SerializeToFileDescriptor(clifd);
+  //to_send->SerializeToFileDescriptor(clifd);
+  google::protobuf::io::ZeroCopyOutputStream * fileOutput = new google::protobuf::io::FileOutputStream(clifd);
+  google::protobuf::MessageLite* message = to_send;
+  writeDelimitedTo(*message, fileOutput);
   // This should stay
   stats.clear();
   delete to_send;
+  delete fileOutput;
+
 }
 
 /*

@@ -5,6 +5,9 @@
 #include <fstream>
 #include <map>
 #include <math.h>
+#include <thread>
+#include <unistd.h>
+#include "boost/filesystem.hpp"
 #include "reader.h"
 #include "records.h"
 #include "util.h"
@@ -53,8 +56,10 @@ void Reader::ProcessFlowHelper(Flow f) {
 
 void Reader::Report(double time) {
 
+//  cout.precision(15);
+//  cout << fixed << time << endl;
   home.Report(time, clifd);
-  foreign.Report(time, clifd);
+  //foreign.Report(time, clifd);
 }
 
 void Reader::ProcessFlow() {
@@ -168,7 +173,6 @@ void Reader::LoadBlocks() {
 // Connect the client to the server whose address is specified by servaddr
 void Reader::ConnectClient(const char * servaddr){
 
-
   int r, len;
   struct sockaddr_un remote;
   remote.sun_family = AF_UNIX;
@@ -181,6 +185,7 @@ void Reader::ConnectClient(const char * servaddr){
   }
 
   r = connect(clifd, (struct sockaddr *)&remote, len);
+
   if(r < 0){
     perror("client connect");
   }
@@ -190,6 +195,8 @@ void Reader::ConnectClient(const char * servaddr){
 int main() {
   // Read in blocks
   Collector collector;
+  thread t(bind(&Collector::StartServer, collector));
+  //thread t2(bind(&Collector::AggregateStats, collector));
   //collector.StartServer();
   Reader reader;
   reader.LoadBlocks();
@@ -205,7 +212,7 @@ int main() {
 //  }
 
   // Verify that the version of the library that we linked against is
-  // compatible with the version of the headers we compiled against.
+  // compatible with the version of  the headers we compiled against.
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   char buffer[256];
@@ -219,5 +226,7 @@ int main() {
   close(Reader::clifd);
   // Delete all global objects allocated by libprotobuf.
   google::protobuf::ShutdownProtobufLibrary();
+  //t.join();
+//  t2.join();
 }
 
