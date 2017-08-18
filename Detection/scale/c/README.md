@@ -4,12 +4,12 @@ This section contains the code to read flow records exported in ASCII format usi
 
 ### How to run?
 
-First start the collector process with './collector'
+First start the collector process with `./collector`
 
 Next run reader(s).
 This is the way to run the code for a single reader process:
 
-flow-export -f2 -mDPKTS,DOCTETS,FIRST,LAST,SRCADDR,DSTADDR,SRCPORT,DSTPORT,PROT,TCP_FLAGS < /nfs_ds/users/mirkovic/nfs_ds/radb_ddos/WSUe/2016/2016-01/2016-01-22/ft-v05.2016-01-22.130020-0500 |  ./reader
+`flow-export -f2 -mDPKTS,DOCTETS,FIRST,LAST,SRCADDR,DSTADDR,SRCPORT,DSTPORT,PROT,TCP_FLAGS < /nfs_ds/users/mirkovic/nfs_ds/radb_ddos/WSUe/2016/2016-01/2016-01-22/ft-v05.2016-01-22.130020-0500 |  ./reader`
 
 The `f2` flag is used for the ASCII output format, `m` flag masks the binary data for only the specified fields (this greatly increases the speed of execution).
 
