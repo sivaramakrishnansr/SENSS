@@ -1,6 +1,6 @@
 # Distributed Stream Processor
 
-This section contains the code to read flow records exported in ASCII format using flow-export, aggregate them and send to the collector server. Google's protobuf is used for marshalling aggregated data and it needs to be installed to run the code. It is currently installed on the SENSS server but it can be easily installed on other machines using the instructions [https://github.com/google/protobuf/blob/master/src/README.md](here). 
+This section contains the code to read flow records exported in ASCII format using flow-export, aggregate them and send to the collector server. Google's protobuf is used for marshalling aggregated data and it needs to be installed to run the code. It is currently installed on the SENSS server but it can be easily installed on other machines using the instructions [here](https://github.com/google/protobuf/blob/master/src/README.md). 
 
 ### How to run?
 This is the way to run the code for a single reader:
