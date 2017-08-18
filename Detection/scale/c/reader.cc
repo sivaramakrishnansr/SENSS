@@ -192,10 +192,6 @@ void Reader::ConnectClient(const char *servaddr) {
 
 int main() {
 
-/*  Collector collector;
-  thread t(bind(&Collector::StartServer, collector));
-  thread t2(bind(&Collector::AggregateStats, collector));
-  collector.StartServer();*/
   // Read in blocks
   Reader reader;
   reader.LoadBlocks();
