@@ -10,9 +10,7 @@
 #include "flow.h"
 #include "iprange.h"
 
-class Reader{
-
-
+class Reader {
 
  public:
   static int clifd;
@@ -23,7 +21,7 @@ class Reader{
   void Report(double time);
   void ProcessFlowHelper(Flow f);
   void LoadBlocks();
-  void ConnectClient(const char * servaddr);
+  void ConnectClient(const char *servaddr);
 };
 
 #endif //SENSS_READER_H

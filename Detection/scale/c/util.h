@@ -8,6 +8,9 @@
 #include <iostream>
 #include <set>
 
+#include "map.pb.h"
+#include <google/protobuf/io/zero_copy_stream_impl.h>
+
 using namespace std;
 
 void InitServicesSet();
@@ -20,6 +23,12 @@ unsigned int Min(const unsigned int &addr, const int &masklen);
 
 unsigned int Max(const unsigned int &addr, const int &masklen);
 
+bool readDelimitedFrom(
+    google::protobuf::io::ZeroCopyInputStream *rawInput,
+    google::protobuf::MessageLite *message);
 
+bool writeDelimitedTo(
+    const google::protobuf::MessageLite &message,
+    google::protobuf::io::ZeroCopyOutputStream *rawOutput)
 
 #endif

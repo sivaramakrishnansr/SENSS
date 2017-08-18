@@ -17,26 +17,25 @@ class Collector {
 
  private:
 
-  struct CompareCell{
+  struct CompareCell {
 
-    bool operator()(Message lhs, Message rhs) const{
+    bool operator()(Message lhs, Message rhs) const {
 
       return lhs.first < rhs.first;
 
     }
   };
 
-  static priority_queue<Message, vector<Message>,CompareCell> stats_queue;
+  static priority_queue<Message, vector<Message>, CompareCell> stats_queue;
   //mutex m;
  public:
   Collector() = default;
-  void ClientHandler(int cli_fd, const char * cli_ip, int port);
+  void ClientHandler(int cli_fd, const char *cli_ip, int port);
   void ProcessClient(int cli_fd);
   void StartServer();
   void CleanUpStats();
   void DecodeStats(Detection::FlowStats flow_stats);
   void AggregateStats();
-
 
 };
 

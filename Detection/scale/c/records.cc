@@ -3,29 +3,6 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 
 
-bool writeDelimitedTo(
-    const google::protobuf::MessageLite& message,
-    google::protobuf::io::ZeroCopyOutputStream* rawOutput) {
-  google::protobuf::io::CodedOutputStream output(rawOutput);
-
-  // Write the size.
-  const int size = message.ByteSize();
-  output.WriteVarint32(size);
-
-  uint8_t* buffer = output.GetDirectBufferForNBytesAndAdvance(size);
-  if (buffer != NULL) {
-    // Optimization:  The message fits in one buffer, so use the faster
-    // direct-to-array serialization path.
-    message.SerializeWithCachedSizesToArray(buffer);
-  } else {
-    // Slightly-slower path when the message is multiple buffers.
-    message.SerializeWithCachedSizes(&output);
-    if (output.HadError()) return false;
-  }
-
-  return true;
-}
-
 void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
   double ps = (f.last - f.first) / kPeriod + 1;
   double pkts = f.pkts / ps;

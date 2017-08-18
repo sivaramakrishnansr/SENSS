@@ -20,7 +20,7 @@ class FlowRecord {
   void PopulateStatsToSend(Detection::FlowStats *to_send);
   int Size();
 
-  map<IpRange,Cell> stats;
+  map<IpRange, Cell> stats;
 };
 
 #endif

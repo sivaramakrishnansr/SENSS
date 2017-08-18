@@ -7,14 +7,12 @@
 #include <math.h>
 #include <thread>
 #include <unistd.h>
-#include "boost/filesystem.hpp"
 #include "reader.h"
 #include "records.h"
 #include "util.h"
 #include "collector.h"
 
 using namespace std;
-
 
 const int CHUNK = 10;
 
@@ -41,13 +39,13 @@ void Reader::ProcessFlowHelper(Flow f) {
   if (sit == blocks.end() && dit != blocks.end()) {
     ourd++;
     // Destination is ours, records may or may not be
-    home.Update(f,1,1);
-    foreign.Update(f,1,0);
+    home.Update(f, 1, 1);
+    foreign.Update(f, 1, 0);
   } else if (sit != blocks.end() && dit == blocks.end()) {
     ours++;
     // Source is ours, records may or may not be
-    home.Update(f,0,1);
-    foreign.Update(f,0,0);
+    home.Update(f, 0, 1);
+    foreign.Update(f, 0, 0);
   } else if (sit == blocks.end() && dit == blocks.end())
     neither++;
   else
@@ -171,7 +169,7 @@ void Reader::LoadBlocks() {
   }
 }
 // Connect the client to the server whose address is specified by servaddr
-void Reader::ConnectClient(const char * servaddr){
+void Reader::ConnectClient(const char *servaddr) {
 
   int r, len;
   struct sockaddr_un remote;
@@ -180,24 +178,25 @@ void Reader::ConnectClient(const char * servaddr){
   len = sizeof(remote.sun_path) + sizeof(remote.sun_family);
 
   clifd = socket(AF_UNIX, SOCK_STREAM, 0);
-  if(clifd < 0) {
+  if (clifd < 0) {
     perror("client socket");
   }
 
-  r = connect(clifd, (struct sockaddr *)&remote, len);
+  r = connect(clifd, (struct sockaddr *) &remote, len);
 
-  if(r < 0){
+  if (r < 0) {
     perror("client connect");
   }
 
 }
 
 int main() {
-  // Read in blocks
-  Collector collector;
+
+/*  Collector collector;
   thread t(bind(&Collector::StartServer, collector));
-  //thread t2(bind(&Collector::AggregateStats, collector));
-  //collector.StartServer();
+  thread t2(bind(&Collector::AggregateStats, collector));
+  collector.StartServer();*/
+  // Read in blocks
   Reader reader;
   reader.LoadBlocks();
   reader.ConnectClient(kServerAddress);
@@ -216,9 +215,9 @@ int main() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   char buffer[256];
-  FILE * fp = fopen("data/test", "r");
+  FILE *fp = fopen("data/test", "r");
   while (fgets(buffer, 255, fp)) {
-    if(buffer[0] == '#') // Skips comments
+    if (buffer[0] == '#') // Skips comments
       continue;
     reader.ReadFlow(buffer);
   }
@@ -226,7 +225,6 @@ int main() {
   close(Reader::clifd);
   // Delete all global objects allocated by libprotobuf.
   google::protobuf::ShutdownProtobufLibrary();
-  //t.join();
-//  t2.join();
+
 }
 

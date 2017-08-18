@@ -63,63 +63,64 @@ void InitDefaults();
 
 // ===================================================================
 
-class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowStats) */ {
+class FlowStats
+    : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowStats) */ {
  public:
   FlowStats();
   virtual ~FlowStats();
 
-  FlowStats(const FlowStats& from);
+  FlowStats(const FlowStats &from);
 
-  inline FlowStats& operator=(const FlowStats& from) {
+  inline FlowStats &operator=(const FlowStats &from) {
     CopyFrom(from);
     return *this;
   }
 
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const FlowStats& default_instance();
+  static const ::google::protobuf::Descriptor *descriptor();
+  static const FlowStats &default_instance();
 
-  static inline const FlowStats* internal_default_instance() {
-    return reinterpret_cast<const FlowStats*>(
-               &_FlowStats_default_instance_);
+  static inline const FlowStats *internal_default_instance() {
+    return reinterpret_cast<const FlowStats *>(
+        &_FlowStats_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    0;
+      0;
 
-  void Swap(FlowStats* other);
+  void Swap(FlowStats *other);
 
   // implements Message ----------------------------------------------
 
-  inline FlowStats* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline FlowStats *New() const PROTOBUF_FINAL { return New(NULL); }
 
-  FlowStats* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const FlowStats& from);
-  void MergeFrom(const FlowStats& from);
+  FlowStats *New(::google::protobuf::Arena *arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void CopyFrom(const FlowStats &from);
+  void MergeFrom(const FlowStats &from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
   size_t ByteSizeLong() const PROTOBUF_FINAL;
   bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedInputStream *input) PROTOBUF_FINAL;
   void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedOutputStream *output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8 *InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8 *target) const PROTOBUF_FINAL;
   int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
+ private:
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(FlowStats* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+  void InternalSwap(FlowStats *other);
+ private:
+  inline ::google::protobuf::Arena *GetArenaNoVirtual() const {
     return NULL;
   }
-  inline void* MaybeArenaPtr() const {
+  inline void *MaybeArenaPtr() const {
     return NULL;
   }
-  public:
+ public:
 
   ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
 
@@ -131,13 +132,13 @@ class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point
   int entry_size() const;
   void clear_entry();
   static const int kEntryFieldNumber = 1;
-  const ::Detection::FlowKeyValue& entry(int index) const;
-  ::Detection::FlowKeyValue* mutable_entry(int index);
-  ::Detection::FlowKeyValue* add_entry();
-  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
-      mutable_entry();
-  const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
-      entry() const;
+  const ::Detection::FlowKeyValue &entry(int index) const;
+  ::Detection::FlowKeyValue *mutable_entry(int index);
+  ::Detection::FlowKeyValue *add_entry();
+  ::google::protobuf::RepeatedPtrField<::Detection::FlowKeyValue> *
+  mutable_entry();
+  const ::google::protobuf::RepeatedPtrField<::Detection::FlowKeyValue> &
+  entry() const;
 
   // double time = 2;
   void clear_time();
@@ -149,70 +150,71 @@ class FlowStats : public ::google::protobuf::Message /* @@protoc_insertion_point
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue > entry_;
+  ::google::protobuf::RepeatedPtrField<::Detection::FlowKeyValue> entry_;
   double time_;
   mutable int _cached_size_;
   friend struct protobuf_map_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
 
-class FlowKeyValue : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowKeyValue) */ {
+class FlowKeyValue
+    : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Detection.FlowKeyValue) */ {
  public:
   FlowKeyValue();
   virtual ~FlowKeyValue();
 
-  FlowKeyValue(const FlowKeyValue& from);
+  FlowKeyValue(const FlowKeyValue &from);
 
-  inline FlowKeyValue& operator=(const FlowKeyValue& from) {
+  inline FlowKeyValue &operator=(const FlowKeyValue &from) {
     CopyFrom(from);
     return *this;
   }
 
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const FlowKeyValue& default_instance();
+  static const ::google::protobuf::Descriptor *descriptor();
+  static const FlowKeyValue &default_instance();
 
-  static inline const FlowKeyValue* internal_default_instance() {
-    return reinterpret_cast<const FlowKeyValue*>(
-               &_FlowKeyValue_default_instance_);
+  static inline const FlowKeyValue *internal_default_instance() {
+    return reinterpret_cast<const FlowKeyValue *>(
+        &_FlowKeyValue_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    1;
+      1;
 
-  void Swap(FlowKeyValue* other);
+  void Swap(FlowKeyValue *other);
 
   // implements Message ----------------------------------------------
 
-  inline FlowKeyValue* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline FlowKeyValue *New() const PROTOBUF_FINAL { return New(NULL); }
 
-  FlowKeyValue* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const FlowKeyValue& from);
-  void MergeFrom(const FlowKeyValue& from);
+  FlowKeyValue *New(::google::protobuf::Arena *arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void CopyFrom(const FlowKeyValue &from);
+  void MergeFrom(const FlowKeyValue &from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
   size_t ByteSizeLong() const PROTOBUF_FINAL;
   bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedInputStream *input) PROTOBUF_FINAL;
   void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedOutputStream *output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8 *InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8 *target) const PROTOBUF_FINAL;
   int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
+ private:
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(FlowKeyValue* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+  void InternalSwap(FlowKeyValue *other);
+ private:
+  inline ::google::protobuf::Arena *GetArenaNoVirtual() const {
     return NULL;
   }
-  inline void* MaybeArenaPtr() const {
+  inline void *MaybeArenaPtr() const {
     return NULL;
   }
-  public:
+ public:
 
   ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
 
@@ -224,26 +226,26 @@ class FlowKeyValue : public ::google::protobuf::Message /* @@protoc_insertion_po
   bool has_key() const;
   void clear_key();
   static const int kKeyFieldNumber = 1;
-  const ::Detection::IpRange& key() const;
-  ::Detection::IpRange* mutable_key();
-  ::Detection::IpRange* release_key();
-  void set_allocated_key(::Detection::IpRange* key);
+  const ::Detection::IpRange &key() const;
+  ::Detection::IpRange *mutable_key();
+  ::Detection::IpRange *release_key();
+  void set_allocated_key(::Detection::IpRange *key);
 
   // .Detection.Cell value = 2;
   bool has_value() const;
   void clear_value();
   static const int kValueFieldNumber = 2;
-  const ::Detection::Cell& value() const;
-  ::Detection::Cell* mutable_value();
-  ::Detection::Cell* release_value();
-  void set_allocated_value(::Detection::Cell* value);
+  const ::Detection::Cell &value() const;
+  ::Detection::Cell *mutable_value();
+  ::Detection::Cell *release_value();
+  void set_allocated_value(::Detection::Cell *value);
 
   // @@protoc_insertion_point(class_scope:Detection.FlowKeyValue)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::Detection::IpRange* key_;
-  ::Detection::Cell* value_;
+  ::Detection::IpRange *key_;
+  ::Detection::Cell *value_;
   mutable int _cached_size_;
   friend struct protobuf_map_2eproto::TableStruct;
 };
@@ -254,58 +256,58 @@ class IpRange : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   IpRange();
   virtual ~IpRange();
 
-  IpRange(const IpRange& from);
+  IpRange(const IpRange &from);
 
-  inline IpRange& operator=(const IpRange& from) {
+  inline IpRange &operator=(const IpRange &from) {
     CopyFrom(from);
     return *this;
   }
 
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const IpRange& default_instance();
+  static const ::google::protobuf::Descriptor *descriptor();
+  static const IpRange &default_instance();
 
-  static inline const IpRange* internal_default_instance() {
-    return reinterpret_cast<const IpRange*>(
-               &_IpRange_default_instance_);
+  static inline const IpRange *internal_default_instance() {
+    return reinterpret_cast<const IpRange *>(
+        &_IpRange_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    2;
+      2;
 
-  void Swap(IpRange* other);
+  void Swap(IpRange *other);
 
   // implements Message ----------------------------------------------
 
-  inline IpRange* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline IpRange *New() const PROTOBUF_FINAL { return New(NULL); }
 
-  IpRange* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const IpRange& from);
-  void MergeFrom(const IpRange& from);
+  IpRange *New(::google::protobuf::Arena *arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void CopyFrom(const IpRange &from);
+  void MergeFrom(const IpRange &from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
   size_t ByteSizeLong() const PROTOBUF_FINAL;
   bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedInputStream *input) PROTOBUF_FINAL;
   void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedOutputStream *output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8 *InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8 *target) const PROTOBUF_FINAL;
   int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
+ private:
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(IpRange* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+  void InternalSwap(IpRange *other);
+ private:
+  inline ::google::protobuf::Arena *GetArenaNoVirtual() const {
     return NULL;
   }
-  inline void* MaybeArenaPtr() const {
+  inline void *MaybeArenaPtr() const {
     return NULL;
   }
-  public:
+ public:
 
   ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
 
@@ -341,58 +343,58 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   Cell();
   virtual ~Cell();
 
-  Cell(const Cell& from);
+  Cell(const Cell &from);
 
-  inline Cell& operator=(const Cell& from) {
+  inline Cell &operator=(const Cell &from) {
     CopyFrom(from);
     return *this;
   }
 
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const Cell& default_instance();
+  static const ::google::protobuf::Descriptor *descriptor();
+  static const Cell &default_instance();
 
-  static inline const Cell* internal_default_instance() {
-    return reinterpret_cast<const Cell*>(
-               &_Cell_default_instance_);
+  static inline const Cell *internal_default_instance() {
+    return reinterpret_cast<const Cell *>(
+        &_Cell_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    3;
+      3;
 
-  void Swap(Cell* other);
+  void Swap(Cell *other);
 
   // implements Message ----------------------------------------------
 
-  inline Cell* New() const PROTOBUF_FINAL { return New(NULL); }
+  inline Cell *New() const PROTOBUF_FINAL { return New(NULL); }
 
-  Cell* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
-  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
-  void CopyFrom(const Cell& from);
-  void MergeFrom(const Cell& from);
+  Cell *New(::google::protobuf::Arena *arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message &from) PROTOBUF_FINAL;
+  void CopyFrom(const Cell &from);
+  void MergeFrom(const Cell &from);
   void Clear() PROTOBUF_FINAL;
   bool IsInitialized() const PROTOBUF_FINAL;
 
   size_t ByteSizeLong() const PROTOBUF_FINAL;
   bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedInputStream *input) PROTOBUF_FINAL;
   void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
-  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
-      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+      ::google::protobuf::io::CodedOutputStream *output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8 *InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8 *target) const PROTOBUF_FINAL;
   int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
-  private:
+ private:
   void SharedCtor();
   void SharedDtor();
   void SetCachedSize(int size) const PROTOBUF_FINAL;
-  void InternalSwap(Cell* other);
-  private:
-  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+  void InternalSwap(Cell *other);
+ private:
+  inline ::google::protobuf::Arena *GetArenaNoVirtual() const {
     return NULL;
   }
-  inline void* MaybeArenaPtr() const {
+  inline void *MaybeArenaPtr() const {
     return NULL;
   }
-  public:
+ public:
 
   ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
 
@@ -407,10 +409,10 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   double bytes(int index) const;
   void set_bytes(int index, double value);
   void add_bytes(double value);
-  const ::google::protobuf::RepeatedField< double >&
-      bytes() const;
-  ::google::protobuf::RepeatedField< double >*
-      mutable_bytes();
+  const ::google::protobuf::RepeatedField<double> &
+  bytes() const;
+  ::google::protobuf::RepeatedField<double> *
+  mutable_bytes();
 
   // repeated double pkts = 5 [packed = true];
   int pkts_size() const;
@@ -419,24 +421,24 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   double pkts(int index) const;
   void set_pkts(int index, double value);
   void add_pkts(double value);
-  const ::google::protobuf::RepeatedField< double >&
-      pkts() const;
-  ::google::protobuf::RepeatedField< double >*
-      mutable_pkts();
+  const ::google::protobuf::RepeatedField<double> &
+  pkts() const;
+  ::google::protobuf::RepeatedField<double> *
+  mutable_pkts();
 
   // string output = 1;
   void clear_output();
   static const int kOutputFieldNumber = 1;
-  const ::std::string& output() const;
-  void set_output(const ::std::string& value);
-  #if LANG_CXX11
-  void set_output(::std::string&& value);
-  #endif
-  void set_output(const char* value);
-  void set_output(const char* value, size_t size);
-  ::std::string* mutable_output();
-  ::std::string* release_output();
-  void set_allocated_output(::std::string* output);
+  const ::std::string &output() const;
+  void set_output(const ::std::string &value);
+#if LANG_CXX11
+  void set_output(::std::string &&value);
+#endif
+  void set_output(const char *value);
+  void set_output(const char *value, size_t size);
+  ::std::string *mutable_output();
+  ::std::string *release_output();
+  void set_allocated_output(::std::string *output);
 
   // int32 cols = 3;
   void clear_cols();
@@ -448,9 +450,9 @@ class Cell : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::google::protobuf::RepeatedField< double > bytes_;
+  ::google::protobuf::RepeatedField<double> bytes_;
   mutable int _bytes_cached_byte_size_;
-  ::google::protobuf::RepeatedField< double > pkts_;
+  ::google::protobuf::RepeatedField<double> pkts_;
   mutable int _pkts_cached_byte_size_;
   ::google::protobuf::internal::ArenaStringPtr output_;
   ::google::protobuf::int32 cols_;
@@ -472,24 +474,24 @@ inline int FlowStats::entry_size() const {
 inline void FlowStats::clear_entry() {
   entry_.Clear();
 }
-inline const ::Detection::FlowKeyValue& FlowStats::entry(int index) const {
+inline const ::Detection::FlowKeyValue &FlowStats::entry(int index) const {
   // @@protoc_insertion_point(field_get:Detection.FlowStats.entry)
   return entry_.Get(index);
 }
-inline ::Detection::FlowKeyValue* FlowStats::mutable_entry(int index) {
+inline ::Detection::FlowKeyValue *FlowStats::mutable_entry(int index) {
   // @@protoc_insertion_point(field_mutable:Detection.FlowStats.entry)
   return entry_.Mutable(index);
 }
-inline ::Detection::FlowKeyValue* FlowStats::add_entry() {
+inline ::Detection::FlowKeyValue *FlowStats::add_entry() {
   // @@protoc_insertion_point(field_add:Detection.FlowStats.entry)
   return entry_.Add();
 }
-inline ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >*
+inline ::google::protobuf::RepeatedPtrField<::Detection::FlowKeyValue> *
 FlowStats::mutable_entry() {
   // @@protoc_insertion_point(field_mutable_list:Detection.FlowStats.entry)
   return &entry_;
 }
-inline const ::google::protobuf::RepeatedPtrField< ::Detection::FlowKeyValue >&
+inline const ::google::protobuf::RepeatedPtrField<::Detection::FlowKeyValue> &
 FlowStats::entry() const {
   // @@protoc_insertion_point(field_list:Detection.FlowStats.entry)
   return entry_;
@@ -504,7 +506,7 @@ inline double FlowStats::time() const {
   return time_;
 }
 inline void FlowStats::set_time(double value) {
-  
+
   time_ = value;
   // @@protoc_insertion_point(field_set:Detection.FlowStats.time)
 }
@@ -521,33 +523,33 @@ inline void FlowKeyValue::clear_key() {
   if (GetArenaNoVirtual() == NULL && key_ != NULL) delete key_;
   key_ = NULL;
 }
-inline const ::Detection::IpRange& FlowKeyValue::key() const {
+inline const ::Detection::IpRange &FlowKeyValue::key() const {
   // @@protoc_insertion_point(field_get:Detection.FlowKeyValue.key)
   return key_ != NULL ? *key_
-                         : *::Detection::IpRange::internal_default_instance();
+                      : *::Detection::IpRange::internal_default_instance();
 }
-inline ::Detection::IpRange* FlowKeyValue::mutable_key() {
-  
+inline ::Detection::IpRange *FlowKeyValue::mutable_key() {
+
   if (key_ == NULL) {
     key_ = new ::Detection::IpRange;
   }
   // @@protoc_insertion_point(field_mutable:Detection.FlowKeyValue.key)
   return key_;
 }
-inline ::Detection::IpRange* FlowKeyValue::release_key() {
+inline ::Detection::IpRange *FlowKeyValue::release_key() {
   // @@protoc_insertion_point(field_release:Detection.FlowKeyValue.key)
-  
-  ::Detection::IpRange* temp = key_;
+
+  ::Detection::IpRange *temp = key_;
   key_ = NULL;
   return temp;
 }
-inline void FlowKeyValue::set_allocated_key(::Detection::IpRange* key) {
+inline void FlowKeyValue::set_allocated_key(::Detection::IpRange *key) {
   delete key_;
   key_ = key;
   if (key) {
-    
+
   } else {
-    
+
   }
   // @@protoc_insertion_point(field_set_allocated:Detection.FlowKeyValue.key)
 }
@@ -560,33 +562,33 @@ inline void FlowKeyValue::clear_value() {
   if (GetArenaNoVirtual() == NULL && value_ != NULL) delete value_;
   value_ = NULL;
 }
-inline const ::Detection::Cell& FlowKeyValue::value() const {
+inline const ::Detection::Cell &FlowKeyValue::value() const {
   // @@protoc_insertion_point(field_get:Detection.FlowKeyValue.value)
   return value_ != NULL ? *value_
-                         : *::Detection::Cell::internal_default_instance();
+                        : *::Detection::Cell::internal_default_instance();
 }
-inline ::Detection::Cell* FlowKeyValue::mutable_value() {
-  
+inline ::Detection::Cell *FlowKeyValue::mutable_value() {
+
   if (value_ == NULL) {
     value_ = new ::Detection::Cell;
   }
   // @@protoc_insertion_point(field_mutable:Detection.FlowKeyValue.value)
   return value_;
 }
-inline ::Detection::Cell* FlowKeyValue::release_value() {
+inline ::Detection::Cell *FlowKeyValue::release_value() {
   // @@protoc_insertion_point(field_release:Detection.FlowKeyValue.value)
-  
-  ::Detection::Cell* temp = value_;
+
+  ::Detection::Cell *temp = value_;
   value_ = NULL;
   return temp;
 }
-inline void FlowKeyValue::set_allocated_value(::Detection::Cell* value) {
+inline void FlowKeyValue::set_allocated_value(::Detection::Cell *value) {
   delete value_;
   value_ = value;
   if (value) {
-    
+
   } else {
-    
+
   }
   // @@protoc_insertion_point(field_set_allocated:Detection.FlowKeyValue.value)
 }
@@ -604,7 +606,7 @@ inline ::google::protobuf::uint32 IpRange::min() const {
   return min_;
 }
 inline void IpRange::set_min(::google::protobuf::uint32 value) {
-  
+
   min_ = value;
   // @@protoc_insertion_point(field_set:Detection.IpRange.min)
 }
@@ -618,7 +620,7 @@ inline ::google::protobuf::uint32 IpRange::max() const {
   return max_;
 }
 inline void IpRange::set_max(::google::protobuf::uint32 value) {
-  
+
   max_ = value;
   // @@protoc_insertion_point(field_set:Detection.IpRange.max)
 }
@@ -636,7 +638,7 @@ inline ::google::protobuf::int32 Cell::cols() const {
   return cols_;
 }
 inline void Cell::set_cols(::google::protobuf::int32 value) {
-  
+
   cols_ = value;
   // @@protoc_insertion_point(field_set:Detection.Cell.cols)
 }
@@ -660,12 +662,12 @@ inline void Cell::add_bytes(double value) {
   bytes_.Add(value);
   // @@protoc_insertion_point(field_add:Detection.Cell.bytes)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField<double> &
 Cell::bytes() const {
   // @@protoc_insertion_point(field_list:Detection.Cell.bytes)
   return bytes_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField<double> *
 Cell::mutable_bytes() {
   // @@protoc_insertion_point(field_mutable_list:Detection.Cell.bytes)
   return &bytes_;
@@ -690,12 +692,12 @@ inline void Cell::add_pkts(double value) {
   pkts_.Add(value);
   // @@protoc_insertion_point(field_add:Detection.Cell.pkts)
 }
-inline const ::google::protobuf::RepeatedField< double >&
+inline const ::google::protobuf::RepeatedField<double> &
 Cell::pkts() const {
   // @@protoc_insertion_point(field_list:Detection.Cell.pkts)
   return pkts_;
 }
-inline ::google::protobuf::RepeatedField< double >*
+inline ::google::protobuf::RepeatedField<double> *
 Cell::mutable_pkts() {
   // @@protoc_insertion_point(field_mutable_list:Detection.Cell.pkts)
   return &pkts_;
@@ -705,50 +707,50 @@ Cell::mutable_pkts() {
 inline void Cell::clear_output() {
   output_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline const ::std::string& Cell::output() const {
+inline const ::std::string &Cell::output() const {
   // @@protoc_insertion_point(field_get:Detection.Cell.output)
   return output_.GetNoArena();
 }
-inline void Cell::set_output(const ::std::string& value) {
-  
+inline void Cell::set_output(const ::std::string &value) {
+
   output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
   // @@protoc_insertion_point(field_set:Detection.Cell.output)
 }
 #if LANG_CXX11
-inline void Cell::set_output(::std::string&& value) {
-  
+inline void Cell::set_output(::std::string &&value) {
+
   output_.SetNoArena(
-    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+      &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
   // @@protoc_insertion_point(field_set_rvalue:Detection.Cell.output)
 }
 #endif
-inline void Cell::set_output(const char* value) {
-  GOOGLE_DCHECK(value != NULL);
-  
+inline void Cell::set_output(const char *value) {
+      GOOGLE_DCHECK(value != NULL);
+
   output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
   // @@protoc_insertion_point(field_set_char:Detection.Cell.output)
 }
-inline void Cell::set_output(const char* value, size_t size) {
-  
+inline void Cell::set_output(const char *value, size_t size) {
+
   output_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
-      ::std::string(reinterpret_cast<const char*>(value), size));
+                     ::std::string(reinterpret_cast<const char *>(value), size));
   // @@protoc_insertion_point(field_set_pointer:Detection.Cell.output)
 }
-inline ::std::string* Cell::mutable_output() {
-  
+inline ::std::string *Cell::mutable_output() {
+
   // @@protoc_insertion_point(field_mutable:Detection.Cell.output)
   return output_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline ::std::string* Cell::release_output() {
+inline ::std::string *Cell::release_output() {
   // @@protoc_insertion_point(field_release:Detection.Cell.output)
-  
+
   return output_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
-inline void Cell::set_allocated_output(::std::string* output) {
+inline void Cell::set_allocated_output(::std::string *output) {
   if (output != NULL) {
-    
+
   } else {
-    
+
   }
   output_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), output);
   // @@protoc_insertion_point(field_set_allocated:Detection.Cell.output)

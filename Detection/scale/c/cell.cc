@@ -1,7 +1,5 @@
 #include "cell.h"
 
-
-
 Cell::Cell() {
   for (int i = 0; i < 2; i++)
     for (int j = 0; j < 2; j++)
@@ -14,8 +12,8 @@ void Cell::Add(int i, int j, int p, int b) {
 }
 
 std::string Cell::ToString() {
-  for(int i = 0; i < 2; i++){
-    for(int j = 0; j < 2; j++){
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
       output += std::to_string(pkts[i][j]) + " " + std::to_string(bytes[i][j]) + " ";
     }
   }
