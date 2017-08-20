@@ -4,6 +4,9 @@ This section contains the code to read flow records exported in ASCII format usi
 
 ### How to run?
 
+Use make all to create executables for collector and reader.
+If compiling protobuf file is needed, use `protoc --cpp_out=./ map.proto`
+
 First start the collector process with `./collector`
 
 Next run reader(s).
