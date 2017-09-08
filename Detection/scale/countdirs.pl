@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# One argument, path to the folder with attack like /nfs_ds/users/mirkovic/nfs_ds/radb_ddos
 
 use File::Find;
 
@@ -28,7 +29,6 @@ for $file (sort keys %hash)
 	    last;
 	}
     }
-    $cmd = "python extract_flows.py $file -f flow-tools >> $dir.out";
-    print "$cmd\n";
-    system("$cmd");
+    #$cmd = "python extract_flows.py $file -f flow-tools >> $dir.out";
+    print "$file\n";
 }
