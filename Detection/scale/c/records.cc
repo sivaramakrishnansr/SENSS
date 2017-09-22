@@ -12,9 +12,9 @@ void FlowRecord::Update(const Flow &f, int dstours, int recordours) {
   if (f.proto == 6) {
     // TCP conns w push get to be counted as successful
     if (f.flags & 8)
-      isreq = 0;
+      isreq = 0; // succ = 1
     else
-      isreq = 1;
+      isreq = 1; // succ = 0
   } else if (IsService(f.sport) && !IsService(f.dport))
     isreq = 0;
   else if (!IsService(f.sport) && IsService(f.dport))
