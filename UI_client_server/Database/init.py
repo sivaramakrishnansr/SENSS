@@ -1,6 +1,6 @@
 import MySQLdb
 
-password=""
+password="usc558l"
 db=MySQLdb.connect(host="localhost",port=3306,user="root",passwd=password)
 cur=db.cursor()
 
