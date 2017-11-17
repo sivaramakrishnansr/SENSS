@@ -1,5 +1,7 @@
 <?php
 
+$server_base_url = "http://localhost/SENSS/UI_client_server/Server/api.php";
+
 function generate_request_headers() {
     $clientcert = file_get_contents('cert/node1cert.pem');
     $clientcert = base64_encode($clientcert);
@@ -38,39 +40,10 @@ if (isset($_GET['topology'])) {
         }
     }
 
-    $sql = sprintf("SELECT as_name, match_field, frequency, end_time FROM MONITORING_RULES WHERE end_time >= %d",
+    $sql = sprintf("SELECT as_name, match_field, frequency, end_time, monitor_id FROM MONITORING_RULES WHERE end_time >= %d",
         time());
     $result = $conn->query($sql);
     $topology['monitoring_rules'] = $result->fetch_all();
-    /*
-    $topology = array(
-        'self' => 'Porto',
-        'nodes' => array(
-            'Rennes', 'Eindhoven', 'Paris', 'Madrid', 'Faro', 'Barcelona', 'London', 'Berlin', 'New York', 'Manchester', 'Munich', 'Lisbon', 'Amsterdam', 'Frankfurt'
-        ),
-        'edges' => array(
-            array("Porto", "Lisbon"),
-            array("Rennes", "Paris"),
-            array("Eindhoven", "Amsterdam"),
-            array("Paris", "Frankfurt"),
-            array("Paris", "London"),
-            array("Paris", "Barcelona"),
-            array("Madrid", "Barcelona"),
-            array("Madrid", "Lisbon"),
-            array("Faro", "Lisbon"),
-            array("London", "New York"),
-            array("London", "Manchester"),
-            array("London", "Lisbon"),
-            array("London", "Amsterdam"),
-            array("London", "Frankfurt"),
-            array("Berlin", "Frankfurt"),
-            array("Berlin", "Munich"),
-            array("Munich", "Frankfurt"),
-            array("Amsterdam", "Frankfurt")
-
-        )
-    );
-    */
 
     echo json_encode($topology, true);
 }
@@ -93,14 +66,14 @@ if (isset($_GET['add_monitor'])) {
     }
     $data_string = json_encode($data_to_send);
 
-    $success_as_name = array();
+    $success_as_name_id = array();
 
     require_once "db_conf.php";
     $sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
 //        $url = $row['server_url'] . "/api.php?action=add_monitor";
-        $url = "http://localhost/SENSS_proxy/html/server/api.php?action=add_monitor";
+        $url = $server_base_url . "?action=add_monitor";
         $options = array(
             'http' => array(
                 'method' => 'POST',
@@ -111,34 +84,35 @@ if (isset($_GET['add_monitor'])) {
 
         $context = stream_context_create($options);
 
-        echo file_get_contents($url, false, $context);
-        $httpcode = http_response_code();
-        if ($httpcode == 200) {
-            array_push($success_as_name, $row['as_name']);
+        $add_monitor_response = file_get_contents($url, false, $context);
+        $add_monitor_response = json_decode($add_monitor_response, true);
+        if ($add_monitor_response['success']) {
+            array_push($success_as_name_id, array(
+                "as_name" => $row['as_name'],
+                "monitor_id" => $add_monitor_response['monitor_id'])
+            );
+            $sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id) VALUES ('%s', '%s', %d, %d, %d)",
+                $row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id']);
+            $conn->query($sql);
         }
 
-        $sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time) VALUES ('%s', '%s', %d, %d)",
-            $row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time);
-        $conn->query($sql);
     }
     $conn->commit();
     $response = array(
-        'as_name' => $success_as_name,
+        'as_name_id' => $success_as_name_id,
         'match' => $data_to_send
     );
 
     echo json_encode($response, true);
 }
 
-
-if (isset($_GET['get_monitor'])) {
-    if (!isset($_GET['as_name'])) {
+if(isset($_GET['remove_monitor'])) {
+    if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
         http_response_code(400);
         return;
     }
     $as_name = $_GET['as_name'];
-
-    $input = file_get_contents("php://input");
+    $monitor_id = $_GET['monitor_id'];
 
     require_once "db_conf.php";
 
@@ -150,13 +124,49 @@ if (isset($_GET['get_monitor'])) {
     }
     $senss_server_url = $result->fetch_all()[0][0];
 
-//    $url = $senss_server_url . "/api.php?action=get_monitor";
-    $url = "http://localhost/SENSS_proxy/html/server/api.php?action=get_monitor";
+//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
+    $url = $server_base_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
-            'method' => 'POST',
-            'header' => generate_request_headers(),
-            'content' => $input
+            'method' => 'GET',
+            'header' => generate_request_headers()
+        )
+    );
+
+    $context = stream_context_create($options);
+
+    $response = file_get_contents($url, false, $context);
+    $httpcode = http_response_code();
+    if ($httpcode == 200) {
+        echo $response;
+    }
+}
+
+
+if (isset($_GET['get_monitor'])) {
+    if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
+        http_response_code(400);
+        return;
+    }
+    $as_name = $_GET['as_name'];
+    $monitor_id = $_GET['monitor_id'];
+
+    require_once "db_conf.php";
+
+    $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
+    $result = $conn->query($sql);
+    if ($result->num_rows == 0) {
+        http_response_code(400);
+        return;
+    }
+    $senss_server_url = $result->fetch_all()[0][0];
+
+//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
+    $url = $server_base_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    $options = array(
+        'http' => array(
+            'method' => 'GET',
+            'header' => generate_request_headers()
         )
     );
 

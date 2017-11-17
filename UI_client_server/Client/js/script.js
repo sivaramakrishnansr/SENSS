@@ -12,12 +12,13 @@ function populateMonitoringValues(rowId, as_name, data) {
     }
 }
 
-function poll_stats(as_name, as_monitor_info) {
+function poll_stats(as_name, monitor_id, as_monitor_info) {
     var random = Math.random().toString(36).substring(7);
-    var markup = "<tr><td>" + as_name + "</td><td><pre>" + JSON.stringify(as_monitor_info, undefined, 4) +
+    var markup = "<tr id='monitor-row-" + random +"'><td>" + as_name + "</td><td><pre>" + JSON.stringify(as_monitor_info, undefined, 4) +
         "</pre></td><td id='packet-count-" + random + "'></td><td id='byte-count-" + random + "'>" +
-        "</td><td id='speed-" + random + "'></td><td><button type='button' class='btn btn-success'>" +
-        "Add Filter</button></td></tr>";
+        "</td><td id='speed-" + random + "'></td><td><p><button type='button' class='btn btn-default' " +
+        "id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
+        "id='add-filter-" + random + "'>Add Filter</button></p></td></tr>";
     $("#table-monitor").append(markup);
 
     var timer = setInterval(function () {
@@ -26,15 +27,28 @@ function poll_stats(as_name, as_monitor_info) {
         }
 
         $.ajax({
-            url: BASE_URI + "get_monitor&as_name=" + as_name,
-            type: "POST",
-            data: JSON.stringify(as_monitor_info.match),
+            url: BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
+            type: "GET",
             success: function (result) {
-                populateMonitoringValues(random, as_name, JSON.parse(result));
+                var resultParsed = JSON.parse(result);
+                if (resultParsed.success) {
+                    populateMonitoringValues(random, as_name, resultParsed.data);
+                }
             }
         });
     }, (parseInt(as_monitor_info.frequency) + 2) * 1000); // rule[2] is actual frequency with which the backend system will update the database/
     // We give couple more seconds to reflect the data in the DB and then fetch the updated data.
+
+    $("#remove-monitor-" + random).click(function () {
+        $.ajax({
+            url: BASE_URI + "remove_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
+            type: "GET",
+            success: function (result) {
+                clearInterval(timer);
+                $("#monitor-row-" + random).remove();
+            }
+        });
+    });
 }
 
 
@@ -74,8 +88,8 @@ $(document).ready(function () {
             contentType: "application/json",
             dataType: "json",
             success: function (result) {
-                result.as_name.forEach(function (as_name) {
-                    poll_stats(as_name, result.match);
+                result.as_name_id.forEach(function (as_name_id) {
+                    poll_stats(as_name_id.as_name, as_name_id.monitor_id, result.match);
                 });
                 $('#add-monitor-modal').modal('toggle');
             }
@@ -86,7 +100,7 @@ $(document).ready(function () {
         $("#set-threshold-modal").modal('show');
     });
 
-    $('.dropdown-menu a').click(function(){
+    $('.dropdown-menu a').click(function () {
         var rate = $(this).text();
         $('#selected').text(rate);
         if (rate == "KBps") {
@@ -99,7 +113,7 @@ $(document).ready(function () {
             thresholdRateMultiplier = 1000 * 1000 * 1000 * 1000;
         }
     });
-    
+
     $("#set-threshold-button").click(function () {
         var value = parseInt($("#threshold-value").val());
         threshold = value * thresholdRateMultiplier;

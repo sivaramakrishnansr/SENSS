@@ -28,13 +28,36 @@ switch ($action) {
 
     case "add_monitor":
         require_once "monitor.php";
-        add_monitor($client_info, file_get_contents("php://input"));
+        $response = add_monitor($client_info, file_get_contents("php://input"));
+        http_response_code(200);
+        echo json_encode($response, true);
+        break;
+
+    case "remove_monitor":
+        require_once "monitor.php";
+        if (!isset($_GET['monitor_id'])) {
+            echo json_encode(array(
+                    "success" => false,
+                    "error" => 400
+                )
+            );
+            return;
+        }
+        remove_monitor($client_info, $_GET['monitor_id']);
         http_response_code(200);
         break;
 
     case "get_monitor":
         require_once "monitor.php";
-        $data = get_monitor($client_info, file_get_contents("php://input"));
+        if (!isset($_GET['monitor_id'])) {
+            echo json_encode(array(
+                    "success" => false,
+                    "error" => 400
+                )
+            );
+            return;
+        }
+        $data = get_monitor($client_info, $_GET['monitor_id']);
         http_response_code(200);
         echo json_encode($data, true);
         return;

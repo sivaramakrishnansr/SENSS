@@ -1,5 +1,4 @@
-BASE_URI = "http://localhost/SENSS_proxy/html/api.php?";
-var child_parent = {};
+BASE_URI = "http://localhost/SENSS/UI_client_server/Client/api.php?";
 
 
 function populateMonitoringTable(nodes) {
@@ -114,9 +113,10 @@ function renderInitialTopology(topology) {
         var as_monitor_info = {
             match: rule[1],
             frequency: rule[2],
-            end_time: rule[3]
+            end_time: rule[3],
+            monitor_id: rule[4]
         };
-        poll_stats(rule[0], JSON.parse(rule[1]));
+        poll_stats(rule[0], rule[4], JSON.parse(rule[1]));
         /*var random = Math.random().toString(36).substring(7);
         var markup = "<tr><td>" + rule[0] + "</td><td><pre>" + JSON.stringify(JSON.parse(rule[1]), undefined, 4) +
             "</pre></td><td id='packet-count-" + random + "'></td><td id='byte-count-" + random + "'></td>" +

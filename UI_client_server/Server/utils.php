@@ -2,6 +2,9 @@
 
 function getIpRange($cidr)
 {
+    if (strpos($cidr, '/') == false) {
+        $cidr .= '/32';
+    }
     list($ip, $mask) = explode('/', $cidr);
 
     $maskBinStr = str_repeat("1", $mask) . str_repeat("0", 32 - $mask);      //net mask binary string
@@ -30,4 +33,11 @@ function ip_in_range($ip, $range)
     $wildcard_decimal = pow(2, (32 - $netmask)) - 1;
     $netmask_decimal = ~$wildcard_decimal;
     return (($ip_decimal & $netmask_decimal) == ($range_decimal & $netmask_decimal));
+}
+
+function validate_ip_range($request_prefix, $client_prefix)
+{
+    $ip_range = getIpRange($request_prefix);
+    return ip_in_range(long2ip($ip_range['firstIP']), $client_prefix) &&
+        ip_in_range(long2ip($ip_range['lastIP']), $client_prefix);
 }
