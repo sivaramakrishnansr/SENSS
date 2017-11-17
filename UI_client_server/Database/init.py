@@ -1,6 +1,6 @@
 import MySQLdb
 
-password=""
+password="usc558l"
 db=MySQLdb.connect(host="localhost",port=3306,user="root",passwd=password)
 cur=db.cursor()
 
@@ -11,25 +11,6 @@ except:
 	print "Database SENSS already exists"
 
 cur.execute("USE SENSS")
-
-try:
-	cur.execute("CREATE TABLE DIRECT_FLOODS(ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,REQUEST_TO VARCHAR(50),O_TIME VARCHAR(50),TOTAL_TIMES VARCHAR(50),TAG VARCHAR(50),DONE VARCHAR(1),RESULT VARCHAR(50000),FILTER VARCHAR(5000),PROXY VARCHAR(1),ATTACK VARCHAR(1),ATTACK_FROM VARCHAR(200))")
-	print "Table DIRECT_FLOODS created"
-except:
-	print "Table DIRECT_FLOODS already exists"
-
-try:
-	cur.execute("CREATE TABLE CROSSFIRE(ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,REQUEST_TO VARCHAR(50),O_TIME VARCHAR(50),TOTAL_TIMES VARCHAR(50),TAG VARCHAR(50),DONE VARCHAR(1),RESULT VARCHAR(50000),FILTER VARCHAR(5000))")
-	print "Table CROSSFIRE created"
-except:
-	print "Table CROSSFIRE already exists"
-
-
-try:
-	cur.execute("CREATE TABLE FILTERS(ID INT NOT NULL PRIMARY KEY AUTO_INCREMENT,DPID VARCHAR(50),MATCH_FLOW VARCHAR(50))")
-	print "Table FILTERS created"
-except:
-	print "Table FILTERS already exists"
 
 try:
 	cur.execute("CREATE TABLE `CLIENT_LOGS` (`id` bigint(20) NOT NULL AUTO_INCREMENT, `as_name` varchar(45) NOT NULL, `log_type` varchar(45) NOT NULL, `match_field` text, `packet_count` bigint(20) DEFAULT NULL, `byte_count` bigint(20) DEFAULT NULL, `speed` varchar(45) DEFAULT NULL, `flag` int(1) DEFAULT 0, `active` int(1) DEFAULT NULL, `frequency` int(11) DEFAULT 0, `end_time` int(15) DEFAULT 0, PRIMARY KEY (`id`))")
