@@ -25,7 +25,7 @@ switch ($action) {
             );
             return;
         }
-        add_filter($client_info, $_GET['monitor_id']);
+        add_filter($client_info, (int)$_GET['monitor_id']);
         http_response_code(200);
         break;
 
@@ -39,7 +39,7 @@ switch ($action) {
             );
             return;
         }
-        remove_filter($client_info, $_GET['monitor_id']);
+        remove_filter($client_info, (int)$_GET['monitor_id']);
         http_response_code(200);
         break;
 
@@ -60,7 +60,7 @@ switch ($action) {
             );
             return;
         }
-        remove_monitor($client_info, $_GET['monitor_id']);
+        remove_monitor($client_info, (int)$_GET['monitor_id']);
         http_response_code(200);
         break;
 
@@ -74,7 +74,7 @@ switch ($action) {
             );
             return;
         }
-        $data = get_monitor($client_info, $_GET['monitor_id']);
+        $data = get_monitor($client_info, (int)$_GET['monitor_id']);
         http_response_code(200);
         echo json_encode($data, true);
         return;

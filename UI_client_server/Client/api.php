@@ -178,3 +178,74 @@ if (isset($_GET['get_monitor'])) {
         echo $response;
     }
 }
+
+if(isset($_GET['add_filter'])) {
+    if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
+        http_response_code(400);
+        return;
+    }
+    $as_name = $_GET['as_name'];
+    $monitor_id = $_GET['monitor_id'];
+
+    require_once "db_conf.php";
+
+    $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
+    $result = $conn->query($sql);
+    if ($result->num_rows == 0) {
+        http_response_code(400);
+        return;
+    }
+    $senss_server_url = $result->fetch_all()[0][0];
+
+//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
+    $url = $server_base_url . "?action=add_filter&monitor_id=" . $monitor_id;
+    $options = array(
+        'http' => array(
+            'method' => 'GET',
+            'header' => generate_request_headers()
+        )
+    );
+
+    $context = stream_context_create($options);
+
+    $response = file_get_contents($url, false, $context);
+    echo $response;
+    $httpcode = http_response_code();
+    http_response_code($httpcode);
+    return;
+}
+
+if(isset($_GET['remove_filter'])) {
+    if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
+        http_response_code(400);
+        return;
+    }
+    $as_name = $_GET['as_name'];
+    $monitor_id = $_GET['monitor_id'];
+
+    require_once "db_conf.php";
+
+    $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
+    $result = $conn->query($sql);
+    if ($result->num_rows == 0) {
+        http_response_code(400);
+        return;
+    }
+    $senss_server_url = $result->fetch_all()[0][0];
+
+//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
+    $url = $server_base_url . "?action=remove_filter&monitor_id=" . $monitor_id;
+    $options = array(
+        'http' => array(
+            'method' => 'GET',
+            'header' => generate_request_headers()
+        )
+    );
+
+    $context = stream_context_create($options);
+
+    $response = file_get_contents($url, false, $context);
+    $httpcode = http_response_code();
+    http_response_code($httpcode);
+    return;
+}

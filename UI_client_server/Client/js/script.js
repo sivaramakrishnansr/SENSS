@@ -18,8 +18,11 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         "</pre></td><td id='packet-count-" + random + "'></td><td id='byte-count-" + random + "'>" +
         "</td><td id='speed-" + random + "'></td><td><p><button type='button' class='btn btn-default' " +
         "id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
-        "id='add-filter-" + random + "'>Add Filter</button></p></td></tr>";
+        "id='add-filter-" + random + "'>Add Filter</button></p><p><button type='button' class='btn btn-danger' " +
+        "id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
     $("#table-monitor").append(markup);
+
+    $("#remove-filter-" + random).hide();
 
     var timer = setInterval(function () {
         if (Math.floor(Date.now() / 1000) > as_monitor_info.end_time) {
@@ -46,6 +49,28 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
             success: function (result) {
                 clearInterval(timer);
                 $("#monitor-row-" + random).remove();
+            }
+        });
+    });
+
+    $("#add-filter-" + random).click(function () {
+        $.ajax({
+            url: BASE_URI + "add_filter&as_name=" + as_name + "&monitor_id=" + monitor_id,
+            type: "GET",
+            success: function (result) {
+                $("#add-filter-" + random).hide();
+                $("#remove-filter-" + random).show();
+            }
+        });
+    });
+
+    $("#remove-filter-" + random).click(function () {
+        $.ajax({
+            url: BASE_URI + "remove_filter&as_name=" + as_name + "&monitor_id=" + monitor_id,
+            type: "GET",
+            success: function (result) {
+                $("#add-filter-" + random).show();
+                $("#remove-filter-" + random).hide();
             }
         });
     });

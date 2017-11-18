@@ -6,12 +6,13 @@ function add_filter($client_info, $monitor_id)
     require_once "db.php";
 
     $sql = sprintf("SELECT match_field FROM CLIENT_LOGS WHERE as_name = '%s' AND id = %d AND log_type = 'MONITOR' AND 
-            end_time >= %d", $client_info['as_name'], $monitor_id, time());
+            end_time >= %d", $client_info['as_domain'], $monitor_id, time());
     $result = $conn1->query($sql);
     $match_field = $result->fetch_assoc()['match_field'];
     $add_rule_data = json_decode($match_field, true);
     $add_rule_data['action'] = array();
 
+    require_once "constants.php";
     $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/modify");
     curl_setopt_array($ch, array(
         CURLOPT_POST => TRUE,
@@ -34,7 +35,8 @@ function add_filter($client_info, $monitor_id)
     }*/
 
     $sql = sprintf("UPDATE CLIENT_LOGS SET flag = 1 WHERE as_name = '%s' AND id = %d AND log_type = 'MONITOR' AND 
-            end_time >= %d", $client_info['as_name'], $monitor_id, time());
+            end_time >= %d", $client_info['as_domain'], $monitor_id, time());
+    echo $sql;
     $conn1->query($sql);
     $conn1->commit();
 }
@@ -45,11 +47,12 @@ function remove_filter($client_info, $monitor_id)
     require_once "db.php";
 
     $sql = sprintf("SELECT match_field FROM CLIENT_LOGS WHERE as_name = '%s' AND id = %d AND log_type = 'MONITOR'",
-        $client_info['as_name'], $monitor_id);
+        $client_info['as_domain'], $monitor_id);
     $result = $conn1->query($sql);
     $match_field = $result->fetch_assoc()['match_field'];
     $add_rule_data = json_decode($match_field, true);
 
+    require_once "constants.php";
     $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/delete");
     curl_setopt_array($ch, array(
         CURLOPT_POST => TRUE,
@@ -72,7 +75,7 @@ function remove_filter($client_info, $monitor_id)
     }*/
 
     $sql = sprintf("UPDATE CLIENT_LOGS SET flag = 0 WHERE as_name = '%s' AND id = %d AND log_type = 'MONITOR'",
-        $client_info['as_name'], $monitor_id);
+        $client_info['as_domain'], $monitor_id);
     $conn1->query($sql);
     $conn1->commit();
 }
