@@ -16,14 +16,31 @@ $action = $_GET['action'];
 
 switch ($action) {
     case "add_filter":
-        require_once "add_filter.php";
-        if (!add_filter(file_get_contents("php://input"))) {
-            http_response_code(400);
+        require_once "filter.php";
+        if (!isset($_GET['monitor_id'])) {
+            echo json_encode(array(
+                    "success" => false,
+                    "error" => 400
+                )
+            );
             return;
         }
+        add_filter($client_info, $_GET['monitor_id']);
+        http_response_code(200);
         break;
 
     case "remove_filter":
+        require_once "filter.php";
+        if (!isset($_GET['monitor_id'])) {
+            echo json_encode(array(
+                    "success" => false,
+                    "error" => 400
+                )
+            );
+            return;
+        }
+        remove_filter($client_info, $_GET['monitor_id']);
+        http_response_code(200);
         break;
 
     case "add_monitor":

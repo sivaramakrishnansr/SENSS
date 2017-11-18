@@ -6,7 +6,6 @@ function add_monitor($client_info, $data)
     require_once "db.php";
 
     $data = json_decode($data, true);
-    // TODO: Validation code here - check if match nw_dst is contained within client_prefix
     if (!isset($data['match']['nw_dst'])) {
         return array(
             "success" => false,
@@ -14,12 +13,12 @@ function add_monitor($client_info, $data)
         );
     }
     require_once "utils.php";
-    /*if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
+    if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
         return array(
             "success" => false,
             "error" => 402
         );
-    }*/
+    }
 
     $frequency = (int)$data['frequency'];
     $end_time = (int)$data['end_time'];

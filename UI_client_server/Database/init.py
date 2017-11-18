@@ -38,7 +38,7 @@ except Exception as e:
 	print "Table AS_URLS already exists"
 	
 try:
-	cur.execute("CREATE TABLE `MONITORING_RULES` (`id` int(11) NOT NULL AUTO_INCREMENT, `as_name` varchar(45) NOT NULL, `match_field` text, `frequency` int(5) DEFAULT 0, `end_time` int(15) DEFAULT 0, PRIMARY KEY (`id`))")
+	cur.execute("CREATE TABLE `MONITORING_RULES` (`id` int(11) NOT NULL AUTO_INCREMENT, `as_name` varchar(45) NOT NULL, `match_field` text, `frequency` int(5) DEFAULT 0, `end_time` int(15) DEFAULT 0, `monitor_id` bigint(20) DEFAULT 0, PRIMARY KEY (`id`))")
 	print "Table MONITORING_RULES created"
 except Exception as e:
 	print e
