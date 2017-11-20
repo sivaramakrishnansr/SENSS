@@ -45,10 +45,10 @@ function add_monitor($client_info, $data)
         CURLOPT_HTTPHEADER => array(
             'Content-Type: application/json'
         ),
-        CURLOPT_POSTFIELDS => json_encode($add_rule_data)
+        CURLOPT_POSTFIELDS => json_encode($add_rule_data, JSON_UNESCAPED_SLASHES)
     ));
 
-    /*curl_exec($ch);
+    curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
@@ -57,7 +57,7 @@ function add_monitor($client_info, $data)
             "success" => false,
             "error" => $http_code
         );
-    }*/
+    }
 
     $sql = sprintf("SELECT * FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
         $client_info['as_domain'], json_encode($add_rule_data));

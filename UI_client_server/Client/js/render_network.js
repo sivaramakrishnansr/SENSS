@@ -1,4 +1,4 @@
-BASE_URI = "http://localhost/SENSS/UI_client_server/Client/api.php?";
+BASE_URI = "api.php?";
 
 
 function populateMonitoringTable(nodes) {
