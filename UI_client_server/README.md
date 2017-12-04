@@ -28,22 +28,22 @@ To launch Client GUI, launch Client/direct_floods_multiple_view.php from your we
 
 You will see a rendered topology with all the SENSS Servers like the image below:
 
-![Initial_topology](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/initial.png")
+![Initial_topology](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/initial.png)
 
 You may set the threshold for the SENSS Client, by clicking the "Edit" option besides the Threshold field. A dialog will appear as below:
 
-![Set_Threshold](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/2_set_threshold.png")
+![Set_Threshold](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/2_set_threshold.png)
 
 To add monitor(s) to SENSS Servers, click the "Add Monitoring Rule" option, specify the SENSS Servers where a monitor is to be added, and enter the monitor parameters/filters:
  
-![Add_Monitor](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/3_add_monitoring_rule.png")
+![Add_Monitor](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/3_add_monitoring_rule.png)
 
 A table will populate with the monitoring values from the SENSS Servers you requested monitoring data. The values are refreshed every x seconds provided in the "Monitoring Frequency" field while adding the monitoring rule.
 
-![Monitoring](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/4_monitoring.png")
+![Monitoring](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/4_monitoring.png)
 
 The inbound traffic metric (speed) will also appear in the topology view with the green color indicating the traffic is below the specified threshold, and red indicating the opposite.
  
 You may add a filter to any of the SENSS Server for traffic coming to your AS, by selecting the option "Add Filter". Traffic coming from that AS will be filtered.
 
-![Add_Filter](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/5_add_filter.png")
+![Add_Filter](https://github.com/sivaramakrishnansr/SENSS/raw/master/UI_client_server/screenshots/5_add_filter.png)
