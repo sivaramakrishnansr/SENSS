@@ -6,9 +6,9 @@ function populateMonitoringValues(rowId, as_name, data) {
     $("#byte-count-" + rowId).html(data.byte_count);
     $("#speed-" + rowId).html(data.speed);
     if (parseInt(data.speed) >= threshold) {
-        cy.$("#root_" + as_name).data("name", data.speed).style("line-color", "red");
+        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
     } else {
-        cy.$("#root_" + as_name).data("name", data.speed).style("line-color", "green");
+        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "green");
     }
 }
 
@@ -77,12 +77,28 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
 }
 
 
+function display_threshold(int_threshold) {
+    var zeros = parseInt(Math.log(int_threshold) / Math.log(10));
+    if (zeros >= 12) {
+        return (int_threshold / Math.pow(10, 12)).toString() + " TBps";
+    } else if (zeros >= 9) {
+        return (int_threshold / Math.pow(10, 9)).toString() + " GBps";
+    } else if (zeros >= 6) {
+        return (int_threshold / Math.pow(10, 6)).toString() + " MBps";
+    } else if (zeros >= 3) {
+        return (int_threshold / Math.pow(10, 3)).toString() + " KBps";
+    } else {
+        return int_threshold.toString() + " Bps";
+    }
+}
+
+
 function set_threshold() {
     var storedThreshold = localStorage.getItem("threshold");
     if (storedThreshold != null) {
         threshold = parseInt(storedThreshold);
     }
-    $("#current-threshold").html(threshold);
+    $("#current-threshold").html(display_threshold(threshold));
 }
 
 $(document).ready(function () {
@@ -143,7 +159,7 @@ $(document).ready(function () {
         var value = parseInt($("#threshold-value").val());
         threshold = value * thresholdRateMultiplier;
         localStorage.setItem("threshold", threshold);
-        $("#current-threshold").html(threshold);
+        $("#current-threshold").html(display_threshold(threshold));
         $("#set-threshold-modal").modal('hide');
     });
 });
