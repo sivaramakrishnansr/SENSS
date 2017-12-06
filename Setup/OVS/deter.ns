@@ -1,0 +1,1392 @@
+set ns [new Simulator]
+source tb_compat.tcl
+
+set i1 [$ns node]
+tb-add-node-attribute $i1 containers:node_type qemu
+tb-set-node-os $i1 Ubuntu1404-64-STD
+set i2 [$ns node]
+tb-add-node-attribute $i2 containers:node_type qemu
+tb-set-node-os $i2 Ubuntu1404-64-STD
+set i3 [$ns node]
+tb-add-node-attribute $i3 containers:node_type qemu
+tb-set-node-os $i3 Ubuntu1404-64-STD
+set i4 [$ns node]
+tb-add-node-attribute $i4 containers:node_type qemu
+tb-set-node-os $i4 Ubuntu1404-64-STD
+set i5 [$ns node]
+tb-add-node-attribute $i5 containers:node_type qemu
+tb-set-node-os $i5 Ubuntu1404-64-STD
+set i6 [$ns node]
+tb-add-node-attribute $i6 containers:node_type qemu
+tb-set-node-os $i6 Ubuntu1404-64-STD
+set i7 [$ns node]
+tb-add-node-attribute $i7 containers:node_type qemu
+tb-set-node-os $i7 Ubuntu1404-64-STD
+set i8 [$ns node]
+tb-add-node-attribute $i8 containers:node_type qemu
+tb-set-node-os $i8 Ubuntu1404-64-STD
+set i9 [$ns node]
+tb-add-node-attribute $i9 containers:node_type qemu
+tb-set-node-os $i9 Ubuntu1404-64-STD
+set i10 [$ns node]
+tb-add-node-attribute $i10 containers:node_type qemu
+tb-set-node-os $i10 Ubuntu1404-64-STD
+set i11 [$ns node]
+tb-add-node-attribute $i11 containers:node_type qemu
+tb-set-node-os $i11 Ubuntu1404-64-STD
+set i12 [$ns node]
+tb-add-node-attribute $i12 containers:node_type qemu
+tb-set-node-os $i12 Ubuntu1404-64-STD
+set i13 [$ns node]
+tb-add-node-attribute $i13 containers:node_type qemu
+tb-set-node-os $i13 Ubuntu1404-64-STD
+set i14 [$ns node]
+tb-add-node-attribute $i14 containers:node_type qemu
+tb-set-node-os $i14 Ubuntu1404-64-STD
+set i15 [$ns node]
+tb-add-node-attribute $i15 containers:node_type qemu
+tb-set-node-os $i15 Ubuntu1404-64-STD
+set i16 [$ns node]
+tb-add-node-attribute $i16 containers:node_type qemu
+tb-set-node-os $i16 Ubuntu1404-64-STD
+set i17 [$ns node]
+tb-add-node-attribute $i17 containers:node_type qemu
+tb-set-node-os $i17 Ubuntu1404-64-STD
+set i18 [$ns node]
+tb-add-node-attribute $i18 containers:node_type qemu
+tb-set-node-os $i18 Ubuntu1404-64-STD
+set i19 [$ns node]
+tb-add-node-attribute $i19 containers:node_type qemu
+tb-set-node-os $i19 Ubuntu1404-64-STD
+set i20 [$ns node]
+tb-add-node-attribute $i20 containers:node_type qemu
+tb-set-node-os $i20 Ubuntu1404-64-STD
+set i21 [$ns node]
+tb-add-node-attribute $i21 containers:node_type qemu
+tb-set-node-os $i21 Ubuntu1404-64-STD
+set i22 [$ns node]
+tb-add-node-attribute $i22 containers:node_type qemu
+tb-set-node-os $i22 Ubuntu1404-64-STD
+set i23 [$ns node]
+tb-add-node-attribute $i23 containers:node_type qemu
+tb-set-node-os $i23 Ubuntu1404-64-STD
+set i24 [$ns node]
+tb-add-node-attribute $i24 containers:node_type qemu
+tb-set-node-os $i24 Ubuntu1404-64-STD
+set i25 [$ns node]
+tb-add-node-attribute $i25 containers:node_type qemu
+tb-set-node-os $i25 Ubuntu1404-64-STD
+set i26 [$ns node]
+tb-add-node-attribute $i26 containers:node_type qemu
+tb-set-node-os $i26 Ubuntu1404-64-STD
+set i27 [$ns node]
+tb-add-node-attribute $i27 containers:node_type qemu
+tb-set-node-os $i27 Ubuntu1404-64-STD
+set i28 [$ns node]
+tb-add-node-attribute $i28 containers:node_type qemu
+tb-set-node-os $i28 Ubuntu1404-64-STD
+set i29 [$ns node]
+tb-add-node-attribute $i29 containers:node_type qemu
+tb-set-node-os $i29 Ubuntu1404-64-STD
+set i30 [$ns node]
+tb-add-node-attribute $i30 containers:node_type qemu
+tb-set-node-os $i30 Ubuntu1404-64-STD
+set i31 [$ns node]
+tb-add-node-attribute $i31 containers:node_type qemu
+tb-set-node-os $i31 Ubuntu1404-64-STD
+set i32 [$ns node]
+tb-add-node-attribute $i32 containers:node_type qemu
+tb-set-node-os $i32 Ubuntu1404-64-STD
+set i33 [$ns node]
+tb-add-node-attribute $i33 containers:node_type qemu
+tb-set-node-os $i33 Ubuntu1404-64-STD
+set i34 [$ns node]
+tb-add-node-attribute $i34 containers:node_type qemu
+tb-set-node-os $i34 Ubuntu1404-64-STD
+set i35 [$ns node]
+tb-add-node-attribute $i35 containers:node_type qemu
+tb-set-node-os $i35 Ubuntu1404-64-STD
+set i36 [$ns node]
+tb-add-node-attribute $i36 containers:node_type qemu
+tb-set-node-os $i36 Ubuntu1404-64-STD
+set i37 [$ns node]
+tb-add-node-attribute $i37 containers:node_type qemu
+tb-set-node-os $i37 Ubuntu1404-64-STD
+set i38 [$ns node]
+tb-add-node-attribute $i38 containers:node_type qemu
+tb-set-node-os $i38 Ubuntu1404-64-STD
+set i39 [$ns node]
+tb-add-node-attribute $i39 containers:node_type qemu
+tb-set-node-os $i39 Ubuntu1404-64-STD
+set i40 [$ns node]
+tb-add-node-attribute $i40 containers:node_type qemu
+tb-set-node-os $i40 Ubuntu1404-64-STD
+set i41 [$ns node]
+tb-add-node-attribute $i41 containers:node_type qemu
+tb-set-node-os $i41 Ubuntu1404-64-STD
+set i42 [$ns node]
+tb-add-node-attribute $i42 containers:node_type qemu
+tb-set-node-os $i42 Ubuntu1404-64-STD
+set i43 [$ns node]
+tb-add-node-attribute $i43 containers:node_type qemu
+tb-set-node-os $i43 Ubuntu1404-64-STD
+set i44 [$ns node]
+tb-add-node-attribute $i44 containers:node_type qemu
+tb-set-node-os $i44 Ubuntu1404-64-STD
+set i45 [$ns node]
+tb-add-node-attribute $i45 containers:node_type qemu
+tb-set-node-os $i45 Ubuntu1404-64-STD
+set i46 [$ns node]
+tb-add-node-attribute $i46 containers:node_type qemu
+tb-set-node-os $i46 Ubuntu1404-64-STD
+set i47 [$ns node]
+tb-add-node-attribute $i47 containers:node_type qemu
+tb-set-node-os $i47 Ubuntu1404-64-STD
+set i48 [$ns node]
+tb-add-node-attribute $i48 containers:node_type qemu
+tb-set-node-os $i48 Ubuntu1404-64-STD
+set i49 [$ns node]
+tb-add-node-attribute $i49 containers:node_type qemu
+tb-set-node-os $i49 Ubuntu1404-64-STD
+set i50 [$ns node]
+tb-add-node-attribute $i50 containers:node_type qemu
+tb-set-node-os $i50 Ubuntu1404-64-STD
+set i51 [$ns node]
+tb-add-node-attribute $i51 containers:node_type qemu
+tb-set-node-os $i51 Ubuntu1404-64-STD
+set i52 [$ns node]
+tb-add-node-attribute $i52 containers:node_type qemu
+tb-set-node-os $i52 Ubuntu1404-64-STD
+set i53 [$ns node]
+tb-add-node-attribute $i53 containers:node_type qemu
+tb-set-node-os $i53 Ubuntu1404-64-STD
+set i54 [$ns node]
+tb-add-node-attribute $i54 containers:node_type qemu
+tb-set-node-os $i54 Ubuntu1404-64-STD
+set i55 [$ns node]
+tb-add-node-attribute $i55 containers:node_type qemu
+tb-set-node-os $i55 Ubuntu1404-64-STD
+set i56 [$ns node]
+tb-add-node-attribute $i56 containers:node_type qemu
+tb-set-node-os $i56 Ubuntu1404-64-STD
+set i57 [$ns node]
+tb-add-node-attribute $i57 containers:node_type qemu
+tb-set-node-os $i57 Ubuntu1404-64-STD
+set i58 [$ns node]
+tb-add-node-attribute $i58 containers:node_type qemu
+tb-set-node-os $i58 Ubuntu1404-64-STD
+set i59 [$ns node]
+tb-add-node-attribute $i59 containers:node_type qemu
+tb-set-node-os $i59 Ubuntu1404-64-STD
+set i60 [$ns node]
+tb-add-node-attribute $i60 containers:node_type qemu
+tb-set-node-os $i60 Ubuntu1404-64-STD
+set i61 [$ns node]
+tb-add-node-attribute $i61 containers:node_type qemu
+tb-set-node-os $i61 Ubuntu1404-64-STD
+set i62 [$ns node]
+tb-add-node-attribute $i62 containers:node_type qemu
+tb-set-node-os $i62 Ubuntu1404-64-STD
+set i63 [$ns node]
+tb-add-node-attribute $i63 containers:node_type qemu
+tb-set-node-os $i63 Ubuntu1404-64-STD
+set i64 [$ns node]
+tb-add-node-attribute $i64 containers:node_type qemu
+tb-set-node-os $i64 Ubuntu1404-64-STD
+set i65 [$ns node]
+tb-add-node-attribute $i65 containers:node_type qemu
+tb-set-node-os $i65 Ubuntu1404-64-STD
+set i66 [$ns node]
+tb-add-node-attribute $i66 containers:node_type qemu
+tb-set-node-os $i66 Ubuntu1404-64-STD
+set i67 [$ns node]
+tb-add-node-attribute $i67 containers:node_type qemu
+tb-set-node-os $i67 Ubuntu1404-64-STD
+set i68 [$ns node]
+tb-add-node-attribute $i68 containers:node_type qemu
+tb-set-node-os $i68 Ubuntu1404-64-STD
+set i69 [$ns node]
+tb-add-node-attribute $i69 containers:node_type qemu
+tb-set-node-os $i69 Ubuntu1404-64-STD
+set i70 [$ns node]
+tb-add-node-attribute $i70 containers:node_type qemu
+tb-set-node-os $i70 Ubuntu1404-64-STD
+set i71 [$ns node]
+tb-add-node-attribute $i71 containers:node_type qemu
+tb-set-node-os $i71 Ubuntu1404-64-STD
+set i72 [$ns node]
+tb-add-node-attribute $i72 containers:node_type qemu
+tb-set-node-os $i72 Ubuntu1404-64-STD
+set i73 [$ns node]
+tb-add-node-attribute $i73 containers:node_type qemu
+tb-set-node-os $i73 Ubuntu1404-64-STD
+set i74 [$ns node]
+tb-add-node-attribute $i74 containers:node_type qemu
+tb-set-node-os $i74 Ubuntu1404-64-STD
+set i75 [$ns node]
+tb-add-node-attribute $i75 containers:node_type qemu
+tb-set-node-os $i75 Ubuntu1404-64-STD
+set i76 [$ns node]
+tb-add-node-attribute $i76 containers:node_type qemu
+tb-set-node-os $i76 Ubuntu1404-64-STD
+set i77 [$ns node]
+tb-add-node-attribute $i77 containers:node_type qemu
+tb-set-node-os $i77 Ubuntu1404-64-STD
+set i78 [$ns node]
+tb-add-node-attribute $i78 containers:node_type qemu
+tb-set-node-os $i78 Ubuntu1404-64-STD
+set i79 [$ns node]
+tb-add-node-attribute $i79 containers:node_type qemu
+tb-set-node-os $i79 Ubuntu1404-64-STD
+set i80 [$ns node]
+tb-add-node-attribute $i80 containers:node_type qemu
+tb-set-node-os $i80 Ubuntu1404-64-STD
+set i81 [$ns node]
+tb-add-node-attribute $i81 containers:node_type qemu
+tb-set-node-os $i81 Ubuntu1404-64-STD
+set i82 [$ns node]
+tb-add-node-attribute $i82 containers:node_type qemu
+tb-set-node-os $i82 Ubuntu1404-64-STD
+set i83 [$ns node]
+tb-add-node-attribute $i83 containers:node_type qemu
+tb-set-node-os $i83 Ubuntu1404-64-STD
+set i84 [$ns node]
+tb-add-node-attribute $i84 containers:node_type qemu
+tb-set-node-os $i84 Ubuntu1404-64-STD
+set i85 [$ns node]
+tb-add-node-attribute $i85 containers:node_type qemu
+tb-set-node-os $i85 Ubuntu1404-64-STD
+set i86 [$ns node]
+tb-add-node-attribute $i86 containers:node_type qemu
+tb-set-node-os $i86 Ubuntu1404-64-STD
+set i87 [$ns node]
+tb-add-node-attribute $i87 containers:node_type qemu
+tb-set-node-os $i87 Ubuntu1404-64-STD
+set i88 [$ns node]
+tb-add-node-attribute $i88 containers:node_type qemu
+tb-set-node-os $i88 Ubuntu1404-64-STD
+set i89 [$ns node]
+tb-add-node-attribute $i89 containers:node_type qemu
+tb-set-node-os $i89 Ubuntu1404-64-STD
+set i90 [$ns node]
+tb-add-node-attribute $i90 containers:node_type qemu
+tb-set-node-os $i90 Ubuntu1404-64-STD
+set i91 [$ns node]
+tb-add-node-attribute $i91 containers:node_type qemu
+tb-set-node-os $i91 Ubuntu1404-64-STD
+set i92 [$ns node]
+tb-add-node-attribute $i92 containers:node_type qemu
+tb-set-node-os $i92 Ubuntu1404-64-STD
+set i93 [$ns node]
+tb-add-node-attribute $i93 containers:node_type qemu
+tb-set-node-os $i93 Ubuntu1404-64-STD
+set i94 [$ns node]
+tb-add-node-attribute $i94 containers:node_type qemu
+tb-set-node-os $i94 Ubuntu1404-64-STD
+set i95 [$ns node]
+tb-add-node-attribute $i95 containers:node_type qemu
+tb-set-node-os $i95 Ubuntu1404-64-STD
+set i96 [$ns node]
+tb-add-node-attribute $i96 containers:node_type qemu
+tb-set-node-os $i96 Ubuntu1404-64-STD
+set i97 [$ns node]
+tb-add-node-attribute $i97 containers:node_type qemu
+tb-set-node-os $i97 Ubuntu1404-64-STD
+set i98 [$ns node]
+tb-add-node-attribute $i98 containers:node_type qemu
+tb-set-node-os $i98 Ubuntu1404-64-STD
+set i99 [$ns node]
+tb-add-node-attribute $i99 containers:node_type qemu
+tb-set-node-os $i99 Ubuntu1404-64-STD
+set i100 [$ns node]
+tb-add-node-attribute $i100 containers:node_type qemu
+tb-set-node-os $i100 Ubuntu1404-64-STD
+set i101 [$ns node]
+tb-add-node-attribute $i101 containers:node_type qemu
+tb-set-node-os $i101 Ubuntu1404-64-STD
+
+set i17a26 [$ns node]
+tb-add-node-attribute $i17a26 containers:node_type qemu
+tb-set-node-os $i17a26 Ubuntu1404-64-STD
+set link1 [$ns duplex-link $i17 $i17a26 100Mb 0ms DropTail]
+tb-set-ip-link $i17 $link1 10.17.26.1
+tb-set-ip-link $i17a26 $link1 10.17.26.2
+
+set link2 [$ns duplex-link $i17a26 $i26 100Mb 0ms DropTail]
+tb-set-ip-link $i17a26 $link2 10.17.26.3
+tb-set-ip-link $i26 $link2 10.17.26.4
+
+set i26a76 [$ns node]
+tb-add-node-attribute $i26a76 containers:node_type qemu
+tb-set-node-os $i26a76 Ubuntu1404-64-STD
+set link3 [$ns duplex-link $i26 $i26a76 100Mb 0ms DropTail]
+tb-set-ip-link $i26 $link3 10.26.76.1
+tb-set-ip-link $i26a76 $link3 10.26.76.2
+
+set link4 [$ns duplex-link $i26a76 $i76 100Mb 0ms DropTail]
+tb-set-ip-link $i26a76 $link4 10.26.76.3
+tb-set-ip-link $i76 $link4 10.26.76.4
+
+set i40a59 [$ns node]
+tb-add-node-attribute $i40a59 containers:node_type qemu
+tb-set-node-os $i40a59 Ubuntu1404-64-STD
+set link5 [$ns duplex-link $i40 $i40a59 100Mb 0ms DropTail]
+tb-set-ip-link $i40 $link5 10.40.59.1
+tb-set-ip-link $i40a59 $link5 10.40.59.2
+
+set link6 [$ns duplex-link $i40a59 $i59 100Mb 0ms DropTail]
+tb-set-ip-link $i40a59 $link6 10.40.59.3
+tb-set-ip-link $i59 $link6 10.40.59.4
+
+set i40a46 [$ns node]
+tb-add-node-attribute $i40a46 containers:node_type qemu
+tb-set-node-os $i40a46 Ubuntu1404-64-STD
+set link7 [$ns duplex-link $i40 $i40a46 100Mb 0ms DropTail]
+tb-set-ip-link $i40 $link7 10.40.46.1
+tb-set-ip-link $i40a46 $link7 10.40.46.2
+
+set link8 [$ns duplex-link $i40a46 $i46 100Mb 0ms DropTail]
+tb-set-ip-link $i40a46 $link8 10.40.46.3
+tb-set-ip-link $i46 $link8 10.40.46.4
+
+set i29a38 [$ns node]
+tb-add-node-attribute $i29a38 containers:node_type qemu
+tb-set-node-os $i29a38 Ubuntu1404-64-STD
+set link9 [$ns duplex-link $i29 $i29a38 100Mb 0ms DropTail]
+tb-set-ip-link $i29 $link9 10.29.38.1
+tb-set-ip-link $i29a38 $link9 10.29.38.2
+
+set link10 [$ns duplex-link $i29a38 $i38 100Mb 0ms DropTail]
+tb-set-ip-link $i29a38 $link10 10.29.38.3
+tb-set-ip-link $i38 $link10 10.29.38.4
+
+set i27a60 [$ns node]
+tb-add-node-attribute $i27a60 containers:node_type qemu
+tb-set-node-os $i27a60 Ubuntu1404-64-STD
+set link11 [$ns duplex-link $i27 $i27a60 100Mb 0ms DropTail]
+tb-set-ip-link $i27 $link11 10.27.60.1
+tb-set-ip-link $i27a60 $link11 10.27.60.2
+
+set link12 [$ns duplex-link $i27a60 $i60 100Mb 0ms DropTail]
+tb-set-ip-link $i27a60 $link12 10.27.60.3
+tb-set-ip-link $i60 $link12 10.27.60.4
+
+set i27a81 [$ns node]
+tb-add-node-attribute $i27a81 containers:node_type qemu
+tb-set-node-os $i27a81 Ubuntu1404-64-STD
+set link13 [$ns duplex-link $i27 $i27a81 100Mb 0ms DropTail]
+tb-set-ip-link $i27 $link13 10.27.81.1
+tb-set-ip-link $i27a81 $link13 10.27.81.2
+
+set link14 [$ns duplex-link $i27a81 $i81 100Mb 0ms DropTail]
+tb-set-ip-link $i27a81 $link14 10.27.81.3
+tb-set-ip-link $i81 $link14 10.27.81.4
+
+set i19a27 [$ns node]
+tb-add-node-attribute $i19a27 containers:node_type qemu
+tb-set-node-os $i19a27 Ubuntu1404-64-STD
+set link15 [$ns duplex-link $i19 $i19a27 100Mb 0ms DropTail]
+tb-set-ip-link $i19 $link15 10.19.27.1
+tb-set-ip-link $i19a27 $link15 10.19.27.2
+
+set link16 [$ns duplex-link $i19a27 $i27 100Mb 0ms DropTail]
+tb-set-ip-link $i19a27 $link16 10.19.27.3
+tb-set-ip-link $i27 $link16 10.19.27.4
+
+set i54a59 [$ns node]
+tb-add-node-attribute $i54a59 containers:node_type qemu
+tb-set-node-os $i54a59 Ubuntu1404-64-STD
+set link17 [$ns duplex-link $i54 $i54a59 100Mb 0ms DropTail]
+tb-set-ip-link $i54 $link17 10.54.59.1
+tb-set-ip-link $i54a59 $link17 10.54.59.2
+
+set link18 [$ns duplex-link $i54a59 $i59 100Mb 0ms DropTail]
+tb-set-ip-link $i54a59 $link18 10.54.59.3
+tb-set-ip-link $i59 $link18 10.54.59.4
+
+set i53a96 [$ns node]
+tb-add-node-attribute $i53a96 containers:node_type qemu
+tb-set-node-os $i53a96 Ubuntu1404-64-STD
+set link19 [$ns duplex-link $i53 $i53a96 100Mb 0ms DropTail]
+tb-set-ip-link $i53 $link19 10.53.96.1
+tb-set-ip-link $i53a96 $link19 10.53.96.2
+
+set link20 [$ns duplex-link $i53a96 $i96 100Mb 0ms DropTail]
+tb-set-ip-link $i53a96 $link20 10.53.96.3
+tb-set-ip-link $i96 $link20 10.53.96.4
+
+set i48a96 [$ns node]
+tb-add-node-attribute $i48a96 containers:node_type qemu
+tb-set-node-os $i48a96 Ubuntu1404-64-STD
+set link21 [$ns duplex-link $i48 $i48a96 100Mb 0ms DropTail]
+tb-set-ip-link $i48 $link21 10.48.96.1
+tb-set-ip-link $i48a96 $link21 10.48.96.2
+
+set link22 [$ns duplex-link $i48a96 $i96 100Mb 0ms DropTail]
+tb-set-ip-link $i48a96 $link22 10.48.96.3
+tb-set-ip-link $i96 $link22 10.48.96.4
+
+set i86a95 [$ns node]
+tb-add-node-attribute $i86a95 containers:node_type qemu
+tb-set-node-os $i86a95 Ubuntu1404-64-STD
+set link23 [$ns duplex-link $i86 $i86a95 100Mb 0ms DropTail]
+tb-set-ip-link $i86 $link23 10.86.95.1
+tb-set-ip-link $i86a95 $link23 10.86.95.2
+
+set link24 [$ns duplex-link $i86a95 $i95 100Mb 0ms DropTail]
+tb-set-ip-link $i86a95 $link24 10.86.95.3
+tb-set-ip-link $i95 $link24 10.86.95.4
+
+set i64a73 [$ns node]
+tb-add-node-attribute $i64a73 containers:node_type qemu
+tb-set-node-os $i64a73 Ubuntu1404-64-STD
+set link25 [$ns duplex-link $i64 $i64a73 100Mb 0ms DropTail]
+tb-set-ip-link $i64 $link25 10.64.73.1
+tb-set-ip-link $i64a73 $link25 10.64.73.2
+
+set link26 [$ns duplex-link $i64a73 $i73 100Mb 0ms DropTail]
+tb-set-ip-link $i64a73 $link26 10.64.73.3
+tb-set-ip-link $i73 $link26 10.64.73.4
+
+set i17a47 [$ns node]
+tb-add-node-attribute $i17a47 containers:node_type qemu
+tb-set-node-os $i17a47 Ubuntu1404-64-STD
+set link27 [$ns duplex-link $i17 $i17a47 100Mb 0ms DropTail]
+tb-set-ip-link $i17 $link27 10.17.47.1
+tb-set-ip-link $i17a47 $link27 10.17.47.2
+
+set link28 [$ns duplex-link $i17a47 $i47 100Mb 0ms DropTail]
+tb-set-ip-link $i17a47 $link28 10.17.47.3
+tb-set-ip-link $i47 $link28 10.17.47.4
+
+set i12a47 [$ns node]
+tb-add-node-attribute $i12a47 containers:node_type qemu
+tb-set-node-os $i12a47 Ubuntu1404-64-STD
+set link29 [$ns duplex-link $i12 $i12a47 100Mb 0ms DropTail]
+tb-set-ip-link $i12 $link29 10.12.47.1
+tb-set-ip-link $i12a47 $link29 10.12.47.2
+
+set link30 [$ns duplex-link $i12a47 $i47 100Mb 0ms DropTail]
+tb-set-ip-link $i12a47 $link30 10.12.47.3
+tb-set-ip-link $i47 $link30 10.12.47.4
+
+set i47a61 [$ns node]
+tb-add-node-attribute $i47a61 containers:node_type qemu
+tb-set-node-os $i47a61 Ubuntu1404-64-STD
+set link31 [$ns duplex-link $i47 $i47a61 100Mb 0ms DropTail]
+tb-set-ip-link $i47 $link31 10.47.61.1
+tb-set-ip-link $i47a61 $link31 10.47.61.2
+
+set link32 [$ns duplex-link $i47a61 $i61 100Mb 0ms DropTail]
+tb-set-ip-link $i47a61 $link32 10.47.61.3
+tb-set-ip-link $i61 $link32 10.47.61.4
+
+set i48a98 [$ns node]
+tb-add-node-attribute $i48a98 containers:node_type qemu
+tb-set-node-os $i48a98 Ubuntu1404-64-STD
+set link33 [$ns duplex-link $i48 $i48a98 100Mb 0ms DropTail]
+tb-set-ip-link $i48 $link33 10.48.98.1
+tb-set-ip-link $i48a98 $link33 10.48.98.2
+
+set link34 [$ns duplex-link $i48a98 $i98 100Mb 0ms DropTail]
+tb-set-ip-link $i48a98 $link34 10.48.98.3
+tb-set-ip-link $i98 $link34 10.48.98.4
+
+set i48a66 [$ns node]
+tb-add-node-attribute $i48a66 containers:node_type qemu
+tb-set-node-os $i48a66 Ubuntu1404-64-STD
+set link35 [$ns duplex-link $i48 $i48a66 100Mb 0ms DropTail]
+tb-set-ip-link $i48 $link35 10.48.66.1
+tb-set-ip-link $i48a66 $link35 10.48.66.2
+
+set link36 [$ns duplex-link $i48a66 $i66 100Mb 0ms DropTail]
+tb-set-ip-link $i48a66 $link36 10.48.66.3
+tb-set-ip-link $i66 $link36 10.48.66.4
+
+set i9a81 [$ns node]
+tb-add-node-attribute $i9a81 containers:node_type qemu
+tb-set-node-os $i9a81 Ubuntu1404-64-STD
+set link37 [$ns duplex-link $i9 $i9a81 100Mb 0ms DropTail]
+tb-set-ip-link $i9 $link37 10.9.81.1
+tb-set-ip-link $i9a81 $link37 10.9.81.2
+
+set link38 [$ns duplex-link $i9a81 $i81 100Mb 0ms DropTail]
+tb-set-ip-link $i9a81 $link38 10.9.81.3
+tb-set-ip-link $i81 $link38 10.9.81.4
+
+set i9a43 [$ns node]
+tb-add-node-attribute $i9a43 containers:node_type qemu
+tb-set-node-os $i9a43 Ubuntu1404-64-STD
+set link39 [$ns duplex-link $i9 $i9a43 100Mb 0ms DropTail]
+tb-set-ip-link $i9 $link39 10.9.43.1
+tb-set-ip-link $i9a43 $link39 10.9.43.2
+
+set link40 [$ns duplex-link $i9a43 $i43 100Mb 0ms DropTail]
+tb-set-ip-link $i9a43 $link40 10.9.43.3
+tb-set-ip-link $i43 $link40 10.9.43.4
+
+set i9a44 [$ns node]
+tb-add-node-attribute $i9a44 containers:node_type qemu
+tb-set-node-os $i9a44 Ubuntu1404-64-STD
+set link41 [$ns duplex-link $i9 $i9a44 100Mb 0ms DropTail]
+tb-set-ip-link $i9 $link41 10.9.44.1
+tb-set-ip-link $i9a44 $link41 10.9.44.2
+
+set link42 [$ns duplex-link $i9a44 $i44 100Mb 0ms DropTail]
+tb-set-ip-link $i9a44 $link42 10.9.44.3
+tb-set-ip-link $i44 $link42 10.9.44.4
+
+set i42a52 [$ns node]
+tb-add-node-attribute $i42a52 containers:node_type qemu
+tb-set-node-os $i42a52 Ubuntu1404-64-STD
+set link43 [$ns duplex-link $i42 $i42a52 100Mb 0ms DropTail]
+tb-set-ip-link $i42 $link43 10.42.52.1
+tb-set-ip-link $i42a52 $link43 10.42.52.2
+
+set link44 [$ns duplex-link $i42a52 $i52 100Mb 0ms DropTail]
+tb-set-ip-link $i42a52 $link44 10.42.52.3
+tb-set-ip-link $i52 $link44 10.42.52.4
+
+set i42a92 [$ns node]
+tb-add-node-attribute $i42a92 containers:node_type qemu
+tb-set-node-os $i42a92 Ubuntu1404-64-STD
+set link45 [$ns duplex-link $i42 $i42a92 100Mb 0ms DropTail]
+tb-set-ip-link $i42 $link45 10.42.92.1
+tb-set-ip-link $i42a92 $link45 10.42.92.2
+
+set link46 [$ns duplex-link $i42a92 $i92 100Mb 0ms DropTail]
+tb-set-ip-link $i42a92 $link46 10.42.92.3
+tb-set-ip-link $i92 $link46 10.42.92.4
+
+set i66a85 [$ns node]
+tb-add-node-attribute $i66a85 containers:node_type qemu
+tb-set-node-os $i66a85 Ubuntu1404-64-STD
+set link47 [$ns duplex-link $i66 $i66a85 100Mb 0ms DropTail]
+tb-set-ip-link $i66 $link47 10.66.85.1
+tb-set-ip-link $i66a85 $link47 10.66.85.2
+
+set link48 [$ns duplex-link $i66a85 $i85 100Mb 0ms DropTail]
+tb-set-ip-link $i66a85 $link48 10.66.85.3
+tb-set-ip-link $i85 $link48 10.66.85.4
+
+set i37a79 [$ns node]
+tb-add-node-attribute $i37a79 containers:node_type qemu
+tb-set-node-os $i37a79 Ubuntu1404-64-STD
+set link49 [$ns duplex-link $i37 $i37a79 100Mb 0ms DropTail]
+tb-set-ip-link $i37 $link49 10.37.79.1
+tb-set-ip-link $i37a79 $link49 10.37.79.2
+
+set link50 [$ns duplex-link $i37a79 $i79 100Mb 0ms DropTail]
+tb-set-ip-link $i37a79 $link50 10.37.79.3
+tb-set-ip-link $i79 $link50 10.37.79.4
+
+set i37a83 [$ns node]
+tb-add-node-attribute $i37a83 containers:node_type qemu
+tb-set-node-os $i37a83 Ubuntu1404-64-STD
+set link51 [$ns duplex-link $i37 $i37a83 100Mb 0ms DropTail]
+tb-set-ip-link $i37 $link51 10.37.83.1
+tb-set-ip-link $i37a83 $link51 10.37.83.2
+
+set link52 [$ns duplex-link $i37a83 $i83 100Mb 0ms DropTail]
+tb-set-ip-link $i37a83 $link52 10.37.83.3
+tb-set-ip-link $i83 $link52 10.37.83.4
+
+set i1a60 [$ns node]
+tb-add-node-attribute $i1a60 containers:node_type qemu
+tb-set-node-os $i1a60 Ubuntu1404-64-STD
+set link53 [$ns duplex-link $i1 $i1a60 100Mb 0ms DropTail]
+tb-set-ip-link $i1 $link53 10.1.60.1
+tb-set-ip-link $i1a60 $link53 10.1.60.2
+
+set link54 [$ns duplex-link $i1a60 $i60 100Mb 0ms DropTail]
+tb-set-ip-link $i1a60 $link54 10.1.60.3
+tb-set-ip-link $i60 $link54 10.1.60.4
+
+set i1a30 [$ns node]
+tb-add-node-attribute $i1a30 containers:node_type qemu
+tb-set-node-os $i1a30 Ubuntu1404-64-STD
+set link55 [$ns duplex-link $i1 $i1a30 100Mb 0ms DropTail]
+tb-set-ip-link $i1 $link55 10.1.30.1
+tb-set-ip-link $i1a30 $link55 10.1.30.2
+
+set link56 [$ns duplex-link $i1a30 $i30 100Mb 0ms DropTail]
+tb-set-ip-link $i1a30 $link56 10.1.30.3
+tb-set-ip-link $i30 $link56 10.1.30.4
+
+set i1a18 [$ns node]
+tb-add-node-attribute $i1a18 containers:node_type qemu
+tb-set-node-os $i1a18 Ubuntu1404-64-STD
+set link57 [$ns duplex-link $i1 $i1a18 100Mb 0ms DropTail]
+tb-set-ip-link $i1 $link57 10.1.18.1
+tb-set-ip-link $i1a18 $link57 10.1.18.2
+
+set link58 [$ns duplex-link $i1a18 $i18 100Mb 0ms DropTail]
+tb-set-ip-link $i1a18 $link58 10.1.18.3
+tb-set-ip-link $i18 $link58 10.1.18.4
+
+set i4a77 [$ns node]
+tb-add-node-attribute $i4a77 containers:node_type qemu
+tb-set-node-os $i4a77 Ubuntu1404-64-STD
+set link59 [$ns duplex-link $i4 $i4a77 100Mb 0ms DropTail]
+tb-set-ip-link $i4 $link59 10.4.77.1
+tb-set-ip-link $i4a77 $link59 10.4.77.2
+
+set link60 [$ns duplex-link $i4a77 $i77 100Mb 0ms DropTail]
+tb-set-ip-link $i4a77 $link60 10.4.77.3
+tb-set-ip-link $i77 $link60 10.4.77.4
+
+set i4a6 [$ns node]
+tb-add-node-attribute $i4a6 containers:node_type qemu
+tb-set-node-os $i4a6 Ubuntu1404-64-STD
+set link61 [$ns duplex-link $i4 $i4a6 100Mb 0ms DropTail]
+tb-set-ip-link $i4 $link61 10.4.6.1
+tb-set-ip-link $i4a6 $link61 10.4.6.2
+
+set link62 [$ns duplex-link $i4a6 $i6 100Mb 0ms DropTail]
+tb-set-ip-link $i4a6 $link62 10.4.6.3
+tb-set-ip-link $i6 $link62 10.4.6.4
+
+set i4a17 [$ns node]
+tb-add-node-attribute $i4a17 containers:node_type qemu
+tb-set-node-os $i4a17 Ubuntu1404-64-STD
+set link63 [$ns duplex-link $i4 $i4a17 100Mb 0ms DropTail]
+tb-set-ip-link $i4 $link63 10.4.17.1
+tb-set-ip-link $i4a17 $link63 10.4.17.2
+
+set link64 [$ns duplex-link $i4a17 $i17 100Mb 0ms DropTail]
+tb-set-ip-link $i4a17 $link64 10.4.17.3
+tb-set-ip-link $i17 $link64 10.4.17.4
+
+set i24a70 [$ns node]
+tb-add-node-attribute $i24a70 containers:node_type qemu
+tb-set-node-os $i24a70 Ubuntu1404-64-STD
+set link65 [$ns duplex-link $i24 $i24a70 100Mb 0ms DropTail]
+tb-set-ip-link $i24 $link65 10.24.70.1
+tb-set-ip-link $i24a70 $link65 10.24.70.2
+
+set link66 [$ns duplex-link $i24a70 $i70 100Mb 0ms DropTail]
+tb-set-ip-link $i24a70 $link66 10.24.70.3
+tb-set-ip-link $i70 $link66 10.24.70.4
+
+set i24a50 [$ns node]
+tb-add-node-attribute $i24a50 containers:node_type qemu
+tb-set-node-os $i24a50 Ubuntu1404-64-STD
+set link67 [$ns duplex-link $i24 $i24a50 100Mb 0ms DropTail]
+tb-set-ip-link $i24 $link67 10.24.50.1
+tb-set-ip-link $i24a50 $link67 10.24.50.2
+
+set link68 [$ns duplex-link $i24a50 $i50 100Mb 0ms DropTail]
+tb-set-ip-link $i24a50 $link68 10.24.50.3
+tb-set-ip-link $i50 $link68 10.24.50.4
+
+set i17a80 [$ns node]
+tb-add-node-attribute $i17a80 containers:node_type qemu
+tb-set-node-os $i17a80 Ubuntu1404-64-STD
+set link69 [$ns duplex-link $i17 $i17a80 100Mb 0ms DropTail]
+tb-set-ip-link $i17 $link69 10.17.80.1
+tb-set-ip-link $i17a80 $link69 10.17.80.2
+
+set link70 [$ns duplex-link $i17a80 $i80 100Mb 0ms DropTail]
+tb-set-ip-link $i17a80 $link70 10.17.80.3
+tb-set-ip-link $i80 $link70 10.17.80.4
+
+set i80a88 [$ns node]
+tb-add-node-attribute $i80a88 containers:node_type qemu
+tb-set-node-os $i80a88 Ubuntu1404-64-STD
+set link71 [$ns duplex-link $i80 $i80a88 100Mb 0ms DropTail]
+tb-set-ip-link $i80 $link71 10.80.88.1
+tb-set-ip-link $i80a88 $link71 10.80.88.2
+
+set link72 [$ns duplex-link $i80a88 $i88 100Mb 0ms DropTail]
+tb-set-ip-link $i80a88 $link72 10.80.88.3
+tb-set-ip-link $i88 $link72 10.80.88.4
+
+set i99a101 [$ns node]
+tb-add-node-attribute $i99a101 containers:node_type qemu
+tb-set-node-os $i99a101 Ubuntu1404-64-STD
+set link73 [$ns duplex-link $i99 $i99a101 100Mb 0ms DropTail]
+tb-set-ip-link $i99 $link73 10.99.101.1
+tb-set-ip-link $i99a101 $link73 10.99.101.2
+
+set link74 [$ns duplex-link $i99a101 $i101 100Mb 0ms DropTail]
+tb-set-ip-link $i99a101 $link74 10.99.101.3
+tb-set-ip-link $i101 $link74 10.99.101.4
+
+set i84a101 [$ns node]
+tb-add-node-attribute $i84a101 containers:node_type qemu
+tb-set-node-os $i84a101 Ubuntu1404-64-STD
+set link75 [$ns duplex-link $i84 $i84a101 100Mb 0ms DropTail]
+tb-set-ip-link $i84 $link75 10.84.101.1
+tb-set-ip-link $i84a101 $link75 10.84.101.2
+
+set link76 [$ns duplex-link $i84a101 $i101 100Mb 0ms DropTail]
+tb-set-ip-link $i84a101 $link76 10.84.101.3
+tb-set-ip-link $i101 $link76 10.84.101.4
+
+set i65a70 [$ns node]
+tb-add-node-attribute $i65a70 containers:node_type qemu
+tb-set-node-os $i65a70 Ubuntu1404-64-STD
+set link77 [$ns duplex-link $i65 $i65a70 100Mb 0ms DropTail]
+tb-set-ip-link $i65 $link77 10.65.70.1
+tb-set-ip-link $i65a70 $link77 10.65.70.2
+
+set link78 [$ns duplex-link $i65a70 $i70 100Mb 0ms DropTail]
+tb-set-ip-link $i65a70 $link78 10.65.70.3
+tb-set-ip-link $i70 $link78 10.65.70.4
+
+set i60a72 [$ns node]
+tb-add-node-attribute $i60a72 containers:node_type qemu
+tb-set-node-os $i60a72 Ubuntu1404-64-STD
+set link79 [$ns duplex-link $i60 $i60a72 100Mb 0ms DropTail]
+tb-set-ip-link $i60 $link79 10.60.72.1
+tb-set-ip-link $i60a72 $link79 10.60.72.2
+
+set link80 [$ns duplex-link $i60a72 $i72 100Mb 0ms DropTail]
+tb-set-ip-link $i60a72 $link80 10.60.72.3
+tb-set-ip-link $i72 $link80 10.60.72.4
+
+set i72a74 [$ns node]
+tb-add-node-attribute $i72a74 containers:node_type qemu
+tb-set-node-os $i72a74 Ubuntu1404-64-STD
+set link81 [$ns duplex-link $i72 $i72a74 100Mb 0ms DropTail]
+tb-set-ip-link $i72 $link81 10.72.74.1
+tb-set-ip-link $i72a74 $link81 10.72.74.2
+
+set link82 [$ns duplex-link $i72a74 $i74 100Mb 0ms DropTail]
+tb-set-ip-link $i72a74 $link82 10.72.74.3
+tb-set-ip-link $i74 $link82 10.72.74.4
+
+set i5a72 [$ns node]
+tb-add-node-attribute $i5a72 containers:node_type qemu
+tb-set-node-os $i5a72 Ubuntu1404-64-STD
+set link83 [$ns duplex-link $i5 $i5a72 100Mb 0ms DropTail]
+tb-set-ip-link $i5 $link83 10.5.72.1
+tb-set-ip-link $i5a72 $link83 10.5.72.2
+
+set link84 [$ns duplex-link $i5a72 $i72 100Mb 0ms DropTail]
+tb-set-ip-link $i5a72 $link84 10.5.72.3
+tb-set-ip-link $i72 $link84 10.5.72.4
+
+set i91a93 [$ns node]
+tb-add-node-attribute $i91a93 containers:node_type qemu
+tb-set-node-os $i91a93 Ubuntu1404-64-STD
+set link85 [$ns duplex-link $i91 $i91a93 100Mb 0ms DropTail]
+tb-set-ip-link $i91 $link85 10.91.93.1
+tb-set-ip-link $i91a93 $link85 10.91.93.2
+
+set link86 [$ns duplex-link $i91a93 $i93 100Mb 0ms DropTail]
+tb-set-ip-link $i91a93 $link86 10.91.93.3
+tb-set-ip-link $i93 $link86 10.91.93.4
+
+set i8a22 [$ns node]
+tb-add-node-attribute $i8a22 containers:node_type qemu
+tb-set-node-os $i8a22 Ubuntu1404-64-STD
+set link87 [$ns duplex-link $i8 $i8a22 100Mb 0ms DropTail]
+tb-set-ip-link $i8 $link87 10.8.22.1
+tb-set-ip-link $i8a22 $link87 10.8.22.2
+
+set link88 [$ns duplex-link $i8a22 $i22 100Mb 0ms DropTail]
+tb-set-ip-link $i8a22 $link88 10.8.22.3
+tb-set-ip-link $i22 $link88 10.8.22.4
+
+set i12a67 [$ns node]
+tb-add-node-attribute $i12a67 containers:node_type qemu
+tb-set-node-os $i12a67 Ubuntu1404-64-STD
+set link89 [$ns duplex-link $i12 $i12a67 100Mb 0ms DropTail]
+tb-set-ip-link $i12 $link89 10.12.67.1
+tb-set-ip-link $i12a67 $link89 10.12.67.2
+
+set link90 [$ns duplex-link $i12a67 $i67 100Mb 0ms DropTail]
+tb-set-ip-link $i12a67 $link90 10.12.67.3
+tb-set-ip-link $i67 $link90 10.12.67.4
+
+set i41a89 [$ns node]
+tb-add-node-attribute $i41a89 containers:node_type qemu
+tb-set-node-os $i41a89 Ubuntu1404-64-STD
+set link91 [$ns duplex-link $i41 $i41a89 100Mb 0ms DropTail]
+tb-set-ip-link $i41 $link91 10.41.89.1
+tb-set-ip-link $i41a89 $link91 10.41.89.2
+
+set link92 [$ns duplex-link $i41a89 $i89 100Mb 0ms DropTail]
+tb-set-ip-link $i41a89 $link92 10.41.89.3
+tb-set-ip-link $i89 $link92 10.41.89.4
+
+set i41a50 [$ns node]
+tb-add-node-attribute $i41a50 containers:node_type qemu
+tb-set-node-os $i41a50 Ubuntu1404-64-STD
+set link93 [$ns duplex-link $i41 $i41a50 100Mb 0ms DropTail]
+tb-set-ip-link $i41 $link93 10.41.50.1
+tb-set-ip-link $i41a50 $link93 10.41.50.2
+
+set link94 [$ns duplex-link $i41a50 $i50 100Mb 0ms DropTail]
+tb-set-ip-link $i41a50 $link94 10.41.50.3
+tb-set-ip-link $i50 $link94 10.41.50.4
+
+set i15a82 [$ns node]
+tb-add-node-attribute $i15a82 containers:node_type qemu
+tb-set-node-os $i15a82 Ubuntu1404-64-STD
+set link95 [$ns duplex-link $i15 $i15a82 100Mb 0ms DropTail]
+tb-set-ip-link $i15 $link95 10.15.82.1
+tb-set-ip-link $i15a82 $link95 10.15.82.2
+
+set link96 [$ns duplex-link $i15a82 $i82 100Mb 0ms DropTail]
+tb-set-ip-link $i15a82 $link96 10.15.82.3
+tb-set-ip-link $i82 $link96 10.15.82.4
+
+set i82a87 [$ns node]
+tb-add-node-attribute $i82a87 containers:node_type qemu
+tb-set-node-os $i82a87 Ubuntu1404-64-STD
+set link97 [$ns duplex-link $i82 $i82a87 100Mb 0ms DropTail]
+tb-set-ip-link $i82 $link97 10.82.87.1
+tb-set-ip-link $i82a87 $link97 10.82.87.2
+
+set link98 [$ns duplex-link $i82a87 $i87 100Mb 0ms DropTail]
+tb-set-ip-link $i82a87 $link98 10.82.87.3
+tb-set-ip-link $i87 $link98 10.82.87.4
+
+set i36a71 [$ns node]
+tb-add-node-attribute $i36a71 containers:node_type qemu
+tb-set-node-os $i36a71 Ubuntu1404-64-STD
+set link99 [$ns duplex-link $i36 $i36a71 100Mb 0ms DropTail]
+tb-set-ip-link $i36 $link99 10.36.71.1
+tb-set-ip-link $i36a71 $link99 10.36.71.2
+
+set link100 [$ns duplex-link $i36a71 $i71 100Mb 0ms DropTail]
+tb-set-ip-link $i36a71 $link100 10.36.71.3
+tb-set-ip-link $i71 $link100 10.36.71.4
+
+set i25a36 [$ns node]
+tb-add-node-attribute $i25a36 containers:node_type qemu
+tb-set-node-os $i25a36 Ubuntu1404-64-STD
+set link101 [$ns duplex-link $i25 $i25a36 100Mb 0ms DropTail]
+tb-set-ip-link $i25 $link101 10.25.36.1
+tb-set-ip-link $i25a36 $link101 10.25.36.2
+
+set link102 [$ns duplex-link $i25a36 $i36 100Mb 0ms DropTail]
+tb-set-ip-link $i25a36 $link102 10.25.36.3
+tb-set-ip-link $i36 $link102 10.25.36.4
+
+set i5a36 [$ns node]
+tb-add-node-attribute $i5a36 containers:node_type qemu
+tb-set-node-os $i5a36 Ubuntu1404-64-STD
+set link103 [$ns duplex-link $i5 $i5a36 100Mb 0ms DropTail]
+tb-set-ip-link $i5 $link103 10.5.36.1
+tb-set-ip-link $i5a36 $link103 10.5.36.2
+
+set link104 [$ns duplex-link $i5a36 $i36 100Mb 0ms DropTail]
+tb-set-ip-link $i5a36 $link104 10.5.36.3
+tb-set-ip-link $i36 $link104 10.5.36.4
+
+set i36a49 [$ns node]
+tb-add-node-attribute $i36a49 containers:node_type qemu
+tb-set-node-os $i36a49 Ubuntu1404-64-STD
+set link105 [$ns duplex-link $i36 $i36a49 100Mb 0ms DropTail]
+tb-set-ip-link $i36 $link105 10.36.49.1
+tb-set-ip-link $i36a49 $link105 10.36.49.2
+
+set link106 [$ns duplex-link $i36a49 $i49 100Mb 0ms DropTail]
+tb-set-ip-link $i36a49 $link106 10.36.49.3
+tb-set-ip-link $i49 $link106 10.36.49.4
+
+set i36a83 [$ns node]
+tb-add-node-attribute $i36a83 containers:node_type qemu
+tb-set-node-os $i36a83 Ubuntu1404-64-STD
+set link107 [$ns duplex-link $i36 $i36a83 100Mb 0ms DropTail]
+tb-set-ip-link $i36 $link107 10.36.83.1
+tb-set-ip-link $i36a83 $link107 10.36.83.2
+
+set link108 [$ns duplex-link $i36a83 $i83 100Mb 0ms DropTail]
+tb-set-ip-link $i36a83 $link108 10.36.83.3
+tb-set-ip-link $i83 $link108 10.36.83.4
+
+set i15a36 [$ns node]
+tb-add-node-attribute $i15a36 containers:node_type qemu
+tb-set-node-os $i15a36 Ubuntu1404-64-STD
+set link109 [$ns duplex-link $i15 $i15a36 100Mb 0ms DropTail]
+tb-set-ip-link $i15 $link109 10.15.36.1
+tb-set-ip-link $i15a36 $link109 10.15.36.2
+
+set link110 [$ns duplex-link $i15a36 $i36 100Mb 0ms DropTail]
+tb-set-ip-link $i15a36 $link110 10.15.36.3
+tb-set-ip-link $i36 $link110 10.15.36.4
+
+set i34a90 [$ns node]
+tb-add-node-attribute $i34a90 containers:node_type qemu
+tb-set-node-os $i34a90 Ubuntu1404-64-STD
+set link111 [$ns duplex-link $i34 $i34a90 100Mb 0ms DropTail]
+tb-set-ip-link $i34 $link111 10.34.90.1
+tb-set-ip-link $i34a90 $link111 10.34.90.2
+
+set link112 [$ns duplex-link $i34a90 $i90 100Mb 0ms DropTail]
+tb-set-ip-link $i34a90 $link112 10.34.90.3
+tb-set-ip-link $i90 $link112 10.34.90.4
+
+set i11a34 [$ns node]
+tb-add-node-attribute $i11a34 containers:node_type qemu
+tb-set-node-os $i11a34 Ubuntu1404-64-STD
+set link113 [$ns duplex-link $i11 $i11a34 100Mb 0ms DropTail]
+tb-set-ip-link $i11 $link113 10.11.34.1
+tb-set-ip-link $i11a34 $link113 10.11.34.2
+
+set link114 [$ns duplex-link $i11a34 $i34 100Mb 0ms DropTail]
+tb-set-ip-link $i11a34 $link114 10.11.34.3
+tb-set-ip-link $i34 $link114 10.11.34.4
+
+set i49a51 [$ns node]
+tb-add-node-attribute $i49a51 containers:node_type qemu
+tb-set-node-os $i49a51 Ubuntu1404-64-STD
+set link115 [$ns duplex-link $i49 $i49a51 100Mb 0ms DropTail]
+tb-set-ip-link $i49 $link115 10.49.51.1
+tb-set-ip-link $i49a51 $link115 10.49.51.2
+
+set link116 [$ns duplex-link $i49a51 $i51 100Mb 0ms DropTail]
+tb-set-ip-link $i49a51 $link116 10.49.51.3
+tb-set-ip-link $i51 $link116 10.49.51.4
+
+set i74a78 [$ns node]
+tb-add-node-attribute $i74a78 containers:node_type qemu
+tb-set-node-os $i74a78 Ubuntu1404-64-STD
+set link117 [$ns duplex-link $i74 $i74a78 100Mb 0ms DropTail]
+tb-set-ip-link $i74 $link117 10.74.78.1
+tb-set-ip-link $i74a78 $link117 10.74.78.2
+
+set link118 [$ns duplex-link $i74a78 $i78 100Mb 0ms DropTail]
+tb-set-ip-link $i74a78 $link118 10.74.78.3
+tb-set-ip-link $i78 $link118 10.74.78.4
+
+set i39a60 [$ns node]
+tb-add-node-attribute $i39a60 containers:node_type qemu
+tb-set-node-os $i39a60 Ubuntu1404-64-STD
+set link119 [$ns duplex-link $i39 $i39a60 100Mb 0ms DropTail]
+tb-set-ip-link $i39 $link119 10.39.60.1
+tb-set-ip-link $i39a60 $link119 10.39.60.2
+
+set link120 [$ns duplex-link $i39a60 $i60 100Mb 0ms DropTail]
+tb-set-ip-link $i39a60 $link120 10.39.60.3
+tb-set-ip-link $i60 $link120 10.39.60.4
+
+set i14a60 [$ns node]
+tb-add-node-attribute $i14a60 containers:node_type qemu
+tb-set-node-os $i14a60 Ubuntu1404-64-STD
+set link121 [$ns duplex-link $i14 $i14a60 100Mb 0ms DropTail]
+tb-set-ip-link $i14 $link121 10.14.60.1
+tb-set-ip-link $i14a60 $link121 10.14.60.2
+
+set link122 [$ns duplex-link $i14a60 $i60 100Mb 0ms DropTail]
+tb-set-ip-link $i14a60 $link122 10.14.60.3
+tb-set-ip-link $i60 $link122 10.14.60.4
+
+set i56a60 [$ns node]
+tb-add-node-attribute $i56a60 containers:node_type qemu
+tb-set-node-os $i56a60 Ubuntu1404-64-STD
+set link123 [$ns duplex-link $i56 $i56a60 100Mb 0ms DropTail]
+tb-set-ip-link $i56 $link123 10.56.60.1
+tb-set-ip-link $i56a60 $link123 10.56.60.2
+
+set link124 [$ns duplex-link $i56a60 $i60 100Mb 0ms DropTail]
+tb-set-ip-link $i56a60 $link124 10.56.60.3
+tb-set-ip-link $i60 $link124 10.56.60.4
+
+set i14a28 [$ns node]
+tb-add-node-attribute $i14a28 containers:node_type qemu
+tb-set-node-os $i14a28 Ubuntu1404-64-STD
+set link125 [$ns duplex-link $i14 $i14a28 100Mb 0ms DropTail]
+tb-set-ip-link $i14 $link125 10.14.28.1
+tb-set-ip-link $i14a28 $link125 10.14.28.2
+
+set link126 [$ns duplex-link $i14a28 $i28 100Mb 0ms DropTail]
+tb-set-ip-link $i14a28 $link126 10.14.28.3
+tb-set-ip-link $i28 $link126 10.14.28.4
+
+set i28a31 [$ns node]
+tb-add-node-attribute $i28a31 containers:node_type qemu
+tb-set-node-os $i28a31 Ubuntu1404-64-STD
+set link127 [$ns duplex-link $i28 $i28a31 100Mb 0ms DropTail]
+tb-set-ip-link $i28 $link127 10.28.31.1
+tb-set-ip-link $i28a31 $link127 10.28.31.2
+
+set link128 [$ns duplex-link $i28a31 $i31 100Mb 0ms DropTail]
+tb-set-ip-link $i28a31 $link128 10.28.31.3
+tb-set-ip-link $i31 $link128 10.28.31.4
+
+set i38a94 [$ns node]
+tb-add-node-attribute $i38a94 containers:node_type qemu
+tb-set-node-os $i38a94 Ubuntu1404-64-STD
+set link129 [$ns duplex-link $i38 $i38a94 100Mb 0ms DropTail]
+tb-set-ip-link $i38 $link129 10.38.94.1
+tb-set-ip-link $i38a94 $link129 10.38.94.2
+
+set link130 [$ns duplex-link $i38a94 $i94 100Mb 0ms DropTail]
+tb-set-ip-link $i38a94 $link130 10.38.94.3
+tb-set-ip-link $i94 $link130 10.38.94.4
+
+set i94a95 [$ns node]
+tb-add-node-attribute $i94a95 containers:node_type qemu
+tb-set-node-os $i94a95 Ubuntu1404-64-STD
+set link131 [$ns duplex-link $i94 $i94a95 100Mb 0ms DropTail]
+tb-set-ip-link $i94 $link131 10.94.95.1
+tb-set-ip-link $i94a95 $link131 10.94.95.2
+
+set link132 [$ns duplex-link $i94a95 $i95 100Mb 0ms DropTail]
+tb-set-ip-link $i94a95 $link132 10.94.95.3
+tb-set-ip-link $i95 $link132 10.94.95.4
+
+set i3a39 [$ns node]
+tb-add-node-attribute $i3a39 containers:node_type qemu
+tb-set-node-os $i3a39 Ubuntu1404-64-STD
+set link133 [$ns duplex-link $i3 $i3a39 100Mb 0ms DropTail]
+tb-set-ip-link $i3 $link133 10.3.39.1
+tb-set-ip-link $i3a39 $link133 10.3.39.2
+
+set link134 [$ns duplex-link $i3a39 $i39 100Mb 0ms DropTail]
+tb-set-ip-link $i3a39 $link134 10.3.39.3
+tb-set-ip-link $i39 $link134 10.3.39.4
+
+set i3a50 [$ns node]
+tb-add-node-attribute $i3a50 containers:node_type qemu
+tb-set-node-os $i3a50 Ubuntu1404-64-STD
+set link135 [$ns duplex-link $i3 $i3a50 100Mb 0ms DropTail]
+tb-set-ip-link $i3 $link135 10.3.50.1
+tb-set-ip-link $i3a50 $link135 10.3.50.2
+
+set link136 [$ns duplex-link $i3a50 $i50 100Mb 0ms DropTail]
+tb-set-ip-link $i3a50 $link136 10.3.50.3
+tb-set-ip-link $i50 $link136 10.3.50.4
+
+set i31a33 [$ns node]
+tb-add-node-attribute $i31a33 containers:node_type qemu
+tb-set-node-os $i31a33 Ubuntu1404-64-STD
+set link137 [$ns duplex-link $i31 $i31a33 100Mb 0ms DropTail]
+tb-set-ip-link $i31 $link137 10.31.33.1
+tb-set-ip-link $i31a33 $link137 10.31.33.2
+
+set link138 [$ns duplex-link $i31a33 $i33 100Mb 0ms DropTail]
+tb-set-ip-link $i31a33 $link138 10.31.33.3
+tb-set-ip-link $i33 $link138 10.31.33.4
+
+set i35a58 [$ns node]
+tb-add-node-attribute $i35a58 containers:node_type qemu
+tb-set-node-os $i35a58 Ubuntu1404-64-STD
+set link139 [$ns duplex-link $i35 $i35a58 100Mb 0ms DropTail]
+tb-set-ip-link $i35 $link139 10.35.58.1
+tb-set-ip-link $i35a58 $link139 10.35.58.2
+
+set link140 [$ns duplex-link $i35a58 $i58 100Mb 0ms DropTail]
+tb-set-ip-link $i35a58 $link140 10.35.58.3
+tb-set-ip-link $i58 $link140 10.35.58.4
+
+set i2a35 [$ns node]
+tb-add-node-attribute $i2a35 containers:node_type qemu
+tb-set-node-os $i2a35 Ubuntu1404-64-STD
+set link141 [$ns duplex-link $i2 $i2a35 100Mb 0ms DropTail]
+tb-set-ip-link $i2 $link141 10.2.35.1
+tb-set-ip-link $i2a35 $link141 10.2.35.2
+
+set link142 [$ns duplex-link $i2a35 $i35 100Mb 0ms DropTail]
+tb-set-ip-link $i2a35 $link142 10.2.35.3
+tb-set-ip-link $i35 $link142 10.2.35.4
+
+set i45a97 [$ns node]
+tb-add-node-attribute $i45a97 containers:node_type qemu
+tb-set-node-os $i45a97 Ubuntu1404-64-STD
+set link143 [$ns duplex-link $i45 $i45a97 100Mb 0ms DropTail]
+tb-set-ip-link $i45 $link143 10.45.97.1
+tb-set-ip-link $i45a97 $link143 10.45.97.2
+
+set link144 [$ns duplex-link $i45a97 $i97 100Mb 0ms DropTail]
+tb-set-ip-link $i45a97 $link144 10.45.97.3
+tb-set-ip-link $i97 $link144 10.45.97.4
+
+set i50a97 [$ns node]
+tb-add-node-attribute $i50a97 containers:node_type qemu
+tb-set-node-os $i50a97 Ubuntu1404-64-STD
+set link145 [$ns duplex-link $i50 $i50a97 100Mb 0ms DropTail]
+tb-set-ip-link $i50 $link145 10.50.97.1
+tb-set-ip-link $i50a97 $link145 10.50.97.2
+
+set link146 [$ns duplex-link $i50a97 $i97 100Mb 0ms DropTail]
+tb-set-ip-link $i50a97 $link146 10.50.97.3
+tb-set-ip-link $i97 $link146 10.50.97.4
+
+set i13a98 [$ns node]
+tb-add-node-attribute $i13a98 containers:node_type qemu
+tb-set-node-os $i13a98 Ubuntu1404-64-STD
+set link147 [$ns duplex-link $i13 $i13a98 100Mb 0ms DropTail]
+tb-set-ip-link $i13 $link147 10.13.98.1
+tb-set-ip-link $i13a98 $link147 10.13.98.2
+
+set link148 [$ns duplex-link $i13a98 $i98 100Mb 0ms DropTail]
+tb-set-ip-link $i13a98 $link148 10.13.98.3
+tb-set-ip-link $i98 $link148 10.13.98.4
+
+set i14a56 [$ns node]
+tb-add-node-attribute $i14a56 containers:node_type qemu
+tb-set-node-os $i14a56 Ubuntu1404-64-STD
+set link149 [$ns duplex-link $i14 $i14a56 100Mb 0ms DropTail]
+tb-set-ip-link $i14 $link149 10.14.56.1
+tb-set-ip-link $i14a56 $link149 10.14.56.2
+
+set link150 [$ns duplex-link $i14a56 $i56 100Mb 0ms DropTail]
+tb-set-ip-link $i14a56 $link150 10.14.56.3
+tb-set-ip-link $i56 $link150 10.14.56.4
+
+set i20a61 [$ns node]
+tb-add-node-attribute $i20a61 containers:node_type qemu
+tb-set-node-os $i20a61 Ubuntu1404-64-STD
+set link151 [$ns duplex-link $i20 $i20a61 100Mb 0ms DropTail]
+tb-set-ip-link $i20 $link151 10.20.61.1
+tb-set-ip-link $i20a61 $link151 10.20.61.2
+
+set link152 [$ns duplex-link $i20a61 $i61 100Mb 0ms DropTail]
+tb-set-ip-link $i20a61 $link152 10.20.61.3
+tb-set-ip-link $i61 $link152 10.20.61.4
+
+set i23a62 [$ns node]
+tb-add-node-attribute $i23a62 containers:node_type qemu
+tb-set-node-os $i23a62 Ubuntu1404-64-STD
+set link153 [$ns duplex-link $i23 $i23a62 100Mb 0ms DropTail]
+tb-set-ip-link $i23 $link153 10.23.62.1
+tb-set-ip-link $i23a62 $link153 10.23.62.2
+
+set link154 [$ns duplex-link $i23a62 $i62 100Mb 0ms DropTail]
+tb-set-ip-link $i23a62 $link154 10.23.62.3
+tb-set-ip-link $i62 $link154 10.23.62.4
+
+set i64a89 [$ns node]
+tb-add-node-attribute $i64a89 containers:node_type qemu
+tb-set-node-os $i64a89 Ubuntu1404-64-STD
+set link155 [$ns duplex-link $i64 $i64a89 100Mb 0ms DropTail]
+tb-set-ip-link $i64 $link155 10.64.89.1
+tb-set-ip-link $i64a89 $link155 10.64.89.2
+
+set link156 [$ns duplex-link $i64a89 $i89 100Mb 0ms DropTail]
+tb-set-ip-link $i64a89 $link156 10.64.89.3
+tb-set-ip-link $i89 $link156 10.64.89.4
+
+set i2a71 [$ns node]
+tb-add-node-attribute $i2a71 containers:node_type qemu
+tb-set-node-os $i2a71 Ubuntu1404-64-STD
+set link157 [$ns duplex-link $i2 $i2a71 100Mb 0ms DropTail]
+tb-set-ip-link $i2 $link157 10.2.71.1
+tb-set-ip-link $i2a71 $link157 10.2.71.2
+
+set link158 [$ns duplex-link $i2a71 $i71 100Mb 0ms DropTail]
+tb-set-ip-link $i2a71 $link158 10.2.71.3
+tb-set-ip-link $i71 $link158 10.2.71.4
+
+set i2a10 [$ns node]
+tb-add-node-attribute $i2a10 containers:node_type qemu
+tb-set-node-os $i2a10 Ubuntu1404-64-STD
+set link159 [$ns duplex-link $i2 $i2a10 100Mb 0ms DropTail]
+tb-set-ip-link $i2 $link159 10.2.10.1
+tb-set-ip-link $i2a10 $link159 10.2.10.2
+
+set link160 [$ns duplex-link $i2a10 $i10 100Mb 0ms DropTail]
+tb-set-ip-link $i2a10 $link160 10.2.10.3
+tb-set-ip-link $i10 $link160 10.2.10.4
+
+set i2a91 [$ns node]
+tb-add-node-attribute $i2a91 containers:node_type qemu
+tb-set-node-os $i2a91 Ubuntu1404-64-STD
+set link161 [$ns duplex-link $i2 $i2a91 100Mb 0ms DropTail]
+tb-set-ip-link $i2 $link161 10.2.91.1
+tb-set-ip-link $i2a91 $link161 10.2.91.2
+
+set link162 [$ns duplex-link $i2a91 $i91 100Mb 0ms DropTail]
+tb-set-ip-link $i2a91 $link162 10.2.91.3
+tb-set-ip-link $i91 $link162 10.2.91.4
+
+set i6a68 [$ns node]
+tb-add-node-attribute $i6a68 containers:node_type qemu
+tb-set-node-os $i6a68 Ubuntu1404-64-STD
+set link163 [$ns duplex-link $i6 $i6a68 100Mb 0ms DropTail]
+tb-set-ip-link $i6 $link163 10.6.68.1
+tb-set-ip-link $i6a68 $link163 10.6.68.2
+
+set link164 [$ns duplex-link $i6a68 $i68 100Mb 0ms DropTail]
+tb-set-ip-link $i6a68 $link164 10.6.68.3
+tb-set-ip-link $i68 $link164 10.6.68.4
+
+set i51a55 [$ns node]
+tb-add-node-attribute $i51a55 containers:node_type qemu
+tb-set-node-os $i51a55 Ubuntu1404-64-STD
+set link165 [$ns duplex-link $i51 $i51a55 100Mb 0ms DropTail]
+tb-set-ip-link $i51 $link165 10.51.55.1
+tb-set-ip-link $i51a55 $link165 10.51.55.2
+
+set link166 [$ns duplex-link $i51a55 $i55 100Mb 0ms DropTail]
+tb-set-ip-link $i51a55 $link166 10.51.55.3
+tb-set-ip-link $i55 $link166 10.51.55.4
+
+set i17a99 [$ns node]
+tb-add-node-attribute $i17a99 containers:node_type qemu
+tb-set-node-os $i17a99 Ubuntu1404-64-STD
+set link167 [$ns duplex-link $i17 $i17a99 100Mb 0ms DropTail]
+tb-set-ip-link $i17 $link167 10.17.99.1
+tb-set-ip-link $i17a99 $link167 10.17.99.2
+
+set link168 [$ns duplex-link $i17a99 $i99 100Mb 0ms DropTail]
+tb-set-ip-link $i17a99 $link168 10.17.99.3
+tb-set-ip-link $i99 $link168 10.17.99.4
+
+set i17a18 [$ns node]
+tb-add-node-attribute $i17a18 containers:node_type qemu
+tb-set-node-os $i17a18 Ubuntu1404-64-STD
+set link169 [$ns duplex-link $i17 $i17a18 100Mb 0ms DropTail]
+tb-set-ip-link $i17 $link169 10.17.18.1
+tb-set-ip-link $i17a18 $link169 10.17.18.2
+
+set link170 [$ns duplex-link $i17a18 $i18 100Mb 0ms DropTail]
+tb-set-ip-link $i17a18 $link170 10.17.18.3
+tb-set-ip-link $i18 $link170 10.17.18.4
+
+set i46a50 [$ns node]
+tb-add-node-attribute $i46a50 containers:node_type qemu
+tb-set-node-os $i46a50 Ubuntu1404-64-STD
+set link171 [$ns duplex-link $i46 $i46a50 100Mb 0ms DropTail]
+tb-set-ip-link $i46 $link171 10.46.50.1
+tb-set-ip-link $i46a50 $link171 10.46.50.2
+
+set link172 [$ns duplex-link $i46a50 $i50 100Mb 0ms DropTail]
+tb-set-ip-link $i46a50 $link172 10.46.50.3
+tb-set-ip-link $i50 $link172 10.46.50.4
+
+set i32a87 [$ns node]
+tb-add-node-attribute $i32a87 containers:node_type qemu
+tb-set-node-os $i32a87 Ubuntu1404-64-STD
+set link173 [$ns duplex-link $i32 $i32a87 100Mb 0ms DropTail]
+tb-set-ip-link $i32 $link173 10.32.87.1
+tb-set-ip-link $i32a87 $link173 10.32.87.2
+
+set link174 [$ns duplex-link $i32a87 $i87 100Mb 0ms DropTail]
+tb-set-ip-link $i32a87 $link174 10.32.87.3
+tb-set-ip-link $i87 $link174 10.32.87.4
+
+set i16a44 [$ns node]
+tb-add-node-attribute $i16a44 containers:node_type qemu
+tb-set-node-os $i16a44 Ubuntu1404-64-STD
+set link175 [$ns duplex-link $i16 $i16a44 100Mb 0ms DropTail]
+tb-set-ip-link $i16 $link175 10.16.44.1
+tb-set-ip-link $i16a44 $link175 10.16.44.2
+
+set link176 [$ns duplex-link $i16a44 $i44 100Mb 0ms DropTail]
+tb-set-ip-link $i16a44 $link176 10.16.44.3
+tb-set-ip-link $i44 $link176 10.16.44.4
+
+set i39a62 [$ns node]
+tb-add-node-attribute $i39a62 containers:node_type qemu
+tb-set-node-os $i39a62 Ubuntu1404-64-STD
+set link177 [$ns duplex-link $i39 $i39a62 100Mb 0ms DropTail]
+tb-set-ip-link $i39 $link177 10.39.62.1
+tb-set-ip-link $i39a62 $link177 10.39.62.2
+
+set link178 [$ns duplex-link $i39a62 $i62 100Mb 0ms DropTail]
+tb-set-ip-link $i39a62 $link178 10.39.62.3
+tb-set-ip-link $i62 $link178 10.39.62.4
+
+set i8a69 [$ns node]
+tb-add-node-attribute $i8a69 containers:node_type qemu
+tb-set-node-os $i8a69 Ubuntu1404-64-STD
+set link179 [$ns duplex-link $i8 $i8a69 100Mb 0ms DropTail]
+tb-set-ip-link $i8 $link179 10.8.69.1
+tb-set-ip-link $i8a69 $link179 10.8.69.2
+
+set link180 [$ns duplex-link $i8a69 $i69 100Mb 0ms DropTail]
+tb-set-ip-link $i8a69 $link180 10.8.69.3
+tb-set-ip-link $i69 $link180 10.8.69.4
+
+set i25a90 [$ns node]
+tb-add-node-attribute $i25a90 containers:node_type qemu
+tb-set-node-os $i25a90 Ubuntu1404-64-STD
+set link181 [$ns duplex-link $i25 $i25a90 100Mb 0ms DropTail]
+tb-set-ip-link $i25 $link181 10.25.90.1
+tb-set-ip-link $i25a90 $link181 10.25.90.2
+
+set link182 [$ns duplex-link $i25a90 $i90 100Mb 0ms DropTail]
+tb-set-ip-link $i25a90 $link182 10.25.90.3
+tb-set-ip-link $i90 $link182 10.25.90.4
+
+set i21a45 [$ns node]
+tb-add-node-attribute $i21a45 containers:node_type qemu
+tb-set-node-os $i21a45 Ubuntu1404-64-STD
+set link183 [$ns duplex-link $i21 $i21a45 100Mb 0ms DropTail]
+tb-set-ip-link $i21 $link183 10.21.45.1
+tb-set-ip-link $i21a45 $link183 10.21.45.2
+
+set link184 [$ns duplex-link $i21a45 $i45 100Mb 0ms DropTail]
+tb-set-ip-link $i21a45 $link184 10.21.45.3
+tb-set-ip-link $i45 $link184 10.21.45.4
+
+set i43a63 [$ns node]
+tb-add-node-attribute $i43a63 containers:node_type qemu
+tb-set-node-os $i43a63 Ubuntu1404-64-STD
+set link185 [$ns duplex-link $i43 $i43a63 100Mb 0ms DropTail]
+tb-set-ip-link $i43 $link185 10.43.63.1
+tb-set-ip-link $i43a63 $link185 10.43.63.2
+
+set link186 [$ns duplex-link $i43a63 $i63 100Mb 0ms DropTail]
+tb-set-ip-link $i43a63 $link186 10.43.63.3
+tb-set-ip-link $i63 $link186 10.43.63.4
+
+set i57a92 [$ns node]
+tb-add-node-attribute $i57a92 containers:node_type qemu
+tb-set-node-os $i57a92 Ubuntu1404-64-STD
+set link187 [$ns duplex-link $i57 $i57a92 100Mb 0ms DropTail]
+tb-set-ip-link $i57 $link187 10.57.92.1
+tb-set-ip-link $i57a92 $link187 10.57.92.2
+
+set link188 [$ns duplex-link $i57a92 $i92 100Mb 0ms DropTail]
+tb-set-ip-link $i57a92 $link188 10.57.92.3
+tb-set-ip-link $i92 $link188 10.57.92.4
+
+set i52a75 [$ns node]
+tb-add-node-attribute $i52a75 containers:node_type qemu
+tb-set-node-os $i52a75 Ubuntu1404-64-STD
+set link189 [$ns duplex-link $i52 $i52a75 100Mb 0ms DropTail]
+tb-set-ip-link $i52 $link189 10.52.75.1
+tb-set-ip-link $i52a75 $link189 10.52.75.2
+
+set link190 [$ns duplex-link $i52a75 $i75 100Mb 0ms DropTail]
+tb-set-ip-link $i52a75 $link190 10.52.75.3
+tb-set-ip-link $i75 $link190 10.52.75.4
+
+set i78a100 [$ns node]
+tb-add-node-attribute $i78a100 containers:node_type qemu
+tb-set-node-os $i78a100 Ubuntu1404-64-STD
+set link191 [$ns duplex-link $i78 $i78a100 100Mb 0ms DropTail]
+tb-set-ip-link $i78 $link191 10.78.100.1
+tb-set-ip-link $i78a100 $link191 10.78.100.2
+
+set link192 [$ns duplex-link $i78a100 $i100 100Mb 0ms DropTail]
+tb-set-ip-link $i78a100 $link192 10.78.100.3
+tb-set-ip-link $i100 $link192 10.78.100.4
+
+set i7a8 [$ns node]
+tb-add-node-attribute $i7a8 containers:node_type qemu
+tb-set-node-os $i7a8 Ubuntu1404-64-STD
+set link193 [$ns duplex-link $i7 $i7a8 100Mb 0ms DropTail]
+tb-set-ip-link $i7 $link193 10.7.8.1
+tb-set-ip-link $i7a8 $link193 10.7.8.2
+
+set link194 [$ns duplex-link $i7a8 $i8 100Mb 0ms DropTail]
+tb-set-ip-link $i7a8 $link194 10.7.8.3
+tb-set-ip-link $i8 $link194 10.7.8.4
+
+set i7a50 [$ns node]
+tb-add-node-attribute $i7a50 containers:node_type qemu
+tb-set-node-os $i7a50 Ubuntu1404-64-STD
+set link195 [$ns duplex-link $i7 $i7a50 100Mb 0ms DropTail]
+tb-set-ip-link $i7 $link195 10.7.50.1
+tb-set-ip-link $i7a50 $link195 10.7.50.2
+
+set link196 [$ns duplex-link $i7a50 $i50 100Mb 0ms DropTail]
+tb-set-ip-link $i7a50 $link196 10.7.50.3
+tb-set-ip-link $i50 $link196 10.7.50.4
+
+set controller [$ns node]
+tb-set-node-os $controller Ubuntu1404-64-STD
+tb-add-node-attribute $controller containers:node_type embedded_pnode
+tb-set-hardware $controller MicroCloud
+
+$ns rtproto Manual
+$ns run
