@@ -42,7 +42,8 @@ except:
 	a=1
 
 #Lets set the speed for all ports
-for i in range(1,2):
+for i in range(1,32):
+	break
 	interface="1/"+str(i)
 	output_string="interface ethernet "+interface+"\n"
 	ser.write(unicode(output_string))
@@ -83,7 +84,7 @@ for i in range(1,2):
 
 #Lets set the ip address on each interface
 for interface,data in port_mapping.iteritems():
-	if interface!="1/1":
+	if interface!="1/23":
 		continue
 	vlan=data["vlan"]
 	switch_ip=data["switch_ip"]
@@ -134,7 +135,6 @@ for interface,data in port_mapping.iteritems():
 	except:
 		a=1
 
-exit(1)
 #Let assign BGP
 output_string="router bgp 1000\n"
 ser.write(unicode(output_string))
@@ -145,6 +145,8 @@ except:
 	time.sleep(0.75)
 
 for interface,data in port_mapping.iteritems():
+	if interface!="1/23":
+		continue
 	asn=data["asn"]
 	server_ip=data["server_ip"]
 	time.sleep(0.75)

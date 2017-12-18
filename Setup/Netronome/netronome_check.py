@@ -148,9 +148,23 @@ def configure_nodes():
 		#Setup OVS
 		setup_ovs(ssh,"sdn_p0","sdn_v0.0",1,2,interface_1,False)
 
+		#Setup interface for traffic generator
+		stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl add-port br0 sdn_v0.1 -- set Interface sdn_v0.1 ofport_request=3")
+		data=stdout.readlines()
+
+		stdin, stdout, stderr = ssh.exec_command("ifconfig sdn_v0.1 up")
+		data=stdout.readlines()
+
+
 		#Add controller 
 		stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl set-controller br0 tcp:"+controller_ip+":6633")
 		data=stdout.readlines()
+
+		#Add rules to connect the traffic generator	
+		dpid=get_dpid(controller_ip)
+		add_forwarding_rules(controller_ip,dpid,3,1)
+
+
 
 		if node in two_ports:
 			#Add IP address to interface_2
