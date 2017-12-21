@@ -42,6 +42,7 @@ while True:
 				continue
 			if key=="in_port":
 				value=3
+				continue
 			match_string=match_string+","+key+"="+str(value)
 		output = subprocess.check_output("ovs-dpctl dump-flows filter="+match_string, shell=True).strip().split(",")
 		print "ovs-dpctl dump-flows filter="+match_string
@@ -54,7 +55,7 @@ while True:
 				new_byte_count=new_byte_count+int(item.strip().split(":")[-1])
 		print colored("Old Byte Count "+str(old_byte_count),"yellow"),colored("New Byte Count "+str(new_byte_count),"green")
 		print colored("Speed "+str(speed),"red"),"\n"
-		speed=str(round((new_byte_count-old_byte_count)/float(frequency),2))+" bps"
+		speed=str(round(((new_byte_count-old_byte_count)*8)/float(frequency),2))
 		cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',packet_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,new_packet_count,speed,id)
 		cur.execute(cmd)
 		time.sleep(frequency)

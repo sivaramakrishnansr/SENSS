@@ -22,6 +22,23 @@ import socket
 import urllib2
 import subprocess
 
+def init_database(ssh):
+	stdin, stdout, stderr = ssh.exec_command("sudo python /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/init.py usc558l")
+	data=stdout.readlines()
+	print "Initialised database"
+
+def add_client_entries(ssh,as_name,server_url,links_to,self):
+	stdin, stdout, stderr = ssh.exec_command("sudo python /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/insert_senss_client.py usc558l "+as_name+" "+server_url+" "+links_to+" "+self)
+	data=stdout.readlines()
+	print data
+
+
+def copy_files(ssh):
+	stdin, stdout, stderr = ssh.exec_command("sudo cp -rf /proj/SENSS/SENSS_git/* /var/www/html/")
+	data=stdout.readlines()
+	print "Copied files"
+	
+
 def install_dependencies(ssh):
 	stdin, stdout, stderr = ssh.exec_command("/proj/SENSS/SENSS_git/SENSS/Setup/install_dependencies.sh")
 	data=stdout.readlines()
@@ -107,21 +124,90 @@ def add_forwarding_rules(controller_ip,dpid,in_port,out_port):
         connection = opener.open(request)
         data = connection.read()
 
+def configure_pktgen_nodes(ssh):
+	#Patching netronome
+        stdin, stdout, stderr = ssh.exec_command("sudo sed 's/link.link_speed = ETH_SPEED_NUM_NONE/link.link_speed = ETH_SPEED_NUM_40G/g' -i /opt/netronome/srcpkg/dpdk-ns/drivers/net/nfp/nfp_net.c")
+        data=stdout.readlines()
+
+	#Make DPDK
+	print "Making DPDK"
+	stdin, stdout, stderr = ssh.exec_command("cd /opt/netronome/srcpkg/dpdk-ns/ ; sudo make")
+	data=stdout.readlines()	
+	print data
+
+	#Copying pktgen
+        stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/pktgen-3.4.5.zip /opt/")
+        data=stdout.readlines()
+
+        #removing
+        #print "Removing pktgen"
+        stdin, stdout, stderr = ssh.exec_command("cd /opt/; sudo rm -rf /opt/pktgen-3.4.5")
+        data=stdout.readlines()
+
+        #extracting pktgen
+        print "Extracting pktgen"
+        stdin, stdout, stderr = ssh.exec_command("cd /opt/; sudo unzip /opt/pktgen-3.4.5.zip")
+        data=stdout.readlines()
+
+        #Cleaning
+        #print "Cleaning pktgen"
+        stdin, stdout, stderr = ssh.exec_command("; cd /opt/pktgen-3.4.5;sudo make clean RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
+        data=stdout.readlines()
+
+        #Copying lua
+        print "Copying lua"
+        stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/lua-5.3.4.tar.gz /opt/pktgen-3.4.5/lib/lua/")
+        data=stdout.readlines()
+
+        #Making lua with patch
+        #print "Making only lua"
+        stdin, stdout, stderr = ssh.exec_command("cd /opt/pktgen-3.4.5/lib/lua ; sudo make RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
+        data=stdout.readlines()
+        #print data
+
+        #creating directories
+        #print "Creating recursive directories"
+        stdin, stdout, stderr = ssh.exec_command("sudo mkdir -p /opt/pktgen-3.4.5/lib/lua/src/lib/lua/src/x86_64-native-linuxapp-gcc/lib/")
+        data=stdout.readlines()
+
+        #Copying files
+        stdin, stdout, stderr = ssh.exec_command("sudo cp /opt/pktgen-3.4.5/lib/lua/lua-5.3.4/src/src/x86_64-native-linuxapp-gcc/lib/librte_lua.a /opt/pktgen-3.4.5/lib/lua/src/lib/lua/src/x86_64-native-linuxapp-gcc/lib/")
+        data=stdout.readlines()
+
+        #Making pktgen
+        print "Making pktgen"
+        stdin, stdout, stderr = ssh.exec_command("cd /opt/pktgen-3.4.5;sudo make RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
+        data=stdout.readlines()
+        #print
+
+
 def configure_nodes():
-	nodes=[]
+	nodes={}
 	two_ports=[]
 	f=open("nodes","r")
+	#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self
 	for line in f:
 		if "#" in line:
 			continue
 		node=line.strip().split(" ")[0]
 		number_of_ports=int(line.strip().split(" ")[1])
-		nodes.append(node)
+		node_type=line.strip().split(" ")[2]
+		asn=line.strip().split(" ")[3]
+		server_url=line.strip().split(" ")[4]
+		links_to=line.strip().split(" ")[5]
+		self=int(line.strip().split(" ")[6])
+		nodes[node]={}
+		nodes[node]["node_type"]=node_type
+		nodes[node]["asn"]=asn
+		nodes[node]["server_url"]=server_url
+		nodes[node]["links_to"]=links_to
+		nodes[node]["self"]=self
 		if number_of_ports==2:
 			two_ports.append(node)
 	f.close()
 
 	password=getpass.getpass()
+	
 	for node in nodes:
 		ssh = paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -135,6 +221,44 @@ def configure_nodes():
 		#Start RYU
 		start_ryu(ssh)
 
+		
+		#Init database
+		init_database(ssh)
+
+		#enter client values
+		if nodes[node]["node_type"]=="client":
+			for node,values in nodes.iteritems():
+				self="0"
+				if values["node_type"]=="client":
+					self="1"
+				print "Addding",values["asn"],values["server_url"],values["links_to"],self
+				add_client_entries(ssh,values["asn"],values["server_url"],values["links_to"],self)
+			print "Added client entries"
+
+
+		#copy server/client files
+		copy_files(ssh)
+
+		#Overwrite the constants file
+		dpid=get_dpid(controller_ip)
+		string_to_write="<?php\n"
+		string_to_write=string_to_write+'const CONTROLLER_BASE_URL = "http://'+node+':8080",\n'
+	    	string_to_write=string_to_write+"SWITCH_DPID = "+str(dpid)+";\n"
+		stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Server/constants.php")
+		data=stdout.readlines()
+		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Server/constants.php")
+		data=stdout.readlines()
+
+		#Install dpdk pktgen
+		if nodes[node]["node_type"]=="client":
+			print "Configuring pktgen"
+			configure_pktgen_nodes(ssh)
+
+
+		#Restart apache
+		stdin, stdout, stderr = ssh.exec_command("sudo service apache2 restart")
+		data=stdout.readlines()
+		
 		#Start OVS on netronome NIC
 		start_ovs(ssh)
 

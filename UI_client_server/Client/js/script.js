@@ -28,7 +28,7 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         if (Math.floor(Date.now() / 1000) > as_monitor_info.end_time) {
             clearInterval(timer);
         }
-
+	console.log(BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id);
         $.ajax({
             url: BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
             type: "GET",

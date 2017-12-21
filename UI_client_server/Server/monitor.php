@@ -4,7 +4,6 @@
 function add_monitor($client_info, $data)
 {
     require_once "db.php";
-
     $data = json_decode($data, true);
     if (!isset($data['match']['nw_dst'])) {
         return array(
@@ -12,13 +11,13 @@ function add_monitor($client_info, $data)
             "error" => 401
         );
     }
-    require_once "utils.php";
-    if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
-        return array(
-            "success" => false,
-            "error" => 402
-        );
-    }
+    //require_once "utils.php";
+    //if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
+    //    return array(
+    //        "success" => false,
+    //        "error" => 402
+    //    );
+    //}
 
     $frequency = (int)$data['frequency'];
     $end_time = (int)$data['end_time'];
@@ -70,9 +69,9 @@ function add_monitor($client_info, $data)
         $conn1->query($sql);
         $conn1->commit();
     } else {
-        $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name, log_type, match_field, active, frequency, end_time) VALUES 
-                  ('%s', 'MONITOR', '%s', 1, %d, %d)", $client_info['as_domain'], json_encode($add_rule_data),
-            $frequency, $end_time);
+        $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name, log_type, match_field, active, frequency, end_time,packet_count,byte_count,speed) VALUES 
+                  ('%s', 'MONITOR', '%s', 1, %d, %d,%d,%d,%d)", $client_info['as_domain'], json_encode($add_rule_data),
+            $frequency, $end_time,0,0,0);
 
         $conn1->query($sql);
         $conn1->commit();

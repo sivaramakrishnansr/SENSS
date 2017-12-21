@@ -1,12 +1,14 @@
+#!/usr/bin/env python
 import time
 import os
 import pexpect
 import subprocess
+import sys
 
 #Command line arguments
 number_of_ports=1
-attack_ip="57.0.0.1"
-attack_duration=10
+attack_ip=sys.argv[1]
+attack_duration=int(sys.argv[2])
 
 proc = subprocess.Popen(["arp"], stdout=subprocess.PIPE, shell=True)
 (out, err) = proc.communicate()
@@ -70,6 +72,3 @@ child.sendline('stop 0')
 time.sleep(3)
 child.sendline('quit')
 
-#child.sendline('stop 0')
-#child.expect('Pktgen:/>')
-#child.sendline('quit')

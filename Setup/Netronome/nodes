@@ -1,19 +1,19 @@
-#Deter node name/Number of netronome ports connected
-#hpc039 2
-#hpc041 2
-#hpc042 2
-#hpc043 2
-#hpc044 2
-##hpc045 2
-#hpc046 2
-#hpc047 2
-#hpc048 1
-#hpc049 1
-#hpc050 1
-#hpc051 1
-#hpc052 1
-#hpc053 1
-#hpc054 1
-#hpc055 1
-hpc056 1
-#hpc057 1
+#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self/rate of traffic/duration
+#hpc039 2 server hpc039 http://hpc039/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc041 2 server hpc041 http://hpc041/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc042 2 server hpc042 http://hpc042/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc043 2 server hpc043 http://hpc043/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc044 2 server hpc044 http://hpc044/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+##hpc045 2 server hpc045 http://hpc045/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc046 2 server hpc046 http://hpc046/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc047 2 server hpc047 http://hpc047/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc048 1 server hpc048 http://hpc048/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc049 1 server hpc049 http://hpc049/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc050 1 server hpc050 http://hpc050/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc051 1 server hpc051 http://hpc051/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc052 1 server hpc052 http://hpc052/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc053 1 server hpc053 http://hpc053/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc054 1 server hpc054 http://hpc054/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+#hpc055 1 server hpc055 http://hpc055/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+hpc056 1 server hpc056 http://hpc056/SENSS/UI_client_server/Server/api.php hpc057 0 100 120
+hpc057 1 client hpc057 http://hpc057/SENSS/UI_client_server/Server/api.php hpc039,hpc041,hpc042,hpc043,hpc044,hpc045,hpc046,hpc047,hpc048,hpc049,hpc050,hpc051,hpc052,hpc053,hpc054,hpc055,hpc056 0 0 0

@@ -40,22 +40,24 @@ def configure_attack_nodes():
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		ssh.connect(node,username="satyaman", password=password, timeout=3)
 		#Patching netronome
-		#stdin, stdout, stderr = ssh.exec_command("sudo sed 's/link.link_speed = ETH_SPEED_NUM_NONE/link.link_speed = ETH_SPEED_NUM_40G/g' -i /opt/netronome/srcpkg/dpdk-ns/drivers/net/nfp/nfp_net.c")
-		#data=stdout.readlines()
+		stdin, stdout, stderr = ssh.exec_command("sudo sed 's/link.link_speed = ETH_SPEED_NUM_NONE/link.link_speed = ETH_SPEED_NUM_40G/g' -i /opt/netronome/srcpkg/dpdk-ns/drivers/net/nfp/nfp_net.c")
+		data=stdout.readlines()
+
+		stdin, stdout, stderr = ssh.exec_command("sudo apt-get install python-pexpect")
+		data=stdout.readlines()
 
 		#Make DPDK
 		print "Making DPDK"
-		#stdin, stdout, stderr = ssh.exec_command("cd /opt/netronome/srcpkg/dpdk-ns/ ; sudo make")
-		#data=stdout.readlines()
-		#print data
+		stdin, stdout, stderr = ssh.exec_command("cd /opt/netronome/srcpkg/dpdk-ns/ ; sudo make")
+		data=stdout.readlines()
+		print data
 
 		#Copying pktgen
-		print "Copying pktgen"
-		#stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/pktgen-3.4.5.zip /opt/")
-		#data=stdout.readlines()
+		stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/pktgen-3.4.5.zip /opt/")
+		data=stdout.readlines()
 
 		#removing
-		print "Removing pktgen"
+		#print "Removing pktgen"
 		stdin, stdout, stderr = ssh.exec_command("cd /opt/; sudo rm -rf /opt/pktgen-3.4.5")
 		data=stdout.readlines()
 
@@ -65,10 +67,9 @@ def configure_attack_nodes():
 		data=stdout.readlines()
 
 		#Cleaning
-		print "Cleaning pktgen"		
+		#print "Cleaning pktgen"		
 		stdin, stdout, stderr = ssh.exec_command("; cd /opt/pktgen-3.4.5;sudo make clean RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
 		data=stdout.readlines()
-		print data
 	
 		#Copying lua
 		print "Copying lua"
@@ -76,19 +77,17 @@ def configure_attack_nodes():
 		data=stdout.readlines()
 
 		#Making lua with patch
-		print "Making only lua"
+		#print "Making only lua"
 		stdin, stdout, stderr = ssh.exec_command("cd /opt/pktgen-3.4.5/lib/lua ; sudo make RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
 		data=stdout.readlines()
-		print data
+		#print data
 
 		#creating directories
-		print "Creating recursive directories"
+		#print "Creating recursive directories"
 		stdin, stdout, stderr = ssh.exec_command("sudo mkdir -p /opt/pktgen-3.4.5/lib/lua/src/lib/lua/src/x86_64-native-linuxapp-gcc/lib/")
 		data=stdout.readlines()
-		print data
 
 		#Copying files
-		print "Copying files"
 		stdin, stdout, stderr = ssh.exec_command("sudo cp /opt/pktgen-3.4.5/lib/lua/lua-5.3.4/src/src/x86_64-native-linuxapp-gcc/lib/librte_lua.a /opt/pktgen-3.4.5/lib/lua/src/lib/lua/src/x86_64-native-linuxapp-gcc/lib/")
 		data=stdout.readlines()
 
@@ -96,8 +95,8 @@ def configure_attack_nodes():
 		print "Making pktgen"
 		stdin, stdout, stderr = ssh.exec_command("cd /opt/pktgen-3.4.5;sudo make RTE_SDK=/opt/netronome/srcpkg/dpdk-ns RTE_TARGET=x86_64-native-linuxapp-gcc")
 		data=stdout.readlines()
-		print data
-
+		#print data
+		print
 if __name__ == '__main__':
 	configure_attack_nodes()
 

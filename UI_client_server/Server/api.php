@@ -5,12 +5,12 @@ if (!isset($_GET['action'])) {
     return;
 }
 /* Authenticate Client */
-require_once "client_auth.php";
-$client_info = client_auth(apache_request_headers());
-if (!$client_info) {
-    http_response_code(400);
-    return;
-}
+//require_once "client_auth.php";
+//$client_info = client_auth(apache_request_headers());
+//if (!$client_info) {
+//    http_response_code(400);
+//    return;
+//}
 
 $action = $_GET['action'];
 

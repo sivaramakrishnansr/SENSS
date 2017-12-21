@@ -1,6 +1,6 @@
 <?php
 
-$server_base_url = "http://localhost/SENSS/UI_client_server/Server/api.php";
+//$server_base_url = "http://hpc057/SENSS/UI_client_server/Server/api.php";
 
 function generate_request_headers() {
     $clientcert = file_get_contents('cert/node1cert.pem');
@@ -43,20 +43,29 @@ if (isset($_GET['topology'])) {
     $sql = sprintf("SELECT as_name, match_field, frequency, end_time, monitor_id FROM MONITORING_RULES WHERE end_time >= %d",
         time());
     $result = $conn->query($sql);
-    $topology['monitoring_rules'] = $result->fetch_all();
+    $topology['monitoring_rules'] = $result->fetch_assoc();
 
     echo json_encode($topology, true);
 }
 
 if (isset($_GET['add_monitor'])) {
+//if (1){
     $input = file_get_contents("php://input");
     $input = json_decode($input, true);
-
+    //$input=array(
+    //  "monitor_frequency"=>500,
+    //  "monitor_duration"=>1,
+    //  "match"=>array(
+    //          "nw_dst"=>"10.0.0.1",
+    //          "nw_src"=>"10.0.0.2"
+    //  ),
+    //  "as_name"=>"hpc056"
+    //  );
     $monitoring_end_time = time() + ($input['monitor_frequency'] * $input['monitor_duration']);
 
     $data_to_send = array(
         'frequency' => $input['monitor_frequency'],
-        'end_time' => $monitoring_end_time,
+        'end_time' =>$monitoring_end_time,
         'match' => array()
     );
     foreach ($input['match'] as $key => $value) {
@@ -70,10 +79,12 @@ if (isset($_GET['add_monitor'])) {
 
     require_once "db_conf.php";
     $sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
+    //$sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" .$input['as_name'] . "')";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
-//        $url = $row['server_url'] . "/api.php?action=add_monitor";
-        $url = $server_base_url . "?action=add_monitor";
+        $url = $row['server_url'] . "?action=add_monitor";
+        //$url = "http://hpc056:80/SENSS/UI_client_server/Server/api.php?action=add_monitor";
+        //$url = $server_base_url . "?action=add_monitor";
         $options = array(
             'http' => array(
                 'method' => 'POST',
@@ -81,7 +92,6 @@ if (isset($_GET['add_monitor'])) {
                 'content' => $data_string
             )
         );
-
         $context = stream_context_create($options);
 
         $add_monitor_response = file_get_contents($url, false, $context);
@@ -106,6 +116,8 @@ if (isset($_GET['add_monitor'])) {
     echo json_encode($response, true);
 }
 
+
+
 if(isset($_GET['remove_monitor'])) {
     if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
         http_response_code(400);
@@ -113,7 +125,6 @@ if(isset($_GET['remove_monitor'])) {
     }
     $as_name = $_GET['as_name'];
     $monitor_id = $_GET['monitor_id'];
-
     require_once "db_conf.php";
 
     $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
@@ -122,10 +133,10 @@ if(isset($_GET['remove_monitor'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_all()[0][0];
+    $senss_server_url = $result->fetch_assoc()["server_url"];
 
-//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
-    $url = $server_base_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
+     $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    //$url = $server_base_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
@@ -141,7 +152,6 @@ if(isset($_GET['remove_monitor'])) {
         echo $response;
     }
 }
-
 
 if (isset($_GET['get_monitor'])) {
     if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
@@ -150,7 +160,6 @@ if (isset($_GET['get_monitor'])) {
     }
     $as_name = $_GET['as_name'];
     $monitor_id = $_GET['monitor_id'];
-
     require_once "db_conf.php";
 
     $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
@@ -159,10 +168,10 @@ if (isset($_GET['get_monitor'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_all()[0][0];
+    $senss_server_url = $result->fetch_assoc()["server_url"];
 
-//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
-    $url = $server_base_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    //$url = $server_base_url . "?action=get_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
@@ -178,6 +187,7 @@ if (isset($_GET['get_monitor'])) {
         echo $response;
     }
 }
+
 
 if(isset($_GET['add_filter'])) {
     if (!isset($_GET['as_name']) && !isset($_GET['monitor_id'])) {
@@ -195,10 +205,10 @@ if(isset($_GET['add_filter'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_all()[0][0];
+    $senss_server_url = $result->fetch_assoc()[0][0];
 
-//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
-    $url = $server_base_url . "?action=add_filter&monitor_id=" . $monitor_id;
+    $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    //$url = $server_base_url . "?action=add_filter&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
@@ -231,10 +241,10 @@ if(isset($_GET['remove_filter'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_all()[0][0];
+    $senss_server_url = $result->fetch_assoc()[0][0];
 
-//    $url = $senss_server_url . "/api.php?action=get_monitor&monitor_id=" . $monitor_id;
-    $url = $server_base_url . "?action=remove_filter&monitor_id=" . $monitor_id;
+    $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    //$url = $server_base_url . "?action=remove_filter&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
