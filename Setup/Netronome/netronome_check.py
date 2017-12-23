@@ -250,9 +250,9 @@ def configure_nodes():
 		data=stdout.readlines()
 
 		#Install dpdk pktgen
-		if nodes[node]["node_type"]=="client":
-			print "Configuring pktgen"
-			configure_pktgen_nodes(ssh)
+		#if nodes[node]["node_type"]=="client":
+		print "Configuring pktgen"
+		configure_pktgen_nodes(ssh)
 
 
 		#Restart apache

@@ -13,7 +13,6 @@ if (!isset($_GET['action'])) {
 //}
 
 $action = $_GET['action'];
-
 switch ($action) {
     case "add_filter":
         require_once "filter.php";
@@ -75,6 +74,13 @@ switch ($action) {
             return;
         }
         $data = get_monitor($client_info, (int)$_GET['monitor_id']);
+        http_response_code(200);
+        echo json_encode($data, true);
+        return;
+
+    case "get_server_logs":
+        require_once "get_server_logs.php";
+        $data = get_server_logs();
         http_response_code(200);
         echo json_encode($data, true);
         return;

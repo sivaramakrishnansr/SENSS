@@ -1,42 +1,13 @@
 set ns [new Simulator]
 source tb_compat.tcl
 
-set a [$ns node]
-tb-fix-node $a hpc039
-tb-set-node-os $a Ubuntu-Agilio-2
+set node1 [$ns node]
+tb-fix-node $node1 hpc056
+tb-set-node-os $node1 Ubuntu-Agilio-2
 
-set b [$ns node]
-tb-fix-node $b hpc041
-tb-set-node-os $b Ubuntu-Agilio-2
-
-set c [$ns node]
-tb-fix-node $c hpc042
-tb-set-node-os $c Ubuntu-Agilio-2
-
-set d [$ns node]
-tb-fix-node $d hpc043
-tb-set-node-os $d Ubuntu-Agilio-2
-
-set e [$ns node]
-tb-fix-node $e hpc044
-tb-set-node-os $e Ubuntu-Agilio-2
-
-set g [$ns node]
-tb-fix-node $g hpc046
-tb-set-node-os $g Ubuntu-Agilio-2
-
-set h [$ns node]
-tb-fix-node $h hpc047
-tb-set-node-os $h Ubuntu-Agilio-2
-
-set i [$ns node]
-tb-fix-node $i hpc048
-tb-set-node-os $i Ubuntu-Agilio-2
-
-set j [$ns node]
-tb-fix-node $j hpc049
-tb-set-node-os $j Ubuntu-Agilio-2
+set node2 [$ns node]
+tb-fix-node $node2 hpc057
+tb-set-node-os $node2 Ubuntu-Agilio-2
 
 $ns rtproto Static
 $ns run
-

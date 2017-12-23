@@ -34,6 +34,8 @@ while True:
 			flag=int(item[7])
 		active=int(item[8])
 		frequency=int(item[9])
+		if active==0:
+			continue
 		#end_time=parser.parse(item[10])
 		priority=match_field["priority"]
 		match_string="ipv4"
@@ -49,13 +51,20 @@ while True:
 		new_packet_count=0
 		new_byte_count=0
 		for item in output:
+			if "actions:drop" in item:
+				new_packet_count=0
+				new_byte_count=0
+				continue
 			if "packets" in item:
 				new_packet_count=new_packet_count+int(item.strip().split(":")[-1])
 			if "bytes" in item:
 				new_byte_count=new_byte_count+int(item.strip().split(":")[-1])
 		print colored("Old Byte Count "+str(old_byte_count),"yellow"),colored("New Byte Count "+str(new_byte_count),"green")
 		print colored("Speed "+str(speed),"red"),"\n"
-		speed=str(round(((new_byte_count-old_byte_count)*8)/float(frequency),2))
+		speed=round(((new_byte_count-old_byte_count)*8)/float(frequency),2)
+		if speed<0:
+			speed=0
+		speed=str(speed)
 		cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',packet_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,new_packet_count,speed,id)
 		cur.execute(cmd)
 		time.sleep(frequency)

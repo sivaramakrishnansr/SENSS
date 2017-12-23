@@ -9,6 +9,7 @@ import sys
 number_of_ports=1
 attack_ip=sys.argv[1]
 attack_duration=int(sys.argv[2])
+attack_rate=sys.argv[3]
 
 proc = subprocess.Popen(["arp"], stdout=subprocess.PIPE, shell=True)
 (out, err) = proc.communicate()
@@ -66,6 +67,7 @@ child.sendline('set 0 dst ip '+attack_ip)
 child.sendline('set 0 src mac '+server_mac_1)
 child.sendline('set 0 dst mac '+switch_mac_1)
 child.sendline('set 0 size 1500')
+child.sendline('set 0 rate '+str(attack_rate))
 child.sendline('start 0')
 time.sleep(attack_duration)
 child.sendline('stop 0')

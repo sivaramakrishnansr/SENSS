@@ -22,7 +22,7 @@ def start_attack():
                 server_url=line.strip().split(" ")[4]
                 links_to=line.strip().split(" ")[5]
                 self=int(line.strip().split(" ")[6])
-		rate=int(line.strip().split(" ")[7])
+		rate=line.strip().split(" ")[7]
 		duration=int(line.strip().split(" ")[8])
 		if node_type=="client":
 			attack_ip=node.replace("hpc0","")+".0.0.1"
@@ -44,9 +44,9 @@ def start_attack():
                 ssh.connect(node,username="satyaman", password=password, timeout=3)
                 #Patching netronome
 		#nohup ./exec_name > /dev/null 2>&1 &\n
-                stdin, stdout, stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"]))
-		print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])
+                stdin, stdout, stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"])
+		print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"]
                 #data=stdout.readlines()	
 
-if __name__ == '__main__':
-	start_attack()
+#if __name__ == '__main__':
+#	start_attack()

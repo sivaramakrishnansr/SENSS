@@ -34,7 +34,7 @@ function add_monitor($client_info, $data)
             )
         )
     );
-    $add_rule_data['match']['in_port'] = 2;
+    //$add_rule_data['match']['in_port'] = 2;
     $add_rule_data['match']['eth_type'] = 2048;
 
     $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/add");
@@ -94,7 +94,7 @@ function remove_monitor($client_info, $monitor_id)
 {
     require_once "db.php";
 
-    $sql = "UPDATE CLIENT_LOGS SET end_time = " . time() . " WHERE as_name = '" . $client_info['as_domain'] . "' 
+    $sql = "UPDATE CLIENT_LOGS SET end_time = " . time() . ",active=0 WHERE as_name = '" . $client_info['as_domain'] . "' 
             AND id = " . (int)$monitor_id . " AND log_type = 'MONITOR'";
 
     $conn1->query($sql);
@@ -110,6 +110,20 @@ function get_monitor($client_info, $monitor_id)
 
     $result = $conn1->query($sql);
     if ($result->num_rows > 0) {
+    	    $sql = "SELECT match_field,packet_count, byte_count, speed FROM CLIENT_LOGS WHERE as_name = '" . $client_info['as_domain'] . "' 
+        	    AND id = " . (int)$monitor_id . " AND log_type = 'MONITOR' AND end_time >= " . time();
+	    $log_result = $conn1->query($sql);
+	    $row=$log_result->fetch_assoc();
+	    $match=$row["match_field"];
+	    $packet_count=$row["packet_count"];
+	    $byte_count=$row["byte_count"];
+	    $speed=$row["speed"];
+	    $request_type="Get flow stats";
+        $sql = sprintf("INSERT INTO SERVER_LOGS (as_name, request_type,match_field,packet_count,byte_count,speed) VALUES 
+                  ('%s', '%s','%s', %d,%d,%d)", $client_info['as_domain'],$request_type, json_encode($match),$packet_count,$byte_count,$speed);
+        $conn1->query($sql);
+        $conn1->commit();
+
         return array(
             "success" => true,
             "data" => $result->fetch_assoc()

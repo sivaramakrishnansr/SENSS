@@ -15,5 +15,5 @@
 #hpc053 1 server hpc053 http://hpc053/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
 #hpc054 1 server hpc054 http://hpc054/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
 #hpc055 1 server hpc055 http://hpc055/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
-hpc056 1 server hpc056 http://hpc056/SENSS/UI_client_server/Server/api.php hpc057 0 100 120
+hpc056 1 server hpc056 http://hpc056/SENSS/UI_client_server/Server/api.php hpc057 0 100 300
 hpc057 1 client hpc057 http://hpc057/SENSS/UI_client_server/Server/api.php hpc039,hpc041,hpc042,hpc043,hpc044,hpc045,hpc046,hpc047,hpc048,hpc049,hpc050,hpc051,hpc052,hpc053,hpc054,hpc055,hpc056 0 0 0

@@ -4,7 +4,8 @@ var threshold = 0;
 function populateMonitoringValues(rowId, as_name, data) {
     $("#packet-count-" + rowId).html(data.packet_count);
     $("#byte-count-" + rowId).html(data.byte_count);
-    $("#speed-" + rowId).html(data.speed);
+    //$("#speed-" + rowId).html(data.speed);
+    $("#speed-" + rowId).html(display_threshold(data.speed));
     if (parseInt(data.speed) >= threshold) {
         cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
     } else {
@@ -39,7 +40,9 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                 }
             }
         });
-    }, (parseInt(as_monitor_info.frequency) + 2) * 1000); // rule[2] is actual frequency with which the backend system will update the database/
+    //}, (parseInt(as_monitor_info.frequency) + 2) * 1000); 
+    }, (parseInt(as_monitor_info.frequency)) * 1000); 
+    // rule[2] is actual frequency with which the backend system will update the database/
     // We give couple more seconds to reflect the data in the DB and then fetch the updated data.
 
     $("#remove-monitor-" + random).click(function () {
@@ -80,13 +83,13 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
 function display_threshold(int_threshold) {
     var zeros = parseInt(Math.log(int_threshold) / Math.log(10));
     if (zeros >= 12) {
-        return (int_threshold / Math.pow(10, 12)).toString() + " TBps";
+        return (int_threshold / Math.pow(10, 12)).toFixed(2).toString() + " TBps";
     } else if (zeros >= 9) {
-        return (int_threshold / Math.pow(10, 9)).toString() + " GBps";
+        return (int_threshold / Math.pow(10, 9)).toFixed(2).toString() + " GBps";
     } else if (zeros >= 6) {
-        return (int_threshold / Math.pow(10, 6)).toString() + " MBps";
+        return (int_threshold / Math.pow(10, 6)).toFixed(2).toString() + " MBps";
     } else if (zeros >= 3) {
-        return (int_threshold / Math.pow(10, 3)).toString() + " KBps";
+        return (int_threshold / Math.pow(10, 3)).toFixed(2).toString() + " KBps";
     } else {
         return int_threshold.toString() + " Bps";
     }

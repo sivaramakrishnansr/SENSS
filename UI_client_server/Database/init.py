@@ -19,6 +19,16 @@ except Exception as e:
 	print e
 	print "Table CLIENT_LOGS already exists"
 
+
+try:
+	cur.execute("CREATE TABLE `SERVER_LOGS` (`id` bigint(20) NOT NULL AUTO_INCREMENT, `request_type` varchar(45) NOT NULL,`as_name` varchar(45) NOT NULL, `match_field` text, `packet_count` bigint(20) DEFAULT NULL, `byte_count` bigint(20) DEFAULT NULL,valid_request INT DEFAULT NULL,prefix_allowed varchar(45) DEFAULT NULL, speed varchar(25) DEFAULT NULL,PRIMARY KEY (`id`))")
+	print "Table SERVER_LOGS created"
+except Exception as e:
+	print e
+	print "Table SERVER_LOGS already exists"
+
+
+
 cur.close()
 cur=db.cursor()
 
@@ -43,3 +53,4 @@ try:
 except Exception as e:
 	print e
 	print "Table MONITORING_RULES already exists"
+

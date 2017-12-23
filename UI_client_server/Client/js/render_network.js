@@ -108,15 +108,23 @@ function renderInitialTopology(topology) {
             }
         }, event);
     });
-
     topology.monitoring_rules.forEach(function (rule) {
+        //var as_monitor_info = {
+        //    match: rule[1],
+        //    frequency: rule[2],
+        //    end_time: rule[3],
+        //    monitor_id: rule[4]
+        //};
         var as_monitor_info = {
-            match: rule[1],
-            frequency: rule[2],
-            end_time: rule[3],
-            monitor_id: rule[4]
+            match: rule["match_field"],
+            frequency: rule["frequency"],
+            end_time: rule["end_time"],
+            monitor_id: rule["monitor_id"]
         };
-        poll_stats(rule[0], rule[4], JSON.parse(rule[1]));
+
+        //poll_stats(rule[0], rule[4], JSON.parse(rule[1]));
+        poll_stats(rule["as_name"], rule["monitor_id"], JSON.parse(rule["match_field"]));
+
         /*var random = Math.random().toString(36).substring(7);
         var markup = "<tr><td>" + rule[0] + "</td><td><pre>" + JSON.stringify(JSON.parse(rule[1]), undefined, 4) +
             "</pre></td><td id='packet-count-" + random + "'></td><td id='byte-count-" + random + "'></td>" +
@@ -137,7 +145,7 @@ function renderInitialTopology(topology) {
                     populateMonitoringValues(random, JSON.parse(result));
                 }
             });
-        }, (parseInt(rule[2]) + 2) * 1000); // rule[2] is actual frequency with which the backend system will update the database/
+        }, (parseInt(rule[2])) * 1000); // rule[2] is actual frequency with which the backend system will update the database/
         // We give couple more seconds to reflect the data in the DB and then fetch the updated data.*/
     });
 }

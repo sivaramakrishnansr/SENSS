@@ -1,6 +1,6 @@
 <?php
 
-
+//flag is used for the buttons
 function add_filter($client_info, $monitor_id)
 {
     require_once "db.php";
@@ -38,6 +38,13 @@ function add_filter($client_info, $monitor_id)
             end_time >= %d", $client_info['as_domain'], $monitor_id, time());
     $conn1->query($sql);
     $conn1->commit();
+
+        $request_type="Add filter";
+        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
+                  ('%s')", $request_type);
+        $conn1->query($sql);
+        $conn1->commit();
+
     return array(
         "success" => true
     );
@@ -55,7 +62,8 @@ function remove_filter($client_info, $monitor_id)
     $add_rule_data = json_decode($match_field, true);
 
     require_once "constants.php";
-    $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/delete");
+    //$ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/delete");
+    $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/modify_strict");
     curl_setopt_array($ch, array(
         CURLOPT_POST => TRUE,
         CURLOPT_RETURNTRANSFER => TRUE,
@@ -80,6 +88,13 @@ function remove_filter($client_info, $monitor_id)
         $client_info['as_domain'], $monitor_id);
     $conn1->query($sql);
     $conn1->commit();
+
+        $request_type="Remove filter";
+        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
+                  ('%s')", $request_type);
+        $conn1->query($sql);
+        $conn1->commit();
+
     return array(
         "success" => true
     );

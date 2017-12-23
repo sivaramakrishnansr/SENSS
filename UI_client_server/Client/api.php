@@ -43,8 +43,10 @@ if (isset($_GET['topology'])) {
     $sql = sprintf("SELECT as_name, match_field, frequency, end_time, monitor_id FROM MONITORING_RULES WHERE end_time >= %d",
         time());
     $result = $conn->query($sql);
-    $topology['monitoring_rules'] = $result->fetch_assoc();
-
+    //$topology['monitoring_rules'] = $result->fetch_assoc();
+    while ($row = $result->fetch_assoc()) {
+        array_push($topology['monitoring_rules'],$row);
+    }
     echo json_encode($topology, true);
 }
 
@@ -135,7 +137,7 @@ if(isset($_GET['remove_monitor'])) {
     }
     $senss_server_url = $result->fetch_assoc()["server_url"];
 
-     $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+     $url = $senss_server_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
     //$url = $server_base_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
@@ -145,6 +147,11 @@ if(isset($_GET['remove_monitor'])) {
     );
 
     $context = stream_context_create($options);
+
+    //$sql = sprintf("DELETE FROM MONITORING_RULES WHERE id = %d", $monitor_id);
+    $sql = sprintf("DELETE FROM MONITORING_RULES WHERE monitor_id=%d ",$monitor_id);
+    $conn->query($sql);
+    $conn->commit();
 
     $response = file_get_contents($url, false, $context);
     $httpcode = http_response_code();
@@ -181,6 +188,7 @@ if (isset($_GET['get_monitor'])) {
 
     $context = stream_context_create($options);
 
+
     $response = file_get_contents($url, false, $context);
     $httpcode = http_response_code();
     if ($httpcode == 200) {
@@ -205,9 +213,8 @@ if(isset($_GET['add_filter'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_assoc()[0][0];
-
-    $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    $senss_server_url = $result->fetch_assoc()["server_url"];
+    $url = $senss_server_url . "?action=add_filter&monitor_id=" . $monitor_id;
     //$url = $server_base_url . "?action=add_filter&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
@@ -219,7 +226,6 @@ if(isset($_GET['add_filter'])) {
     $context = stream_context_create($options);
 
     $response = file_get_contents($url, false, $context);
-    echo $response;
     $httpcode = http_response_code();
     http_response_code($httpcode);
     return;
@@ -241,9 +247,8 @@ if(isset($_GET['remove_filter'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_assoc()[0][0];
-
-    $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
+    $senss_server_url = $result->fetch_assoc()["server_url"]; 
+    $url = $senss_server_url . "?action=remove_filter&monitor_id=" . $monitor_id;
     //$url = $server_base_url . "?action=remove_filter&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
