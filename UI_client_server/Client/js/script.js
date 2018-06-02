@@ -1,26 +1,65 @@
 var thresholdRateMultiplier = 1;
 var threshold = 0;
+var proxy_counter = 0;
+var proxy_flag=0;
+var sum_array={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
 
 function populateMonitoringValues(rowId, as_name, data) {
-    $("#packet-count-" + rowId).html(data.packet_count);
-    $("#byte-count-" + rowId).html(data.byte_count);
-    //$("#speed-" + rowId).html(data.speed);
-    $("#speed-" + rowId).html(display_threshold(data.speed));
-    if (parseInt(data.speed) >= threshold) {
-        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
-    } else {
-        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "green");
+    if (data.speed=="Not reachable"){
+	    sum_array[as_name]=0;
+	    $("#packet-count-" + rowId).html("N/A");
+    	    //$("#byte-count-" + rowId).html(data.byte_count);
+            //$("#speed-" + rowId).html(data.speed);
+    	    $("#speed-" + rowId).html("N/A");
+            cy.$("#root_" + as_name).data("name", "N/A").style("line-color", "#996300");
+	proxy_counter=proxy_counter+1;
+	if (proxy_counter==5)
+	{
+		if (proxy_flag==0){
+			proxy_flag=1;
+	        $.ajax({
+		 url: BASE_URI + "send_proxy_info",
+            	 type: "GET",
+           	 success: function (result) {
+			console.log("Sent information to proxy");
+	            }
+        	});
+		}
+	}
+
     }
+
+    else{
+	sum_array[as_name]=data.speed;
+    	$("#packet-count-" + rowId).html(data.packet_count);
+    	//$("#byte-count-" + rowId).html(data.byte_count);
+    	//$("#speed-" + rowId).html(data.speed);
+    	$("#speed-" + rowId).html(display_threshold(data.speed));
+    	if (parseInt(data.speed) >= threshold) {
+        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
+    	} else {
+        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "green");
+    	}
+    }
+    var all_speed=0;
+    for (var key in sum_array){
+		all_speed=all_speed+Number(sum_array[key]);
+	}
+    $("#all_speed").html(display_threshold(all_speed));
+    console.log("Speed "+all_speed);
 }
 
 function poll_stats(as_name, monitor_id, as_monitor_info) {
     var random = Math.random().toString(36).substring(7);
     var markup = "<tr id='monitor-row-" + random +"'><td>" + as_name + "</td><td><pre>" + JSON.stringify(as_monitor_info, undefined, 4) +
-        "</pre></td><td id='packet-count-" + random + "'></td><td id='byte-count-" + random + "'>" +
-        "</td><td id='speed-" + random + "'></td><td><p><button type='button' class='btn btn-default' " +
-        "id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
-        "id='add-filter-" + random + "'>Add Filter</button></p><p><button type='button' class='btn btn-danger' " +
-        "id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
+        "</pre></td><td id='packet-count-" + random + "'></td>"+
+	//"<td id='byte-count-" + random + "'>" +"</td>"
+	"<td id='speed-" + random + "'></td></tr>"
+	//<td><p><button type='button' class='btn btn-default' " ;
+	//+
+        //"id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
+        //"id='add-filter-" + random + "'>Add Filter</button></p><p><button type='button' class='btn btn-danger' " +
+        //"id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
     $("#table-monitor").append(markup);
 
     $("#remove-filter-" + random).hide();
@@ -33,15 +72,23 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         $.ajax({
             url: BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
             type: "GET",
+            error: function () {
+	    	var error_data={packet_count:"Not reachable",speed:"Not reachable"};
+            	populateMonitoringValues(random, as_name, error_data);
+            },
             success: function (result) {
+		if (typeof result !== 'undefined') {
+			console.log(result);
+		}
                 var resultParsed = JSON.parse(result);
                 if (resultParsed.success) {
                     populateMonitoringValues(random, as_name, resultParsed.data);
                 }
-            }
+            },
+	    timeout: 2000
         });
-    //}, (parseInt(as_monitor_info.frequency) + 2) * 1000); 
-    }, (parseInt(as_monitor_info.frequency)) * 1000); 
+    }, (parseInt(as_monitor_info.frequency) + 2) * 1000); 
+    //}, (parseInt(as_monitor_info.frequency)) * 1000); 
     // rule[2] is actual frequency with which the backend system will update the database/
     // We give couple more seconds to reflect the data in the DB and then fetch the updated data.
 
@@ -110,6 +157,22 @@ $(document).ready(function () {
         $("#add-monitor-modal").modal('show');
     });
 
+    $("#add-filter-all").click(function () {
+	    var xhttp = new XMLHttpRequest();
+    	    xhttp.open("GET", BASE_URI+"add_filter_all", true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send();
+    });
+
+    $("#remove-filter-all").click(function () {
+	    var xhttp = new XMLHttpRequest();
+    	    xhttp.open("GET", BASE_URI+"remove_filter_all", true);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.send();
+    });
+
+	
+    
     $("#add-monitor-rule").click(function () {
         var data = {
             as_name: $("#as_name").val(),

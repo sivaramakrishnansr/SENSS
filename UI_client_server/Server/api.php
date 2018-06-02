@@ -9,7 +9,7 @@ if (!isset($_GET['action'])) {
 //$client_info = client_auth(apache_request_headers());
 //if (!$client_info) {
 //    http_response_code(400);
-//    return;
+//    return;/
 //}
 
 $action = $_GET['action'];

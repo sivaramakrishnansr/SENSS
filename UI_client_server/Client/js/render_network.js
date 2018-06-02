@@ -10,7 +10,7 @@ function populateMonitoringTable(nodes) {
 }
 
 function renderInitialTopology(topology) {
-    console.log(topology);
+    //console.log(topology);
 
     var roots = "";
     var nodes = [];
@@ -22,25 +22,33 @@ function renderInitialTopology(topology) {
     var edges = [];
 
     topology.nodes.forEach(function (node) {
+	//console.log(node);
         if (topology.self.indexOf(node) > -1) {
             nodes.push({data: {id: node, color: 'yellow', border: 'black'}});
             // edges.push({data: {id: "root_cloud", name: "", source: node, target: 'cloud'}});
-        } else {
+        } 
+
+	else {
+	    if (node=="hpc056"){
+            nodes.push({data: {id: node, color: 'orange', border: 'black'}});
+            }
+	    else{
             nodes.push({data: {id: node, color: 'gray', border: 'black'}});
+	    }
             topology.self.forEach(function (root) {
                 edges.push({data: {id: "root_" + node, name: "", source: root, target: node}});
             });
         }
     });
 
-    console.log(nodes);
+    //console.log(nodes);
 
     /*topology.edges.forEach(function (edge) {
         edges.push({data: {id: edge[0] + "_" + edge[1], name: "", source: edge[0], target: edge[1]}});
         child_parent[edge[1]] = edge[1];
     });*/
 
-    console.log(edges);
+    //console.log(edges);
 
 
     var cy = window.cy = cytoscape({

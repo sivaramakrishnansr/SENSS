@@ -57,7 +57,7 @@
 	    <th>Request type</th>
             <th>Match</th>
             <th>Packet Count</th>
-            <th>Byte Count</th>
+            <!--<th>Byte Count</th>-->
             <th>Speed</th>
         </tr>
         </thead>

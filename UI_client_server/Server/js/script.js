@@ -35,7 +35,7 @@ function poll_stats() {
     						"<td id='request-type-" + random + "'></td>" +
     						"<td id='match-" + random + "'><pre></pre></td>" +
     						"<td id='packet-count-" + random + "'></td>" +
-						"<td id='byte-count-" + random + "'></td>" +
+						//"<td id='byte-count-" + random + "'></td>" +
     	        				"<td id='speed-" + random + "'></td></tr>";
     					 $("#table-monitor").append(markup);
 

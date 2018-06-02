@@ -3,7 +3,7 @@
 function get_domain($domain)
 {
     $original = $domain = strtolower($domain);
-
+    return $original;
     if (filter_var($domain, FILTER_VALIDATE_IP)) { return $domain; }
 
     $arr = array_slice(array_filter(explode('.', $domain, 4), function($value){
@@ -90,6 +90,7 @@ function get_domain($domain)
 function client_auth($headers) {
     if (!isset($headers['X-Client-Cert'])) {
         http_response_code(400);
+	return 10;
         return false;
     }
     $client_cert = $headers['X-Client-Cert'];
@@ -99,11 +100,12 @@ function client_auth($headers) {
     include('File/X509.php');
 
     $x509 = new File_X509();
-    $pemcacert = file_get_contents('certificates/rootcert.pem');
+    $pemcacert = file_get_contents('/var/www/html/SENSS/UI_client_server/GenCertificates/certificates/rootcert.pem');
     $x509->loadCA($pemcacert);
     $x509->loadX509($client_cert);
     if (!$x509->validateSignature()) {
         http_response_code(400);
+	return 0;
         return false;
     }
     $cert_content = openssl_x509_parse($client_cert);

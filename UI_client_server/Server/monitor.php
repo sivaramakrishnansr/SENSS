@@ -2,15 +2,20 @@
 
 
 function add_monitor($client_info, $data)
+//if(1)
 {
     require_once "db.php";
+
+
+    //Blocked for testing purpose
     $data = json_decode($data, true);
-    if (!isset($data['match']['nw_dst'])) {
+
+    /*if (!isset($data['match']['nw_dst'])) {
         return array(
             "success" => false,
             "error" => 401
         );
-    }
+    }*/
     //require_once "utils.php";
     //if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
     //    return array(
@@ -19,23 +24,30 @@ function add_monitor($client_info, $data)
     //    );
     //}
 
+    //Blocked for testing purpose
     $frequency = (int)$data['frequency'];
     $end_time = (int)$data['end_time'];
+
 
     require_once "constants.php";
     $add_rule_data = array(
         "dpid" => SWITCH_DPID,
         "priority" => 11111,
+        //Blocked for testing purpose
         "match" => $data['match'],
         "actions" => array(
             array(
                 "type" => "OUTPUT",
                 "port" => 1
-            )
+            ),
+	    array(
+		"type" => "OUTPUT",
+		"port" =>2
+	    )
         )
     );
     //$add_rule_data['match']['in_port'] = 2;
-    $add_rule_data['match']['eth_type'] = 2048;
+    $add_rule_data["match"]["eth_type"] = 2048;
 
     $ch = curl_init(CONTROLLER_BASE_URL . "/stats/flowentry/add");
     curl_setopt_array($ch, array(
@@ -60,6 +72,8 @@ function add_monitor($client_info, $data)
 
     $sql = sprintf("SELECT * FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
         $client_info['as_domain'], json_encode($add_rule_data));
+
+
     $result = $conn1->query($sql);
     $id = 0;
     if ($result->num_rows == 1) {

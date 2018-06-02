@@ -61,10 +61,13 @@
     </div>
     <div class="col-md-8">
         <p>Monitor traffic and add/remove rules</p>
+	<h4><p>Total traffic: <div id="all_speed">0</div></p></h4>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-2">
         <p>
             <button type="button" class="btn btn-default" id="add-monitoring-rule">Add Monitoring Rule</button>
+            <button type="button" class="btn btn-default" id="add-filter-all">Add filter all</button>
+            <button type="button" class="btn btn-default" id="remove-filter-all">Remove filter all</button>
         </p>
     </div>
     <table id="table-monitor" class="table table-bordered table-striped">
@@ -73,9 +76,9 @@
             <th>AS Name</th>
             <th>Match</th>
             <th>Packet Count</th>
-            <th>Byte Count</th>
+            <!--<th>Byte Count</th>-->
             <th>Speed</th>
-            <th>Action</th>
+            <!--<th>Action</th>-->
         </tr>
         </thead>
         <tbody>
