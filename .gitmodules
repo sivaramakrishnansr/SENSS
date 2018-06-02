@@ -1,0 +1,3 @@
+[submodule "Detection/AMON-SENSS"]
+	path = Detection/AMON-SENSS
+	url = https://github.com/jelenamirkovic/AMON-SENSS
