@@ -97,11 +97,13 @@
                 <table class="table">
                     <tr>
                         <td><input type="text" class="form-control" id="threshold-value"></td>
+			<td>%</td>
+			<!--
                         <td>
                             <div class="dropdown">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
-                                    <span id="selected">Select rate</span><span class="caret"></span></button>
+                                 <span id="selected">Select rate</span><span class="caret"></span></button>
                                 <ul class="dropdown-menu" id="threshold-rate">
                                     <li><a href="#">KBps</a></li>
                                     <li><a href="#">MBps</a></li>
@@ -110,6 +112,7 @@
                                 </ul>
                             </div>
                         </td>
+			-->
                     </tr>
                 </table>
             </div>

@@ -14,6 +14,7 @@ switch_mac=sys.argv[4]
 server_mac=sys.argv[5]
 source_ip=sys.argv[6]
 legit_traffic=int(sys.argv[7])
+legit_traffic_rate=sys.argv[8]
 
 proc = subprocess.Popen(["arp"], stdout=subprocess.PIPE, shell=True)
 (out, err) = proc.communicate()
@@ -80,7 +81,7 @@ child.sendline('set 1 dst ip 57.0.0.5')
 child.sendline('set 1 src mac '+server_mac)
 child.sendline('set 1 dst mac '+switch_mac)
 child.sendline('set 1 size 1500')
-child.sendline('set 1 rate 1')
+child.sendline('set 1 rate '+str(legit_traffic_rate))
 child.sendline('set 1 proto udp')
 
 if legit_traffic==1:

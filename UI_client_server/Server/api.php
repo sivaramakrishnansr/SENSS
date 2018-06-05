@@ -5,15 +5,25 @@ if (!isset($_GET['action'])) {
     return;
 }
 /* Authenticate Client */
-//require_once "client_auth.php";
-//$client_info = client_auth(apache_request_headers());
-//if (!$client_info) {
-//    http_response_code(400);
-//    return;/
-//}
+/*require_once "client_auth.php";
+$client_info = client_auth(apache_request_headers());
+if (!$client_info) {
+    http_response_code(400);
+    return;
+}*/
 
 $action = $_GET['action'];
 switch ($action) {
+    case "check":
+        echo json_encode($client_info, true);
+	break;
+
+    case "add_filter_all":
+	require_once "filter.php";
+        add_filter_all();
+	http_response_code(200);
+        break;
+
     case "add_filter":
         require_once "filter.php";
         if (!isset($_GET['monitor_id'])) {
@@ -84,6 +94,10 @@ switch ($action) {
         http_response_code(200);
         echo json_encode($data, true);
         return;
+
+    case "get_request_count":
+	require_once "get_count.php";
+
 
     default:
         http_response_code(400);

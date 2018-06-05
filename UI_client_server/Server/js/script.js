@@ -50,8 +50,28 @@ function poll_stats() {
 
 }
 
-
+function set_threshold() {
+    var storedThreshold = localStorage.getItem("threshold");
+    if (storedThreshold != null) {
+        threshold = parseInt(storedThreshold);
+    }
+    //$("#current-threshold").html(display_threshold(threshold));
+    $("#current-threshold").html(threshold+" Rules");
+}
 
 $(document).ready(function () {
+set_threshold();
 poll_stats();
+    $("#set-threshold").click(function () {
+        $("#set-threshold-modal").modal('show');
+    });
+
+    $("#set-threshold-button").click(function () {
+        var value = parseInt($("#threshold-value").val());
+        threshold=value;
+        localStorage.setItem("threshold", threshold);
+        $("#current-threshold").html(threshold+" Rules");
+        $("#set-threshold-modal").modal('hide');
+    });
+
 });

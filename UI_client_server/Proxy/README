@@ -1,0 +1,19 @@
+Pre-req
+	- Ensure AS-URLS is filled
+api.php
+	- add_monitor
+		- insert into monitoring rules | along with the monitor ID
+		- maybe there is a requirement to update if it is filtering or not
+	- remove_monitor
+		- delete from monitoring rules matching the monitor_id
+	- add_filter
+		- do nothing
+		- server maintains it
+	- remove_filter
+		- do nothing	
+		- server maintains it	
+		
+UI
+	- add proxy element on each row
+	- making it unreachable
+

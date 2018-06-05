@@ -50,6 +50,13 @@
             Logs
         </h2>
     </div>
+    <div class="col-md-4">
+        Threshold: <span id="current-threshold"></span>&emsp;
+        <button class="btn btn-primary" id="set-threshold">
+            <span class="glyphicon glyphicon-pencil"></span>
+            Edit
+        </button>
+    </div>
     <table id="table-monitor" class="table table-bordered table-striped">
         <thead>
         <tr>
@@ -65,7 +72,28 @@
         </tbody>
     </table>
 </div>
+<div id="set-threshold-modal" class="modal fade" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title">Set Threshold</h4>
+            </div>
+            <div class="modal-body" style="height:200px;">
+                <table class="table">
+                    <tr>
+                        <td><input type="text" class="form-control" id="threshold-value"></td>
+                        <td> Rules</td>
+                    </tr>
+                </table>
+            </div>
 
+            <div class="modal-footer">
+                <div id="set-threshold-button" class="btn btn-success">Set Threshold</div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 <script src="js/script.js"></script>
 </html>

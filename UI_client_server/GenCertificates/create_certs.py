@@ -56,7 +56,8 @@ for line in lines:
     node = line.split(":",2)[0]
     prefix = line.split(":", 2)[1]
 
-    commonname = node + ".isi.edu"
+    #commonname = node + ".isi.edu"
+    commonname = node
 
     # Create one client certificate
     cmd = "openssl req -newkey rsa:4096 -sha256 -keyout clients/" + node + "key.pem -out clients/" + node + "req.pem -passin pass:" + password + " -passout pass:" + password

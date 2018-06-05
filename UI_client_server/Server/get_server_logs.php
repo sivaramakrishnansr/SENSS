@@ -21,3 +21,7 @@ function get_server_logs()
         "error" => 400
     );
 }
+
+function get_count()
+{
+}

@@ -1,7 +1,7 @@
 <?php
 
 
-function add_monitor($client_info, $data)
+function add_monitor($client_info, $data,$as_name)
 //if(1)
 {
     require_once "db.php";
@@ -71,7 +71,7 @@ function add_monitor($client_info, $data)
     }
 
     $sql = sprintf("SELECT * FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
-        $client_info['as_domain'], json_encode($add_rule_data));
+        $as_name, json_encode($add_rule_data));
 
 
     $result = $conn1->query($sql);
@@ -84,20 +84,27 @@ function add_monitor($client_info, $data)
         $conn1->commit();
     } else {
         $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name, log_type, match_field, active, frequency, end_time,packet_count,byte_count,speed) VALUES 
-                  ('%s', 'MONITOR', '%s', 1, %d, %d,%d,%d,%d)", $client_info['as_domain'], json_encode($add_rule_data),
+                  ('%s', 'MONITOR', '%s', 1, %d, %d,%d,%d,%d)", $as_name, json_encode($add_rule_data),
             $frequency, $end_time,0,0,0);
 
         $conn1->query($sql);
         $conn1->commit();
         $sql = sprintf("SELECT id FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
-            $client_info['as_domain'], json_encode($add_rule_data));
+            $as_name, json_encode($add_rule_data));
         $result = $conn1->query($sql);
         if ($result->num_rows == 1) {
             $id = $result->fetch_assoc()['id'];
         }
     }
-    $conn1->close();
 
+
+    //Add request_type
+        $request_type="Add monitor";
+        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
+                  ('%s')", $request_type);
+        $conn1->query($sql);
+        $conn1->commit();
+    $conn1->close();
     return array(
         "success" => true,
         "monitor_id" => $id

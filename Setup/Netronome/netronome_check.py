@@ -343,7 +343,7 @@ def configure_nodes():
 
 
 		#copy server/client files
-		#copy_files(ssh)
+		copy_files(ssh)
 
 
 

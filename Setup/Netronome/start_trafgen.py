@@ -33,6 +33,7 @@ def start_attack():
 		switch_mac=line.strip().split(" ")[10]
 		server_ip=line.strip().split(" ")[11]
 		legit_traffic=line.strip().split(" ")[12]
+		legit_traffic_rate=line.strip().split(" ")[13]
 		if node_type=="client":
 			attack_ip=node.replace("hpc0","")+".0.0.1"
 			continue
@@ -48,6 +49,7 @@ def start_attack():
 		nodes[node]["switch_mac"]=switch_mac
 		nodes[node]["server_ip"]=server_ip
 		nodes[node]["legit_traffic"]=legit_traffic
+		nodes[node]["legit_traffic_rate"]=legit_traffic_rate
         f.close()
 	password=getpass.getpass()
 	for node in nodes:
@@ -60,8 +62,8 @@ def start_attack():
                 	#Patching netronome
 			#nohup ./exec_name > /dev/null 2>&1 &\n
                 	#stdin, stdout, stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"])
-			stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"])
-			print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]
+			stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"])
+			print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+attack_ip+" "+str(nodes[node]["duration"])+" "+nodes[node]["rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]
 	                #data=stdout.readlines()	
 
 if __name__ == '__main__':

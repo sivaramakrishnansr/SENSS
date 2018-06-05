@@ -1,19 +1,19 @@
-#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self/rate of traffic/duration/server mac/switch mac/server ip/generate legit
-hpc039 2 server hpc039 http://39.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 0e:a6:71:01:ca:b3 7c:fe:90:f3:a1:41 39.0.0.1 0
-hpc041 2 server hpc041 http://41.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 d6:b8:1a:43:28:dd 7c:fe:90:f3:a1:41 41.0.0.1 1
-hpc042 2 server hpc042 http://42.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 36:5a:0a:20:6e:e3 7c:fe:90:f3:a1:41 42.0.0.1 1
-hpc043 2 server hpc043 http://43.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 be:6e:62:68:1c:03 7c:fe:90:f3:a1:41 43.0.0.1 0
-hpc044 2 server hpc044 http://44.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 0a:0b:96:4e:b4:6f 7c:fe:90:f3:a1:41 44.0.0.1 1
+#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self/rate of traffic/duration/server mac/switch mac/server ip/generate legit/legitimate rate
+hpc039 2 server hpc039 http://39.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 0e:a6:71:01:ca:b3 7c:fe:90:f3:a1:41 39.0.0.1 0 0
+hpc041 2 server hpc041 http://41.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 d6:b8:1a:43:28:dd 7c:fe:90:f3:a1:41 41.0.0.1 1 5
+hpc042 2 server hpc042 http://42.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 36:5a:0a:20:6e:e3 7c:fe:90:f3:a1:41 42.0.0.1 1 5
+hpc043 2 server hpc043 http://43.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 be:6e:62:68:1c:03 7c:fe:90:f3:a1:41 43.0.0.1 0 0
+hpc044 2 server hpc044 http://44.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 0a:0b:96:4e:b4:6f 7c:fe:90:f3:a1:41 44.0.0.1 1 5
 ##hpc045 2 server hpc045 http://hpc045/SENSS/UI_client_server/Server/api.php hpc057 0 10 100
-hpc046 2 server hpc046 http://46.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 b2:53:65:a4:b1:e2 7c:fe:90:f3:a1:41 46.0.0.1 0
-hpc047 2 server hpc047 http://47.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 d2:2c:a2:c5:02:b8 7c:fe:90:f3:a1:41 47.0.0.1 0
-hpc048 1 server hpc048 http://48.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 62:a4:30:1d:54:38 7c:fe:90:f3:a1:41 48.0.0.1 0
-hpc049 1 server hpc049 http://49.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 de:a7:4e:c9:ab:d2 7c:fe:90:f3:a1:41 49.0.0.1 0
-hpc050 1 server hpc050 http://50.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 f6:73:c8:61:b2:6c 7c:fe:90:f3:a1:41 50.0.0.1 0
+hpc046 2 server hpc046 http://46.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 b2:53:65:a4:b1:e2 7c:fe:90:f3:a1:41 46.0.0.1 0 0
+hpc047 2 server hpc047 http://47.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 d2:2c:a2:c5:02:b8 7c:fe:90:f3:a1:41 47.0.0.1 0 0
+hpc048 1 server hpc048 http://48.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 62:a4:30:1d:54:38 7c:fe:90:f3:a1:41 48.0.0.1 0 0
+hpc049 1 server hpc049 http://49.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 de:a7:4e:c9:ab:d2 7c:fe:90:f3:a1:41 49.0.0.1 0 0
+hpc050 1 server hpc050 http://50.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 f6:73:c8:61:b2:6c 7c:fe:90:f3:a1:41 50.0.0.1 0 0
 ##hpc051 1 server hpc051 http://hpc051/SENSS/UI_client_server/Server/api.php hpc057 0 10 100 
-hpc052 1 server hpc052 http://52.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 fa:07:ad:ad:84:fc 7c:fe:90:f3:a1:41 52.0.0.1 1
-##hpc053 1 server hpc053 http://53.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100
-hpc054 1 server hpc054 http://54.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 42:3a:2e:83:0c:03 7c:fe:90:f3:a1:41 54.0.0.1 0
-##hpc055 1 server hpc055 http://hpc055/SENSS/UI_client_server/Server/api.php hpc057 0 10 100
-#hpc056 1 server hpc056 http://56.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 100 5e:5b:8e:47:0c:71 7c:fe:90:f3:a1:41 56.0.0.1 0
-hpc057 1 client hpc057 http://57.0.0.1/SENSS/UI_client_server/Server/api.php hpc039,hpc041,hpc042,hpc043,hpc044,hpc045,hpc046,hpc047,hpc048,hpc049,hpc050,hpc051,hpc052,hpc053,hpc054,hpc055,hpc056 0 0 0 1e:cc:05:f0:92:35 7c:fe:90:f3:a1:41 57.0.0.1 0
+hpc052 1 server hpc052 http://52.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 fa:07:ad:ad:84:fc 7c:fe:90:f3:a1:41 52.0.0.1 1 5
+##hpc053 1 server hpc053 http://53.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10
+hpc054 1 server hpc054 http://54.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 42:3a:2e:83:0c:03 7c:fe:90:f3:a1:41 54.0.0.1 0 0
+##hpc055 1 server hpc055 http://hpc055/SENSS/UI_client_server/Server/api.php hpc057 0 10 10 
+#hpc056 1 server hpc056 http://56.0.0.1/SENSS/UI_client_server/Server/api.php hpc057 0 100 10 5e:5b:8e:47:0c:71 7c:fe:90:f3:a1:41 56.0.0.1 0 0
+hpc057 1 client hpc057 http://57.0.0.1/SENSS/UI_client_server/Server/api.php hpc039,hpc041,hpc042,hpc043,hpc044,hpc045,hpc046,hpc047,hpc048,hpc049,hpc050,hpc051,hpc052,hpc053,hpc054,hpc055,hpc056 0 0 0 1e:cc:05:f0:92:35 7c:fe:90:f3:a1:41 57.0.0.1 0 0
