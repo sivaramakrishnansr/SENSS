@@ -60,12 +60,10 @@
     <table id="table-monitor" class="table table-bordered table-striped">
         <thead>
         <tr>
-            <th>AS Name</th>
+            <th>Client AS Name</th>
 	    <th>Request type</th>
             <th>Match</th>
-            <th>Packet Count</th>
-            <!--<th>Byte Count</th>-->
-            <th>Speed</th>
+	    <th>Number of requests</th>
         </tr>
         </thead>
         <tbody>

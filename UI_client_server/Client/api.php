@@ -5,7 +5,7 @@ $proxy_base_url = "http://hpc056/SENSS/UI_client_server/Proxy/api.php";
 
 function generate_request_headers() {
     ///var/www/html/SENSS/UI_client_server/Client/cert
-    $clientcert = file_get_contents('/var/www/html/SENSS/UI_client_server/Client/cert/node1cert.pem');
+    $clientcert = file_get_contents('/var/www/html/SENSS/UI_client_server/Client/cert/clientcert.pem');
     $clientcert = base64_encode($clientcert);
     return array(
         "Content-Type: application/json",
@@ -14,7 +14,7 @@ function generate_request_headers() {
 }
 
 
-if(1){
+if(isset($_GET['check'])){
     $url = "http://hpc052/SENSS/UI_client_server/Server/api.php?action=check";
         $options = array(
             'http' => array(

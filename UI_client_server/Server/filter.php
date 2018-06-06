@@ -1,7 +1,7 @@
 <?php
 
 //flag is used for the buttons
-function add_filter_all()
+function add_filter_all($as_info)
 {
     require_once "constants.php";
     $url=CONTROLLER_BASE_URL . "/stats/flowentry/clear/".SWITCH_DPID;
@@ -13,12 +13,20 @@ function add_filter_all()
     $output = curl_exec($ch);
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
     if ($http_code != 200) {
         return array(
             "success" => false,
             "error" => $http_code
         );
     }
+    require_once "db.php";
+    $request_type="Add filter all";
+    $sql = sprintf("INSERT INTO SERVER_LOGS (as_name,$request_type) VALUES
+                  ('%s','%s')",$as_info['as_domain'],$request_type);
+    $conn1->query($sql);
+    $conn1->commit();
+
     return array(
         "success" => true
     );
@@ -67,8 +75,8 @@ function add_filter($as_info, $monitor_id)
     $conn1->commit();
 
         $request_type="Add filter";
-        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
-                  ('%s')", $request_type);
+        $sql = sprintf("INSERT INTO SERVER_LOGS (as_name,request_type,match_field) VALUES
+                  ('%s','%s','%s')",$as_info['as_domain'],$request_type,json_encode($add_rule_data));
         $conn1->query($sql);
         $conn1->commit();
 
@@ -117,8 +125,8 @@ function remove_filter($as_info, $monitor_id)
     $conn1->commit();
 
         $request_type="Remove filter";
-        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
-                  ('%s')", $request_type);
+        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type,as_name,match_field) VALUES
+                  ('%s','%s','%s')", $request_type,$as_info['as_domain'],json_encode($add_rule_data));
         $conn1->query($sql);
         $conn1->commit();
 

@@ -1,7 +1,7 @@
 <?php
 
 
-function add_monitor($client_info, $data,$as_name)
+function add_monitor($client_info, $data)
 //if(1)
 {
     require_once "db.php";
@@ -71,7 +71,7 @@ function add_monitor($client_info, $data,$as_name)
     }
 
     $sql = sprintf("SELECT * FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
-        $as_name, json_encode($add_rule_data));
+        $client_info['as_domain'], json_encode($add_rule_data));
 
 
     $result = $conn1->query($sql);
@@ -84,13 +84,13 @@ function add_monitor($client_info, $data,$as_name)
         $conn1->commit();
     } else {
         $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name, log_type, match_field, active, frequency, end_time,packet_count,byte_count,speed) VALUES 
-                  ('%s', 'MONITOR', '%s', 1, %d, %d,%d,%d,%d)", $as_name, json_encode($add_rule_data),
+                  ('%s', 'MONITOR', '%s', 1, %d, %d,%d,%d,%d)", $client_info['as_domain'], json_encode($add_rule_data),
             $frequency, $end_time,0,0,0);
 
         $conn1->query($sql);
         $conn1->commit();
         $sql = sprintf("SELECT id FROM CLIENT_LOGS WHERE as_name = '%s' AND match_field = '%s' AND log_type = 'MONITOR'",
-            $as_name, json_encode($add_rule_data));
+            $client_info['as_domain'], json_encode($add_rule_data));
         $result = $conn1->query($sql);
         if ($result->num_rows == 1) {
             $id = $result->fetch_assoc()['id'];
@@ -100,11 +100,12 @@ function add_monitor($client_info, $data,$as_name)
 
     //Add request_type
         $request_type="Add monitor";
-        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type) VALUES
-                  ('%s')", $request_type);
-        $conn1->query($sql);
+        $sql = sprintf("INSERT INTO SERVER_LOGS (as_name, request_type,match_field,end_time) VALUES 
+                  ('%s', '%s','%s','%d')", $client_info['as_domain'],$request_type, json_encode($add_rule_data),$end_time);
+	        $conn1->query($sql);
         $conn1->commit();
-    $conn1->close();
+
+	    $conn1->close();
     return array(
         "success" => true,
         "monitor_id" => $id
@@ -119,6 +120,19 @@ function remove_monitor($client_info, $monitor_id)
             AND id = " . (int)$monitor_id . " AND log_type = 'MONITOR'";
 
     $conn1->query($sql);
+        $conn1->commit();
+        $request_type="Remove monitor";
+        $sql = sprintf("INSERT INTO SERVER_LOGS (request_type,as_name) VALUES
+                  ('%s','%s')", $request_type,$client_info['as_domain']);
+        $conn1->query($sql);
+        $conn1->commit();
+    $conn1->close();
+    return array(
+        "success" => true,
+        "monitor_id" => $id
+    );
+
+
 }
 
 //The SENSS clients will call this endpoint periodically to receive traffic updates
@@ -126,10 +140,10 @@ function get_monitor($client_info, $monitor_id)
 {
     require_once "db.php";
 
-    $sql = "SELECT packet_count, byte_count, speed FROM CLIENT_LOGS WHERE as_name = '" . $client_info['as_domain'] . "' 
+    $sql1 = "SELECT packet_count, byte_count, speed FROM CLIENT_LOGS WHERE as_name = '" . $client_info['as_domain'] . "' 
             AND id = " . (int)$monitor_id . " AND log_type = 'MONITOR' AND end_time >= " . time();
 
-    $result = $conn1->query($sql);
+    $result = $conn1->query($sql1);
     if ($result->num_rows > 0) {
     	    $sql = "SELECT match_field,packet_count, byte_count, speed FROM CLIENT_LOGS WHERE as_name = '" . $client_info['as_domain'] . "' 
         	    AND id = " . (int)$monitor_id . " AND log_type = 'MONITOR' AND end_time >= " . time();
@@ -140,14 +154,14 @@ function get_monitor($client_info, $monitor_id)
 	    $byte_count=$row["byte_count"];
 	    $speed=$row["speed"];
 	    $request_type="Get flow stats";
-        $sql = sprintf("INSERT INTO SERVER_LOGS (as_name, request_type,match_field,packet_count,byte_count,speed) VALUES 
+            $sql = sprintf("INSERT INTO SERVER_LOGS (as_name, request_type,match_field,packet_count,byte_count,speed) VALUES 
                   ('%s', '%s','%s', %d,%d,%d)", $client_info['as_domain'],$request_type, json_encode($match),$packet_count,$byte_count,$speed);
         $conn1->query($sql);
         $conn1->commit();
-
         return array(
             "success" => true,
-            "data" => $result->fetch_assoc()
+            "data" => $result->fetch_assoc(),
+	    "message"=>$sql
         );
     }
     return array(

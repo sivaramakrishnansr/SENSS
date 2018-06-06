@@ -100,7 +100,7 @@ function client_auth($headers) {
     include('File/X509.php');
 
     $x509 = new File_X509();
-    $pemcacert = file_get_contents('/var/www/html/SENSS/UI_client_server/GenCertificates/certificates/rootcert.pem');
+    $pemcacert = file_get_contents('/var/www/html/SENSS/UI_client_server/Server/cert/rootcert.pem');
     $x509->loadCA($pemcacert);
     $x509->loadX509($client_cert);
     if (!$x509->validateSignature()) {

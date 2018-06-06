@@ -170,6 +170,18 @@ def print_data(data):
 	for item in data:
 		print item.strip()
 	
+
+def copy_certificates(server_flag,node,ssh):
+	print "Copying certificates"
+	if server_flag==True:
+        	stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/SENSS_git/SENSS/UI_client_server/GenCertificates/certificates/rootcert.pem /var/www/html/SENSS/UI_client_server/Server/cert/rootcert.pem")
+        	data=stdout.readlines()
+	else:
+		certificate_to_copy=node+"cert.pem"
+        	stdin, stdout, stderr = ssh.exec_command("sudo cp /proj/SENSS/SENSS_git/SENSS/UI_client_server/GenCertificates/certificates/"+certificate_to_copy+" /var/www/html/SENSS/UI_client_server/Client/cert/clientcert.pem")
+        	data=stdout.readlines()
+		
+
 def configure_pktgen_nodes(ssh):
 	#Make DPDK
 
@@ -281,10 +293,16 @@ def configure_nodes():
 	f.close()
 
 	password=getpass.getpass()
-	
+	install={}
+
+	f=open("install","r")
+	for line in f:
+		type=line.strip().split(",")[0]
+		flag=line.strip().split(",")[1]
+		install[type]=flag
+	f.close()
+
 	for node in nodes:
-		#if node!="hpc042":
-		#	continue
 		ssh = paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 		ssh.connect(node,username="satyaman", password=password, timeout=3)
@@ -293,96 +311,112 @@ def configure_nodes():
 		print "Node: ",node," ",controller_ip,node in two_ports
 
 		#Install dependencies
-		#install_dependencies(ssh)
+		if install["install_dependencies"]=="yes":
+			install_dependencies(ssh)
 
 		#Start RYU
-		start_ryu(ssh)
-		print "Started RYU"
+		if install["start_ryu"]=="yes":
+			start_ryu(ssh)
+			print "Started RYU"
 		
 		#Init database
-		if nodes[node]["node_type"]=="client":
-			init_database(ssh,nodes,1)
-		else:
-			init_database(ssh,nodes,0)
-		print "Initialised DB"
+		if install["init_database"]=="yes":
+			if nodes[node]["node_type"]=="client":
+				init_database(ssh,nodes,1)
+			else:
+				init_database(ssh,nodes,0)
+			print "Initialised DB"
+
 		#Resetting database to the address
-		#enter client values
-		if nodes[node]["node_type"]=="client":
-			for node,values in nodes.iteritems():
-				self="0"
-				if values["node_type"]=="client":
-					self="1"
-				print "Addding",values["asn"],values["server_url"],values["links_to"],self
-				add_client_entries(ssh,values["asn"],values["server_url"],values["links_to"],self)
-			print "Added client entries"
+		if install["add_client_entries"]=="yes":
+			if nodes[node]["node_type"]=="client":
+				for node,values in nodes.iteritems():
+					self="0"
+					if values["node_type"]=="client":
+						self="1"
+					print "Addding",values["asn"],values["server_url"],values["links_to"],self
+					add_client_entries(ssh,values["asn"],values["server_url"],values["links_to"],self)
+				print "Added client entries"
 
 		#Start monitoring flows
-		#ip_1 is the source ip
-		if nodes[node]["node_type"]=="server":
-			if node in two_ports:
-				start_monitor_flows(ssh,2,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
-			else:
-				start_monitor_flows(ssh,1,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+		if install["start_monitor_flows"]=="yes":
+			#ip_1 is the source ip
+			if nodes[node]["node_type"]=="server":
+				if node in two_ports:
+					start_monitor_flows(ssh,2,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+				else:
+					start_monitor_flows(ssh,1,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+		
+		if install["start_ovs"]=="yes":
+			#Start OVS on netronome NIC
+			start_ovs(ssh)
 
-
-		#Start OVS on netronome NIC
-		#start_ovs(ssh)
-
-		#Add IP address to interface_1
-		#stdin, stdout, stderr = ssh.exec_command("sudo python /opt/netronome/libexec/dpdk_nic_bind.py -b nfp_netvf 08:08.0")
-		#data=stdout.readlines()
-		#print data
-		#interface_1=get_interface(ssh,"08:08.0")
-		#dummy_ip="200.0.0.1"
-		#stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+dummy_ip)
-		#data=stdout.readlines()
-		#stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+dummy_ip)
-		#data=stdout.readlines()
-		#stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+ip_1)
-		#data=stdout.readlines()
+		if install["assign_ip"]=="yes":
+			#Add IP address to interface_1
+			stdin, stdout, stderr = ssh.exec_command("sudo python /opt/netronome/libexec/dpdk_nic_bind.py -b nfp_netvf 08:08.0")
+			data=stdout.readlines()
+			print data
+			interface_1=get_interface(ssh,"08:08.0")
+			dummy_ip="200.0.0.1"
+			stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+dummy_ip)
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+dummy_ip)
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+ip_1)
+			data=stdout.readlines()
 
 
 		#copy server/client files
-		copy_files(ssh)
+		if install["copy_files"]=="yes":
+			copy_files(ssh)
 
+      		#Copying certificates
+		if install["copy_certificates"]=="yes":
+			if nodes[node]["node_type"]=="server":
+				copy_certificates(True,node,ssh)
+			if nodes[node]["node_type"]=="client":
+				copy_certificates(False,node,ssh)
 
 
 		#Install dpdk pktgen
-		#if nodes[node]["node_type"]=="server":
-		#	print "Configuring pktgen"
-		#	configure_pktgen_nodes(ssh)
+		if install["configure_pktgen_nodes"]=="yes":
+			if nodes[node]["node_type"]=="server":
+				print "Configuring pktgen"
+				configure_pktgen_nodes(ssh)
 
 		#Restart apache
-		stdin, stdout, stderr = ssh.exec_command("sudo service apache2 restart")
-		data=stdout.readlines()
+		if install["apache_restart"]=="yes":
+			stdin, stdout, stderr = ssh.exec_command("sudo service apache2 restart")
+			data=stdout.readlines()
 		
 
 
 		#OVS SETUP
-		if node in two_ports:
-			print "In two ports"
-			stdin, stdout, stderr = ssh.exec_command("sudo sh /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ovs_two_ports.sh")
-			data=stdout.readlines()
-			#Add controller 
-			stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl set-controller br0 tcp:"+controller_ip+":6633")
-			data=stdout.readlines()
-			dpid=get_dpid(controller_ip)
-			add_forwarding_rules(controller_ip,dpid,1,3)		
-			add_forwarding_rules(controller_ip,dpid,3,1)		
-			add_forwarding_rules(controller_ip,dpid,5,1)		
-			add_forwarding_rules_2(controller_ip,dpid,4,1,2)		
+		if install["ovs_setup"]=="yes":
+			if node in two_ports:
+				print "In two ports"
+				stdin, stdout, stderr = ssh.exec_command("sudo sh /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ovs_two_ports.sh")
+				data=stdout.readlines()
+				#Add controller 
+				stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl set-controller br0 tcp:"+controller_ip+":6633")
+				data=stdout.readlines()
+				dpid=get_dpid(controller_ip)
+				add_forwarding_rules(controller_ip,dpid,1,3)		
+				add_forwarding_rules(controller_ip,dpid,3,1)		
+				add_forwarding_rules(controller_ip,dpid,5,1)		
+				add_forwarding_rules_2(controller_ip,dpid,4,1,2)		
 
-		if node not in two_ports:
-			stdin, stdout, stderr = ssh.exec_command("sudo sh /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ovs_one_port.sh")
-			data=stdout.readlines()
-			#Add controller 
-			stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl set-controller br0 tcp:"+controller_ip+":6633")
-			data=stdout.readlines()
-			dpid=get_dpid(controller_ip)
-			add_forwarding_rules(controller_ip,dpid,1,2)		
-			add_forwarding_rules(controller_ip,dpid,2,1)		
-			add_forwarding_rules(controller_ip,dpid,3,1)		
-			add_forwarding_rules(controller_ip,dpid,4,1)		
+			if node not in two_ports:
+				stdin, stdout, stderr = ssh.exec_command("sudo sh /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ovs_one_port.sh")
+				data=stdout.readlines()
+				#Add controller 
+				stdin, stdout, stderr = ssh.exec_command("sudo ovs-vsctl set-controller br0 tcp:"+controller_ip+":6633")
+				data=stdout.readlines()
+				dpid=get_dpid(controller_ip)
+				add_forwarding_rules(controller_ip,dpid,1,2)		
+				add_forwarding_rules(controller_ip,dpid,2,1)		
+				add_forwarding_rules(controller_ip,dpid,3,1)		
+				add_forwarding_rules(controller_ip,dpid,4,1)		
 			
 
 		#Overwrite the constants file
@@ -394,54 +428,55 @@ def configure_nodes():
 		data=stdout.readlines()
 		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Server/constants.php")
 		data=stdout.readlines()
-		continue
-		#Config zebra
-		string_to_write="hostname zebra\n"
-		string_to_write=string_to_write+"password en\n"
-		string_to_write=string_to_write+"enable password en\n"
-		string_to_write=string_to_write+"interface "+interface_1+"\n"
-		string_to_write=string_to_write+" ip address "+ip_1+"/32\n"
-		#if node in two_ports:
-		#	string_to_write=string_to_write+"interface "+interface_2+"\n"
-		#	string_to_write=string_to_write+" ip address "+ip_2+"/32"
 
-		stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/zebra.conf")
-		data=stdout.readlines()
-		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/zebra.conf")
-		data=stdout.readlines()
+		if install["configure_bgp"]=="yes":
+			#Config zebra
+			string_to_write="hostname zebra\n"
+			string_to_write=string_to_write+"password en\n"
+			string_to_write=string_to_write+"enable password en\n"
+			string_to_write=string_to_write+"interface "+interface_1+"\n"
+			string_to_write=string_to_write+" ip address "+ip_1+"/32\n"
+			#if node in two_ports:
+			#	string_to_write=string_to_write+"interface "+interface_2+"\n"
+			#	string_to_write=string_to_write+" ip address "+ip_2+"/32"
 
-		#Configure daemons
-		string_to_write="zebra=yes\n"
-		string_to_write=string_to_write+"bgpd=yes\n"
-		string_to_write=string_to_write+"ospfd=no\n"
-		string_to_write=string_to_write+"ospf6d=no\n"
-		string_to_write=string_to_write+"ripd=no\n"
-		string_to_write=string_to_write+"ripngd=no\n"
-		string_to_write=string_to_write+"isisd=no\n"
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/zebra.conf")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/zebra.conf")
+			data=stdout.readlines()
 
-		stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/daemons")
-		data=stdout.readlines()
-		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/daemons")
-		data=stdout.readlines()
+			#Configure daemons
+			string_to_write="zebra=yes\n"
+			string_to_write=string_to_write+"bgpd=yes\n"
+			string_to_write=string_to_write+"ospfd=no\n"
+			string_to_write=string_to_write+"ospf6d=no\n"
+			string_to_write=string_to_write+"ripd=no\n"
+			string_to_write=string_to_write+"ripngd=no\n"
+			string_to_write=string_to_write+"isisd=no\n"
 
-		#Condigure bgpd
-		string_to_write="hostname "+node+"\n"
-		string_to_write=string_to_write+"password en\n"
-		string_to_write=string_to_write+"enable password en\n"
-		string_to_write=string_to_write+"router bgp "+first_octet+"\n"
-		string_to_write=string_to_write+" network "+first_octet+".0.0.0/8\n"
-		string_to_write=string_to_write+" neighbor "+first_octet+".0.0.2 remote-as 1000\n"
-		#if node in two_ports:
-		#	string_to_write=string_to_write+" neighbor "+first_octet+".1.0.2 remote-as 1000\n"
-		stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/bgpd.conf")
-		data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/daemons")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/daemons")
+			data=stdout.readlines()
 
-		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/bgpd.conf")
-		data=stdout.readlines()
-		stdin, stdout, stderr = ssh.exec_command("sudo service quagga restart")
-		data=stdout.readlines()
-		print "Configured Quagga"
-		print
+			#Condigure bgpd
+			string_to_write="hostname "+node+"\n"
+			string_to_write=string_to_write+"password en\n"
+			string_to_write=string_to_write+"enable password en\n"
+			string_to_write=string_to_write+"router bgp "+first_octet+"\n"
+			string_to_write=string_to_write+" network "+first_octet+".0.0.0/8\n"
+			string_to_write=string_to_write+" neighbor "+first_octet+".0.0.2 remote-as 1000\n"
+			#if node in two_ports:
+			#	string_to_write=string_to_write+" neighbor "+first_octet+".1.0.2 remote-as 1000\n"
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /etc/quagga/bgpd.conf")
+			data=stdout.readlines()
+
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /etc/quagga/bgpd.conf")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("sudo service quagga restart")
+			data=stdout.readlines()
+			print "Configured Quagga"
+			print
 
 if __name__ == '__main__':
 	configure_nodes()
