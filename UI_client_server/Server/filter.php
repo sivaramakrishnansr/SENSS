@@ -18,7 +18,7 @@ function add_filter_alpha($as_info)
         return array(
             "success" => false,
             "error" => $http_code,
-	    "as_name" => $as_info["as_domain"],
+	    "as_name" => SENSS_AS,
 	    "details" => "Problem with RYU controller"
         );
     }
@@ -31,6 +31,7 @@ function add_filter_alpha($as_info)
 
     return array(
         "success" => true,
+	"as_name" => SENSS_AS,
 	"code" => $http_code
     );
 }
@@ -69,7 +70,7 @@ function add_filter($as_info, $monitor_id)
         return array(
             "success" => false,
             "error" => $http_code,
-	    "as_name" => $as_info["as_domain"],
+	    "as_name" => SENSS_AS,
 	    "details" => "Problem with RYU controller"
         );
     }
@@ -87,6 +88,7 @@ function add_filter($as_info, $monitor_id)
 
     return array(
         "success" => true,
+	"as_name" => SENSS_AS,
 	"code" => $http_code
     );
 }
@@ -118,10 +120,13 @@ function remove_filter($as_info, $monitor_id)
     $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
+
     if ($http_code != 200) {
         return array(
             "success" => false,
-            "error" => $http_code
+            "error" => $http_code,
+	    "as_name" => SENSS_AS,
+	    "details" => "Problem with RYU controller"
         );
     }
 
@@ -137,6 +142,8 @@ function remove_filter($as_info, $monitor_id)
         $conn1->commit();
 
     return array(
-        "success" => true
+        "success" => true,
+	"code" => $http_code,
+	"as_name" => SENSS_AS
     );
 }

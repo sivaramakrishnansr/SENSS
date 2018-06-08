@@ -12,6 +12,7 @@ if (!$client_info) {
 }
 function get_count()
 {
+    require_once "constants.php";
     $servername1 = "localhost";
 $username1 = "root";
 $password1 = "usc558l";
@@ -55,14 +56,16 @@ if ($conn1->connect_error) {
     	return array(
 		"threshold"=>$threshold,
 		"count"=>$count,
-		"excess_rules"=>true
+		"excess_rules"=>true,
+		"as_name"=>SENSS_AS
 	);
     }
     else{
     	return array(
 		"threshold"=>$threshold,
 		"count"=>$count,
-		"excess_rules"=>false
+		"excess_rules"=>false,
+		"as_name"=>SENSS_AS
 	);
     }
 }
@@ -81,7 +84,7 @@ switch ($action) {
             echo json_encode(array(
                     "success" => false,
                     "error" => 500,
-		    "as_name" => $client_info["as_domain"],
+		    "as_name" => $get_count_array['as_name'],
                     "details" => "Not sufficient rules",
 		    "threshold" => $get_count_array['threshold'],
 		    "count" => $get_count_array['count']
@@ -94,7 +97,7 @@ switch ($action) {
 		echo json_encode(array(
 			"success" => false,
 			"error" => 500,
-			"as_name" => $client_info["as_domain"],
+			"as_name" => $response["as_name"],
 			"details" => $response["details"],
 			"threshold" => $get_count_array["threshold"],
 			"count" => $get_count_array["count"]
@@ -104,7 +107,7 @@ switch ($action) {
 	http_response_code(200);
 	echo json_encode(array(
 		"success" => true,
-		"as_name" => $client_info["as_domain"],
+		"as_name" => $response["as_name"],
 		"threshold" => $get_count_array["threshold"],
 		"count" => $get_count_array["count"]
 		),true);
@@ -116,7 +119,7 @@ switch ($action) {
             echo json_encode(array(
                     "success" => false,
                     "error" => 500,
-		    "as_name" =>$client_info["as_domain"],
+		    "as_name" =>$get_count_array['as_name'],
                     "details" => "Not sufficient rules",
 		    "threshold" => $get_count_array['threshold'],
 		    "count" => $get_count_array['count']
@@ -128,7 +131,7 @@ switch ($action) {
             echo json_encode(array(
                     "success" => false,
                     "error" => 400,
-		    "as_name" => $client_info["as_domain"],
+		    "as_name" => $response["as_name"],
 		    "details" => "monitor_id not present",
 		    "threshold" => $get_count_array["threshold"],
 		    "count" => $get_count_array["count"]
@@ -143,7 +146,7 @@ switch ($action) {
 		echo json_encode(array(
 			"success" => false,
 			"error" => 500,
-			"as_name" => $client_info["as_domain"],
+			"as_name" => $response["as_name"],
 			"details" => $response["details"],
 			"threshold" => $get_count_array["threshold"],
 			"count" => $get_count_array["count"]
@@ -153,23 +156,40 @@ switch ($action) {
 	http_response_code(200);
 	echo json_encode(array(
 		"success" => true,
-		"as_name" => $client_info["as_domain"],
+		"as_name" => $response["as_name"],
 		"threshold" => $get_count_array["threshold"],
 		"count" => $get_count_array["count"]
 		),true);
         break;
 
     case "remove_filter":
-        require_once "filter.php";
         if (!isset($_GET['monitor_id'])) {
             echo json_encode(array(
                     "success" => false,
-                    "error" => 400
+                    "error" => 400,
+		    "as_name" => $response["as_name"],
+		    "details" => "monitor_id not present"
                 )
             );
             return;
         }
-        remove_filter($client_info, (int)$_GET['monitor_id']);
+        require_once "filter.php";
+        $response=remove_filter($client_info, (int)$_GET['monitor_id']);
+	if (!$response["success"]){
+		echo json_encode(array(
+			"success" => false,
+			"error" => 500,
+			"as_name" => $response["as_name"],
+			"details" => $response["details"]
+			),true);
+		break;
+	}
+	http_response_code(200);
+	echo json_encode(array(
+		"success" => true,
+		"as_name" => $response["as_name"]
+		),true);
+
         http_response_code(200);
         break;
 
@@ -198,13 +218,20 @@ switch ($action) {
         if (!isset($_GET['monitor_id'])) {
             echo json_encode(array(
                     "success" => false,
-                    "error" => 400
-                )
+                    "error" => 400,
+		    "details" => "No monitor_id"
+                ),true
             );
             return;
         }
-        remove_monitor($client_info, (int)$_GET['monitor_id']);
+        $responses=remove_monitor($client_info, (int)$_GET['monitor_id']);
         http_response_code(200);
+	if ($responses["success"]){
+		echo json_encode(array(
+			"success" => true,
+			"as_name" => SENSS_AS
+		),true);
+	}
         break;
 
     case "get_monitor":

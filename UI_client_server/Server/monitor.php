@@ -48,7 +48,9 @@ function add_monitor($client_info, $data)
     if ($http_code != 200) {
         return array(
             "success" => false,
-            "error" => $http_code
+            "error" => $http_code,
+	    "details" => "Problem with RYU controller",
+	    "as_name" => SENSS_AS
         );
     }
 
@@ -89,7 +91,8 @@ function add_monitor($client_info, $data)
 
     return array(
         "success" => true,
-        "monitor_id" => $id
+        "monitor_id" => $id,
+	"as_name" => SENSS_AS
     );
 }
 
@@ -107,12 +110,11 @@ function remove_monitor($client_info, $monitor_id)
                   ('%s','%s')", $request_type,$client_info['as_domain']);
         $conn1->query($sql);
         $conn1->commit();
+    require_once "constants.php";
     return array(
         "success" => true,
-        "monitor_id" => $id
+	"as_name" => SENSS_AS
     );
-
-
 }
 
 //The SENSS clients will call this endpoint periodically to receive traffic updates

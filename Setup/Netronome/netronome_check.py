@@ -425,7 +425,8 @@ def configure_nodes():
 		dpid=get_dpid(controller_ip)
 		string_to_write="<?php\n"
 		string_to_write=string_to_write+'const CONTROLLER_BASE_URL = "http://'+node+':8080",\n'
-	    	string_to_write=string_to_write+"SWITCH_DPID = "+str(dpid)+";\n"
+	    	string_to_write=string_to_write+"SWITCH_DPID = "+str(dpid)+",\n"
+	    	string_to_write=string_to_write+'SENSS_AS = "'+node+'";\n'
 		stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Server/constants.php")
 		data=stdout.readlines()
 		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Server/constants.php")

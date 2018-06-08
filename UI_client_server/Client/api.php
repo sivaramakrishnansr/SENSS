@@ -190,9 +190,9 @@ if (isset($_GET["add_filter_all"])){
 	else{
             	array_push($failed_as_name_id, array(
                 	"as_name" => $response["as_name"],
+			"error" => $response["error"],
 			"threshold" => $response['threshold'],
 			"count" => $response['count'],
-			"error" => $response["error"],
 			"details" => $response["details"])
             	);
 	}
@@ -218,10 +218,11 @@ if (isset($_GET["remove_filter_all"])){
     $sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
     $result = $conn->query($sql);
     $removed_filters=array();
+    $success_as_name_id=array();
+    $failed_as_name_id=array();
     while ($row = $result->fetch_assoc()) {
         $as_name=$row["as_name"];
         $monitor_id=$row["monitor_id"];
-	array_push($removed_filters,$as_name);
         $sql = "SELECT server_url FROM AS_URLS WHERE as_name = '" . $as_name . "'";
         $result_1 = $conn->query($sql);
         $senss_server_url = $result_1->fetch_assoc()["server_url"];
@@ -234,14 +235,37 @@ if (isset($_GET["remove_filter_all"])){
         );
         $context = stream_context_create($options);
         $response = file_get_contents($url, false, $context);
+	echo "Response ".$response."\n";
+	$response=json_decode($response,true);
         $httpcode = http_response_code();
         http_response_code($httpcode);
+
+	if ($response["success"]){
+	        array_push($removed_filters,$as_name);
+            	array_push($success_as_name_id, array(
+                	"as_name" => $response["as_name"])
+            	);
+	}
+	else{
+            	array_push($failed_as_name_id, array(
+                	"as_name" => $response["as_name"],
+			"error" => $response["error"],
+			"details" => $response["details"])
+            	);
+	}
+
     }
     foreach ($removed_filters as $as_name){
 	    $sql = "UPDATE MONITORING_RULES SET filter='None' WHERE as_name = '" . $as_name . "'";
     	    $result = $conn->query($sql);
+	    $conn->commit();
 	}
-    $conn->commit();
+
+    $responses=array();
+    $responses["sucess"] = $success_as_name_id;
+    $responses["failed"] = $failed_as_name_id;
+    echo json_encode($responses, true);
+
     return;
 }
 
@@ -480,14 +504,32 @@ if(isset($_GET['add_filter'])) {
     $context = stream_context_create($options);
 
     $response = file_get_contents($url, false, $context);
+    echo $response."\n";
+    $response = json_decode($response,true);
     $httpcode = http_response_code();
     http_response_code($httpcode);
+
+    if(!$response["success"]){
+		echo json_encode(array(
+                        "as_name" => $response["as_name"],
+                        "error" => $response["error"],
+			"threshold" => $response["threshold"],
+			"count" =>$response["count"],
+                        "details" => $response["details"]
+                ),true);
+		return;
+    }
 
     $sql = "UPDATE MONITORING_RULES SET filter='add_filter' WHERE as_name = '" . $as_name . "'";
     $result = $conn->query($sql);
     $conn->commit();
 
-
+    echo json_encode(array(
+		"success" => true,
+		"as_name" => $response["as_name"],
+		"threshold" => $response["threshold"],
+		"count" => $response["count"]
+	),true);
     return;
 }
 
@@ -507,7 +549,7 @@ if(isset($_GET['remove_filter'])) {
         http_response_code(400);
         return;
     }
-    $senss_server_url = $result->fetch_assoc()["server_url"]; 
+    $senss_server_url = $result->fetch_assoc()["server_url"];
     $url = $senss_server_url . "?action=remove_filter&monitor_id=" . $monitor_id."&as_name=".$as_name;
     $options = array(
         'http' => array(
@@ -519,12 +561,30 @@ if(isset($_GET['remove_filter'])) {
     $context = stream_context_create($options);
 
     $response = file_get_contents($url, false, $context);
+    echo $response."\n";
+    $response = json_decode($response,true);
     $httpcode = http_response_code();
     http_response_code($httpcode);
+
+
+    if(!$response["success"]){
+		echo json_encode(array(
+                        "as_name" => $response["as_name"],
+                        "error" => $response["error"],
+                        "details" => $response["details"]
+                ),true);
+		return;
+    }
+
 
     $sql = "UPDATE MONITORING_RULES SET filter='None' WHERE as_name = '" . $as_name . "'";
     $result = $conn->query($sql);
     $conn->commit();
+
+    echo json_encode(array(
+		"success" => true,
+		"as_name" => $response["as_name"]
+	),true);
 
     return;
 }

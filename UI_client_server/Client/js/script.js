@@ -126,12 +126,12 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
     var markup = "<tr id='monitor-row-" + random +"'><td>" + as_name + "</td><td><pre>" + JSON.stringify(as_monitor_info, undefined, 4) +
         "</pre></td><td id='packet-count-" + random + "'></td>"+
 	//"<td id='byte-count-" + random + "'>" +"</td>"
-	"<td id='speed-" + random + "'></td></tr>"
-	//<td><p><button type='button' class='btn btn-default' " ;
-	//+
-        //"id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
-        //"id='add-filter-" + random + "'>Add Filter</button></p><p><button type='button' class='btn btn-danger' " +
-        //"id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
+	"<td id='speed-" + random + "'></td>"+
+	"<td><p><button type='button' class='btn btn-default' " 
+	+
+        "id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
+        "id='add-filter-" + random + "'>Add Filter</button></p><p><button type='button' class='btn btn-danger' " +
+        "id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
     $("#table-monitor").append(markup);
 
     $("#remove-filter-" + random).hide();
