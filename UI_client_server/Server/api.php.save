@@ -81,7 +81,6 @@ switch ($action) {
             echo json_encode(array(
                     "success" => false,
                     "error" => 500,
-		    "as_name" => $client_info["as_domain"],
                     "details" => "Not sufficient rules",
 		    "threshold" => $get_count_array['threshold'],
 		    "count" => $get_count_array['count']
@@ -90,11 +89,13 @@ switch ($action) {
 	}
 	require_once "filter.php";
         $response=add_filter_all($client_info);
+	echo json_encode(array("msg"=>"h"),true);
+	break;
 	if (!$response["success"]){
 		echo json_encode(array(
 			"success" => false,
 			"error" => 500,
-			"as_name" => $client_info["as_domain"],
+			"as_name" => $response["as_name"],
 			"details" => $response["details"],
 			"threshold" => $get_count_array["threshold"],
 			"count" => $get_count_array["count"]
@@ -104,59 +105,33 @@ switch ($action) {
 	http_response_code(200);
 	echo json_encode(array(
 		"success" => true,
-		"as_name" => $client_info["as_domain"],
+		"as_name" => $response["as_name"],
+		"random" => "hi",
 		"threshold" => $get_count_array["threshold"],
 		"count" => $get_count_array["count"]
 		),true);
         break;
 
     case "add_filter":
-	$get_count_array=get_count();
-	if($get_count_array['excess_rules']){
+	if (!get_count()){
             echo json_encode(array(
                     "success" => false,
-                    "error" => 500,
-		    "as_name" =>$client_info["as_domain"],
-                    "details" => "Not sufficient rules",
-		    "threshold" => $get_count_array['threshold'],
-		    "count" => $get_count_array['count']
-                ),true);
-	    break;
+                    "error" => "Not sufficient rules"
+                )
+            );
+            return;
 	}
-
+        require_once "filter.php";
         if (!isset($_GET['monitor_id'])) {
             echo json_encode(array(
                     "success" => false,
-                    "error" => 400,
-		    "as_name" => $client_info["as_domain"],
-		    "details" => "monitor_id not present",
-		    "threshold" => $get_count_array["threshold"],
-		    "count" => $get_count_array["count"]
+                    "error" => 400
                 )
             );
             return;
         }
-
-        require_once "filter.php";
-        $response=add_filter($client_info, (int)$_GET['monitor_id']);
-	if (!$response["success"]){
-		echo json_encode(array(
-			"success" => false,
-			"error" => 500,
-			"as_name" => $client_info["as_domain"],
-			"details" => $response["details"],
-			"threshold" => $get_count_array["threshold"],
-			"count" => $get_count_array["count"]
-			),true);
-		break;
-	}
-	http_response_code(200);
-	echo json_encode(array(
-		"success" => true,
-		"as_name" => $client_info["as_domain"],
-		"threshold" => $get_count_array["threshold"],
-		"count" => $get_count_array["count"]
-		),true);
+        add_filter($client_info, (int)$_GET['monitor_id']);
+        http_response_code(200);
         break;
 
     case "remove_filter":

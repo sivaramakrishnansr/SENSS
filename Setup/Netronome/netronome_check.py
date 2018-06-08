@@ -308,6 +308,8 @@ def configure_nodes():
 		ssh.connect(node,username="satyaman", password=password, timeout=3)
 		ip_1,ip_2,first_octet=return_ips(node)
 		controller_ip=socket.gethostbyname(node)
+		if node!="hpc052" and node!="hpc057":
+			continue
 		print "Node: ",node," ",controller_ip,node in two_ports
 
 		#Install dependencies

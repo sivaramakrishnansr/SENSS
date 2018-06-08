@@ -5,24 +5,7 @@ function add_monitor($client_info, $data)
 //if(1)
 {
     require_once "db.php";
-
-
-    //Blocked for testing purpose
     $data = json_decode($data, true);
-
-    /*if (!isset($data['match']['nw_dst'])) {
-        return array(
-            "success" => false,
-            "error" => 401
-        );
-    }*/
-    //require_once "utils.php";
-    //if (!validate_ip_range($data['match']['nw_dst'], $client_info['client_prefix'])) {
-    //    return array(
-    //        "success" => false,
-    //        "error" => 402
-    //    );
-    //}
 
     //Blocked for testing purpose
     $frequency = (int)$data['frequency'];
@@ -33,7 +16,6 @@ function add_monitor($client_info, $data)
     $add_rule_data = array(
         "dpid" => SWITCH_DPID,
         "priority" => 11111,
-        //Blocked for testing purpose
         "match" => $data['match'],
         "actions" => array(
             array(
@@ -105,7 +87,6 @@ function add_monitor($client_info, $data)
 	        $conn1->query($sql);
         $conn1->commit();
 
-	    $conn1->close();
     return array(
         "success" => true,
         "monitor_id" => $id
@@ -126,7 +107,6 @@ function remove_monitor($client_info, $monitor_id)
                   ('%s','%s')", $request_type,$client_info['as_domain']);
         $conn1->query($sql);
         $conn1->commit();
-    $conn1->close();
     return array(
         "success" => true,
         "monitor_id" => $id

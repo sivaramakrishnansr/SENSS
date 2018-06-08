@@ -1,7 +1,7 @@
 <?php
 
 //flag is used for the buttons
-function add_filter_all($as_info)
+function add_filter_alpha($as_info)
 {
     require_once "constants.php";
     $url=CONTROLLER_BASE_URL . "/stats/flowentry/clear/".SWITCH_DPID;
@@ -17,7 +17,9 @@ function add_filter_all($as_info)
     if ($http_code != 200) {
         return array(
             "success" => false,
-            "error" => $http_code
+            "error" => $http_code,
+	    "as_name" => $as_info["as_domain"],
+	    "details" => "Problem with RYU controller"
         );
     }
     require_once "db.php";
@@ -28,7 +30,8 @@ function add_filter_all($as_info)
     $conn1->commit();
 
     return array(
-        "success" => true
+        "success" => true,
+	"code" => $http_code
     );
 }
 
@@ -65,7 +68,9 @@ function add_filter($as_info, $monitor_id)
     if ($http_code != 200) {
         return array(
             "success" => false,
-            "error" => $http_code
+            "error" => $http_code,
+	    "as_name" => $as_info["as_domain"],
+	    "details" => "Problem with RYU controller"
         );
     }
 
@@ -81,7 +86,8 @@ function add_filter($as_info, $monitor_id)
         $conn1->commit();
 
     return array(
-        "success" => true
+        "success" => true,
+	"code" => $http_code
     );
 }
 

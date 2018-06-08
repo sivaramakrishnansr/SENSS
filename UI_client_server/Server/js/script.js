@@ -22,12 +22,12 @@ function poll_stats() {
         	        if (resultParsed.success) {
 				//console.log(resultParsed.data);
 				for (var i = 0; i < resultParsed.data.length; i++) {
-					 console.log(resultParsed.data[i]);
+					 //console.log(resultParsed.data[i]);
 					 //var random = Math.random().toString(36).substring(7);
 					 var random = resultParsed.data[i].as_name+"_"+resultParsed.data[i].request_type.replace(/\s/g, '');
 					 if (check_random.indexOf(random)==-1){
 					 	check_random.push(random);
-					 	console.log(random);
+					 	//console.log(random);
     					 	var markup = "<tr id='monitor-row-" + random +"'>" +
     							"<td id='as-name-" + random + "'></td>" +
     							"<td id='request-type-" + random + "'></td>" +
@@ -48,6 +48,7 @@ function poll_stats() {
 
 function set_threshold() {
     var storedThreshold = localStorage.getItem("threshold");
+
     if (storedThreshold != null) {
         threshold = parseInt(storedThreshold);
     }
@@ -68,6 +69,14 @@ poll_stats();
         localStorage.setItem("threshold", threshold);
         $("#current-threshold").html(threshold+" Rules");
         $("#set-threshold-modal").modal('hide');
+	$.ajax({
+	    type: "POST",
+    	    url: 'threshold.php',
+    	    dataType: 'json',
+    	    data: {functionname: 'insert_threshold', arguments: [threshold]},
+            success: function (result) {
+			console.log("Inserted"+result);
+		}
+	});
     });
-
 });

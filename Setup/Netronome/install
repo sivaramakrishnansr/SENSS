@@ -5,9 +5,9 @@ add_client_entries,yes
 start_monitor_flows,yes
 start_ovs,no
 assign_ip,no
-copy_files,yes
-copy_certificates,yes
+copy_files,no
+copy_certificates,no
 configure_pktgen_nodes,no
-apache_restart,yes
+apache_restart,no
 ovs_setup,yes
 configure_bgp,no
