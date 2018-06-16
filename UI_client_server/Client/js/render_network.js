@@ -1,5 +1,5 @@
 BASE_URI = "api.php?";
-
+var graph_elements={};
 
 function populateMonitoringTable(nodes) {
     var selectOptionsMarkup = "";
@@ -8,6 +8,17 @@ function populateMonitoringTable(nodes) {
     });
     $("#as_name").append(selectOptionsMarkup);
 }
+
+function includeJs(jsFilePath) {
+    var js = document.createElement("script");
+
+    js.type = "text/javascript";
+    js.src = jsFilePath;
+
+    document.body.appendChild(js);
+    console.log("Included JSNX");
+}
+
 
 function renderInitialTopology(topology) {
     //console.log(topology);
@@ -25,22 +36,45 @@ function renderInitialTopology(topology) {
 	//console.log(node);
         if (topology.self.indexOf(node) > -1) {
             nodes.push({data: {id: node, color: 'yellow', border: 'black'}});
-            // edges.push({data: {id: "root_cloud", name: "", source: node, target: 'cloud'}});
         } 
-
 	else {
-	    if (node=="hpc056"){
-            nodes.push({data: {id: node, color: 'orange', border: 'black'}});
-            }
-	    else{
             nodes.push({data: {id: node, color: 'gray', border: 'black'}});
+	    var G = jsnx.binomialGraph(myConstClass.number_of_nodes+1,0.3);
+            for(var i=1;i<=myConstClass.number_of_nodes;i++){
+            	if(jsnx.hasPath(G, {source: 0, target: i})==false){
+                	G.addEdge(0,i);
+                }
+            }
+	    graph_elements[node]=G;
+	    var all_nodes=G.nodes();
+	    for (var i=0;i<all_nodes.length;i++){
+		    var sub_node=node+"_"+all_nodes[i];
+	            nodes.push({data: {id: sub_node, color: 'gray', border: 'black'}});
 	    }
             topology.self.forEach(function (root) {
                 edges.push({data: {id: "root_" + node, name: "", source: root, target: node}});
             });
+	    var all_edges=G.edges();
+	    for (var i=0;i<all_edges.length;i++){
+			var sub_edge=all_edges[i];
+			var min_edge;
+			var max_edge;
+			if (sub_edge[0]>sub_edge[1]){
+				min_edge=sub_edge[1];
+				max_edge=sub_edge[0];
+			}
+			else{
+				max_edge=sub_edge[1];
+				min_edge=sub_edge[0];
+			}
+	                edges.push({data: {id: node+"_"+min_edge+"_"+max_edge, name: "", source: node+"_"+min_edge, target: node+"_"+max_edge}});
+	    }
+	    edges.push({data: {id: node+"_"+node+"_"+0, name: "", source: node+"_"+0, target: node}});
+
         }
     });
 
+    
     //console.log(nodes);
 
     /*topology.edges.forEach(function (edge) {
@@ -169,4 +203,5 @@ function getTopologyData() {
     });
 }
 
+includeJs("js/jsnetworkx.js");
 getTopologyData();

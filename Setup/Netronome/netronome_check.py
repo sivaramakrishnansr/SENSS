@@ -34,8 +34,6 @@ def init_database(ssh,nodes,is_client):
 		return
 	print "Adding AS_URLS"
 	for node,node_data in nodes.iteritems():
-		#if node=="hpc056":
-		#	continue
 		stdin, stdout, stderr = ssh.exec_command("sudo python /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/insert_topo.py "+node+" "+node_data["links_to"]+" "+str(node_data["self"]))
 		data=stdout.readlines()
 		for i in data:
@@ -72,10 +70,10 @@ def start_ryu(ssh):
 	data=stdout.readlines()
 	print "Started RYU controller"
 
-def start_monitor_flows(ssh,multiply,filter_1,filter_2):
-	print filter_1,filter_2
-	stdin, stdout, stderr = ssh.exec_command("screen -d -m sudo python /var/www/html/SENSS/UI_client_server/Server/monitor_flows.py "+str(multiply)+" "+filter_1+" "+filter_2)
+def start_monitor_flows(ssh,multiply):
+	stdin, stdout, stderr = ssh.exec_command("screen -d -m sudo python /var/www/html/SENSS/UI_client_server/Server/monitor_flows.py "+str(multiply))
 	data=stdout.readlines()
+	print "sudo python /var/www/html/SENSS/UI_client_server/Server/monitor_flows.py "+str(multiply)
 	print "Started Monitoring flows controller"
 
 def start_ovs(ssh):
@@ -269,6 +267,8 @@ def configure_nodes():
 		f=open("nodes","r")
 	if attack_type=="ddos":
 		f=open("nodes_1","r")
+	if attack_type=="alpha":
+		f=open("nodes_alpha","r")
 		
 	#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self
 	for line in f:
@@ -282,12 +282,18 @@ def configure_nodes():
 		server_url=line.strip().split(" ")[4]
 		links_to=line.strip().split(" ")[5]
 		self=int(line.strip().split(" ")[6])
+		if attack_type=="alpha":
+			legit_nodes=int(line.strip().split(" ")[11])
+			attack_nodes=int(line.strip().split(" ")[12])
+			total_nodes=legit_nodes+attack_nodes
 		nodes[node]={}
 		nodes[node]["node_type"]=node_type
 		nodes[node]["asn"]=asn
 		nodes[node]["server_url"]=server_url
 		nodes[node]["links_to"]=links_to
 		nodes[node]["self"]=self
+		if attack_type=="alpha":
+			nodes[node]["total_nodes"]=total_nodes
 		if number_of_ports==2:
 			two_ports.append(node)
 	f.close()
@@ -308,8 +314,8 @@ def configure_nodes():
 		ssh.connect(node,username="satyaman", password=password, timeout=3)
 		ip_1,ip_2,first_octet=return_ips(node)
 		controller_ip=socket.gethostbyname(node)
-		if node!="hpc052" and node!="hpc057":
-			continue
+		#if node!="hpc052" and node!="hpc057":
+		#	continue
 		print "Node: ",node," ",controller_ip,node in two_ports
 
 		#Install dependencies
@@ -345,9 +351,12 @@ def configure_nodes():
 			#ip_1 is the source ip
 			if nodes[node]["node_type"]=="server":
 				if node in two_ports:
-					start_monitor_flows(ssh,2,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+					#start_monitor_flows(ssh,2,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+					start_monitor_flows(ssh,2)
+					
 				else:
-					start_monitor_flows(ssh,1,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+					#start_monitor_flows(ssh,1,"ipv4,nw_src="+ip_1+",nw_dst=57.0.0.1","ipv4,nw_src="+ip_1+",nw_dst=57.0.0.5")
+					start_monitor_flows(ssh,1)
 		
 		if install["start_ovs"]=="yes":
 			#Start OVS on netronome NIC
@@ -431,6 +440,12 @@ def configure_nodes():
 		data=stdout.readlines()
 		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Server/constants.php")
 		data=stdout.readlines()
+		if attack_type=="alpha" and nodes[node]["node_type"]=="client":
+			string_to_write="const myConstClass = {\n"
+        		string_to_write=string_to_write+"number_of_nodes:"+str(nodes[node]["total_nodes"])+"\n"
+			string_to_write=string_to_write+"}"
+					
+			
 
 		if install["configure_bgp"]=="yes":
 			#Config zebra

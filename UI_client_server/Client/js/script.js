@@ -3,10 +3,12 @@ var thresholdRateMultiplier =1000 * 1000 * 1000 * 1000;
 var threshold = 0;
 var proxy_counter = 0;
 var proxy_flag=0;
-var sum_array={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
+//var sum_array={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
+var sum_array={"hpc039":{},"hpc041":{},"hpc042":{},"hpc043":{},"hpc044":{},"hpc046":{},"hpc047":{},"hpc048":{},"hpc049":{},"hpc050":{},"hpc052":{},"hpc054":{},"hpc056":{},"hpc057":{}}
 var traffic_contribution={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
 var monitor_ids={};
 var global_speed=0;
+var monitor_ids_available=false;
 
 function populateMonitoringValues(rowId, as_name, data) {
     if (data.speed=="Not reachable"){
@@ -34,27 +36,40 @@ function populateMonitoringValues(rowId, as_name, data) {
     }
 
     else{
-	sum_array[as_name]=data.speed;
+	if (!(rowId in sum_array[as_name])){
+		sum_array[as_name][rowId]=0;
+	}
+	//sum_array[as_name]=data.speed;
+	sum_array[as_name][rowId]=data.speed;
     	$("#packet-count-" + rowId).html(data.packet_count);
     	//$("#byte-count-" + rowId).html(data.byte_count);
     	//$("#speed-" + rowId).html(data.speed);
     	$("#speed-" + rowId).html(display_threshold(data.speed));
 	
     	//if (parseInt(data.speed) >= threshold) {
+	var as_speed=0;
+	for (var key in sum_array[as_name]){
+		as_speed=as_speed+Number(sum_array[as_name][key]);
+	}
+	console.log("AS Speed "+as_name+" "+as_speed);
     	if (parseInt(data.speed) >= 35*1000*1000*1000) {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
+        	//cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "red");
+        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "red");
     	} else {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "green");
+        	//cy.$("#root_" + as_name).data("name", display_threshold(parseInt(data.speed))).style("line-color", "green");
+        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "green");
     	}
     }
     var all_speed=0;
     var all_byte_count=0;
-    for (var key in sum_array){
-		all_speed=all_speed+Number(sum_array[key]);
+    for (var key1 in sum_array){
+		for(var key2 in sum_array[key1]){
+			all_speed=all_speed+Number(sum_array[key1][key2]);
+		}
 	}
     global_speed=all_speed;
     $("#all_speed").html(display_threshold(all_speed));
-    //console.log("Speed "+all_speed); 47279368576
+    console.log("Speed "+all_speed); 
 }
 
 function filter(as_name,monitor_id){
@@ -71,7 +86,7 @@ function filter(as_name,monitor_id){
             			contentType: "application/json",
             			dataType: "json",
             			success: function (result) {
-					console.log("SIVARAM: Added rules "+as_name);
+					//console.log("SIVARAM: Added rules "+as_name);
 					var i=0;
             			}
         		});
@@ -101,7 +116,8 @@ function auto_detection(){
 		else{
 			traffic_contribution[key]=contribution;
                         if(key=="hpc041" || key=="hpc042" || key=="hpc044" || key=="hpc052"){
-				console.log("SIVARAM: "+key+" "+contribution);
+				//console.log("SIVARAM: "+key+" "+contribution);
+				var aa=1;
 			}
 		}
    }
@@ -237,7 +253,8 @@ function get_monitor_ids(){
             type: "GET",
             success: function (result) {
 			monitor_ids=JSON.parse(result);
-			console.log("SIVARAM: "+result);
+			//console.log("SIVARAM: "+result);
+			monitor_ids_available=true;
             }
         });
 }
@@ -263,14 +280,13 @@ $(document).ready(function () {
             xhttp.send();
     });
 
-	
-    
+
     $("#add-monitor-rule").click(function () {
         var data = {
             as_name: $("#as_name").val(),
             match: {
-                nw_src: $("#nw_src").val(),
-                nw_dst: $("#nw_dst").val(),
+                ipv4_src: $("#nw_src").val(),
+                ipv4_dst: $("#nw_dst").val(),
                 tcp_src: $("#tcp_src").val(),
                 tcp_dst: $("#tcp_dst").val(),
                 udp_src: $("#udp_src").val(),

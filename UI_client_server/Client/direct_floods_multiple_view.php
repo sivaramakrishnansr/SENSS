@@ -227,4 +227,5 @@
 </body>
 <script src="js/render_network.js"></script>
 <script src="js/script.js"></script>
+<script src="jsnetworkx.js"></script>
 </html>

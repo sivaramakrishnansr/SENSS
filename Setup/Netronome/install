@@ -6,8 +6,8 @@ start_monitor_flows,yes
 start_ovs,no
 assign_ip,no
 copy_files,no
-copy_certificates,no
+copy_certificates,yes
 configure_pktgen_nodes,no
-apache_restart,no
+apache_restart,yes
 ovs_setup,yes
 configure_bgp,no

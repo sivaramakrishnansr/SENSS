@@ -1,3 +1,5 @@
+import re
+from netaddr import IPAddress,IPNetwork
 import MySQLdb
 import os
 import json
@@ -16,14 +18,20 @@ local_packet_count=0
 multiply=int(sys.argv[1])
 #filter_1="ipv4,nw_src=39.0.0.1,nw_dst=57.0.0.1"
 #filter_2="ipv4,nw_src=39.0.0.1,nw_dst=57.0.0.2"
-filter_1=sys.argv[2]
-filter_2=sys.argv[3]
+#filter_1=sys.argv[2]
+#filter_2=sys.argv[3]
 
+last_time={}
 while True:
 	db.commit()
 	cur.execute("SELECT * FROM CLIENT_LOGS")
+	all_ids=set()
+	completed_ids=set()
 	for item in cur.fetchall():
 		id=int(item[0])
+		#if id!=1:
+		#	continue
+		all_ids.add(id)
 		if item[1]!=None:
 			as_name=str(item[1])
 		if item[2]!=None:		
@@ -54,49 +62,92 @@ while True:
 				value=3
 				continue
 			match_string=match_string+","+key+"="+str(value)
-		#output = subprocess.check_output("ovs-dpctl dump-flows filter="+match_string, shell=True).strip().split(",")
-		#print "ovs-dpctl dump-flows filter="+match_string
-		
-		output = subprocess.check_output("ovs-dpctl dump-flows filter="+filter_1, shell=True).strip().split(",")
-		print "ovs-dpctl dump-flows filter="+filter_1
-		new_packet_count=0
-		new_byte_count=0
-		for item in output:
-			if "actions:drop" in item:
-				new_packet_count=0
-				new_byte_count=0
-				continue
-			if "packets" in item:
-				new_packet_count=new_packet_count+int(item.strip().split(":")[-1])
-			if "bytes" in item:
-				new_byte_count=new_byte_count+int(item.strip().split(":")[-1])
 
-		output = subprocess.check_output("ovs-dpctl dump-flows filter="+filter_2, shell=True).strip().split(",")
-		print "ovs-dpctl dump-flows filter="+filter_2
-		for item in output:
-			if "actions:drop" in item:
-				new_packet_count=0
-				new_byte_count=0
-				continue
-			if "packets" in item:
-				new_packet_count=new_packet_count+int(item.strip().split(":")[-1])
-			if "bytes" in item:
-				new_byte_count=new_byte_count+int(item.strip().split(":")[-1])
+		output = subprocess.check_output("ovs-dpctl dump-flows", shell=True).strip().split("\n")
+		byte_counts={}
+		for dump in output:
+			derived_fields={}
+			match_fields=re.split(',\s*(?![^()]*\))', dump)
+			for match in match_fields[1:]:
+				if "(" in match and ")" in match and "," in match:
+					start_key=match.split("(")[0]	
+					for item in match.split("(")[1].replace(")","").split(","):
+						sub_key=item.split("=")[0]
+						key=start_key+"_"+sub_key
+						sub_value=item.split("=")[1]
+						if key=="ipv4_src" or key=="ipv4_dst":
+							if "/" in sub_value:
+								ip_addr=sub_value.split("/")[0]
+								subnet=IPAddress(sub_value.split("/")[1]).netmask_bits()
+								sub_value=ip_addr+"/"+str(subnet)
+						derived_fields[key]=sub_value
+					continue
+				if "(" in match and ")" in match and "," not in match:
+					key=match.split("(")[0]
+					item=match.split("(")[1].replace(")","")
+					if key=="eth_type":
+						item=int(item, 0)
+					derived_fields[key]=item
+					continue
+				if ":" in match and "(" not in match and ")" not in match:
+					key=match.split(":")[0]
+					item=match.split(":")[1]
+					derived_fields[key]=item
+			total=0
+			found=0
+			for key,value in match_field["match"].iteritems():
+				total=total+1
+				if key in derived_fields:
+					if key=="ipv4_src" or key=="ipv4_dst":
+						if IPNetwork(value) == IPNetwork(derived_fields[key]):
+							found=found+1		
+						continue
+					if value==derived_fields[key]:
+						found=found+1
 
-
-
-		update_packet_count=new_packet_count-local_packet_count
-		local_packet_count=new_packet_count
-		print colored("Old Byte Count "+str(old_byte_count),"yellow"),colored("New Byte Count "+str(new_byte_count),"green")
-		print colored("Speed "+str(speed),"red"),"\n"
-		speed=round(((new_byte_count-old_byte_count)*8)/float(frequency),2)
+			current_time=time.time()
+			if found==total:
+				if id not in byte_counts:
+					byte_counts[id]=0
+				print colored(dump,"yellow")
+				new_byte_count=int(derived_fields["bytes"])
+				if "actions" in derived_fields:
+					if derived_fields["actions"]=="drop":
+						print "HERE to DROP"
+						new_byte_count=0
+				print "HERE",new_byte_count
+				byte_counts[id]=byte_counts[id]+new_byte_count
+		if id not in last_time:
+			last_time[id]=time.time()
+			continue
+		total_time=current_time-last_time[id]
+		if total_time<frequency:
+			completed_ids.add(id)
+			continue
+		if id in byte_counts:	
+			new_byte_count=byte_counts[id]
+			speed=round(((new_byte_count-old_byte_count)*8)/float(total_time),2)
+		else:
+			speed=0
+		last_time[id]=current_time
 		if speed<0:
 			speed=0
 		speed=str(speed*multiply)
-		if update_packet_count<0:
-			update_packet_count=0
-		update_packet_count=update_packet_count*multiply
-		#cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',packet_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,new_packet_count,speed,id)
-		cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',packet_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,update_packet_count,speed,id)
+		cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,speed,id)
 		cur.execute(cmd)
-		time.sleep(frequency)
+		db.commit()
+		print colored("Matching "+json.dumps(match_field["match"]),"green")
+		print colored("Old Byte Count "+str(old_byte_count),"yellow"),colored("New Byte Count "+str(new_byte_count),"green")
+		print derived_fields
+		print colored("Speed "+str(speed),"red"),"\n"
+		print colored("Total time "+str(total_time)+" Diff "+str(new_byte_count-old_byte_count),"red")
+		print	
+		completed_ids.add(id)
+		#time.sleep(2)	
+	remaining_ids=all_ids-completed_ids
+	for id in remaining_ids:
+		new_byte_count=0
+		speed=0
+		cmd="""UPDATE CLIENT_LOGS SET byte_count='%d',speed='%s' WHERE id='%d'"""%(new_byte_count,speed,id)
+		cur.execute(cmd)
+		db.commit()

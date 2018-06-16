@@ -270,37 +270,26 @@ if (isset($_GET["remove_filter_all"])){
 }
 
 if (isset($_GET['add_monitor'])) {
-//if (1){
     $input = file_get_contents("php://input");
     $input = json_decode($input, true);
-    /*$input=array(
-      "monitor_frequency"=>500,
-      "monitor_duration"=>1,
-      "match"=>array(
-              "nw_dst"=>"10.0.0.1",
-              "nw_src"=>"10.0.0.2"
-     ),
-      "as_name"=>"hpc057"
-    );*/
-
     $monitoring_end_time = time() + ($input['monitor_frequency'] * $input['monitor_duration']);
-
-
     $success_as_name_id = array();
-
     require_once "db_conf.php";
 
     $sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
-    //$sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" .$input['as_name'] . "')";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
+	echo $row["server_url"]."\n";
         $url = $row['server_url'] . "?action=add_monitor";
-        //$url = "http://hpc056:80/SENSS/UI_client_server/Server/api.php?action=add_monitor";
-        //$url = $server_base_url . "?action=add_monitor";
 	$temp=$row['as_name'];
 	$as_name_temp=str_replace("hpc0","",$temp);
-	$input['match']['nw_src']=$as_name_temp.".0.0.1";
-	$input['match']['nw_proto']=17;
+	//$input['match']['ipv4_src']=$as_name_temp.".0.0.1";
+	if ($input['match']['tcp_src']!=NULL || $input['match']['tcp_dst']!=NULL){
+		$input['match']['ip_proto']=6;
+	}
+	if ($input['match']['udp_src']!=NULL || $input['match']['udp_dst']!=NULL){
+		$input['match']['ip_proto']=17;
+	}
 	$data_to_send = array(
         	'frequency' => $input['monitor_frequency'],
         	'end_time' =>$monitoring_end_time,
@@ -311,7 +300,9 @@ if (isset($_GET['add_monitor'])) {
             	$data_to_send['match'][$key] = $value;
         	}
     	}
-    	$data_string = json_encode($data_to_send);
+	//echo "Sending to data\n";
+	//print_r($data_to_send);
+    	$data_string = json_encode($data_to_send,true);
 
         $options = array(
             'http' => array(
@@ -323,7 +314,8 @@ if (isset($_GET['add_monitor'])) {
         $context = stream_context_create($options);
         $add_monitor_response = file_get_contents($url, false, $context);
         $add_monitor_response = json_decode($add_monitor_response, true);
-
+	//echo "Response\n";
+	//print_r($add_monitor_response);
         if ($add_monitor_response['success']) {
             array_push($success_as_name_id, array(
                 "as_name" => $row['as_name'],
@@ -386,17 +378,6 @@ if (isset($_GET['get_monitor_ids'])) {
     return;
 }
 
-/*if (isset($_GET['get_monitor_status'])) {
-    $as_name=$_GET['as_name'];
-    require_once "db_conf.php";
-    $sql = "SELECT filter FROM MONITORING_RULES WHERE as_name ='". $as_name . "'";
-    $result = $conn->query($sql);
-    while ($row = $result->fetch_assoc()) {
-	$filter_tag=$row["filter"];
-    }
-    echo $filter_tag;
-}*/
-
 
 //Remove monitor removes from the database as well
 if(isset($_GET['remove_monitor'])) {
@@ -417,7 +398,6 @@ if(isset($_GET['remove_monitor'])) {
     $senss_server_url = $result->fetch_assoc()["server_url"];
 
      $url = $senss_server_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
-    //$url = $server_base_url . "?action=remove_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
@@ -427,7 +407,6 @@ if(isset($_GET['remove_monitor'])) {
 
     $context = stream_context_create($options);
 
-    //$sql = sprintf("DELETE FROM MONITORING_RULES WHERE id = %d", $monitor_id);
     $sql = sprintf("DELETE FROM MONITORING_RULES WHERE monitor_id=%d ",$monitor_id);
     $conn->query($sql);
     $conn->commit();
@@ -457,7 +436,6 @@ if (isset($_GET['get_monitor'])) {
     $senss_server_url = $result->fetch_assoc()["server_url"];
 
     $url = $senss_server_url . "?action=get_monitor&monitor_id=" . $monitor_id;
-    //$url = $server_base_url . "?action=get_monitor&monitor_id=" . $monitor_id;
     $options = array(
         'http' => array(
             'method' => 'GET',
@@ -466,8 +444,6 @@ if (isset($_GET['get_monitor'])) {
     );
 
     $context = stream_context_create($options);
-
-
     $response = file_get_contents($url, false, $context);
     $httpcode = http_response_code();
     if ($httpcode == 200) {
@@ -510,14 +486,14 @@ if(isset($_GET['add_filter'])) {
     http_response_code($httpcode);
 
     if(!$response["success"]){
-		echo json_encode(array(
-                        "as_name" => $response["as_name"],
-                        "error" => $response["error"],
-			"threshold" => $response["threshold"],
-			"count" =>$response["count"],
-                        "details" => $response["details"]
-                ),true);
-		return;
+    	echo json_encode(array(
+        	"as_name" => $response["as_name"],
+                "error" => $response["error"],
+		"threshold" => $response["threshold"],
+		"count" =>$response["count"],
+                "details" => $response["details"]
+        ),true);
+	return;
     }
 
     $sql = "UPDATE MONITORING_RULES SET filter='add_filter' WHERE as_name = '" . $as_name . "'";
