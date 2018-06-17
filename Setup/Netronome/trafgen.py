@@ -127,9 +127,9 @@ if type=="proxy" or type=="ddos":
 
 	if legit_traffic==1:
 		child.sendline('start 1')
-	print "SLEEEPING *******"
-	time.sleep(10)
-	
+		print "SLEEEPING *******"
+	time.sleep(3)
+	print "Starting attack"	
 	child.sendline('start 0')
 	time.sleep(attack_duration)
 	child.sendline('stop 0')
