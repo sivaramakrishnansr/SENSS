@@ -4,6 +4,8 @@
     <title>SENSS</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/jsnetworkx.js"></script>
+    <script src="js/constants.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/cytoscape.min.js"></script>
@@ -31,12 +33,7 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="direct_floods_form.php">SENSS</a>
-        </div>
-        <div>
-            <ul class="nav navbar-nav">
-                <li><a href="direct_floods_form.php">Direct Floods</a></li>
-            </ul>
+            <a class="navbar-brand" href="client_alpha.php">SENSS-Direct Floods without Signature</a>
         </div>
     </div>
 </nav>
@@ -45,27 +42,26 @@
 <div id="network-canvas" style="height: 500px; width: 1080px; margin: 0 auto; border: 1px solid black;"></div>
 
 <div class="container inner-container">
+    <div class="row">
+    	<div class="col-sm-4">
+        	<h3>Monitoring Table</h3>
+    	</div>
+    	<div class="col-sm-4">
+		<br>
+     		<p><b>Traffic Threshold: </b><span id="current-threshold"></span> <span class="pull-right">
+     		<button type="button" class="btn btn-primary btn-small" name="submit" id="set-threshold">Edit</button></span></p>
+     		<br>
+	</div>
+    	<div class="col-sm-4">
+		<br>
+        	<p><b>SENSS nodes: </b><span id="current-nodes"></span> <span class="pull-right"><br>
+     		<button type="button" class="btn btn-primary btn-small" name="submit" id="set-nodes">Edit</button></span></p>
+		<br>
+	</div>
+    </div>
+
     <div class="col-md-8">
-        <h2>
-            Monitoring Table
-        </h2>
-    </div>
-    <div class="col-md-4">
-        Threshold: <span id="current-threshold"></span>&emsp;
-        <button class="btn btn-primary" id="set-threshold">
-            <span class="glyphicon glyphicon-pencil"></span>
-            Edit
-        </button>
-    </div>
-    <div class="col-md-4">
-        Number of SENSS nodes: <span id="current-nodes"></span>&emsp;
-        <button class="btn btn-primary" id="set-nodes">
-            <span class="glyphicon glyphicon-pencil"></span>
-            Edit
-        </button>
-    </div>
-    <div class="col-md-8">
-	<h4><p>Total traffic: <div id="all_speed">0</div></p></h4>
+	<h4>Total traffic: <span id="all_speed">0</span></h4>
     </div>
     <table id="table-monitor" class="table table-bordered table-striped">
         <thead>
@@ -127,6 +123,6 @@
 </body>
 <script src="js/render_network.js"></script>
 <script src="js/script_alpha.js"></script>
-<script src="js/jsnetworkx.js"></script>
-<script src="js/constants.js"></script>
+
+
 </html>

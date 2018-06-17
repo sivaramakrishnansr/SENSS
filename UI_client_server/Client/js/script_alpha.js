@@ -120,7 +120,6 @@ function populateMonitoringValues(rowId, as_name, data) {
 						//}
 					}
 				}
-				//console.log("Speed of node "+node+" "+node_speed);
 				for(var i=0;i<shortest_path.length;i++){
 					if(i+1==shortest_path.length){
 						break;
@@ -191,6 +190,16 @@ function populateMonitoringValues(rowId, as_name, data) {
 }
 
 function auto_detection(){
+    	for(var as_name in sum_array){
+		for(var r=1;r<=myConstClass.number_of_nodes;r++){
+			if (random_nodes.indexOf(r)>-1){
+	    			cy.$("#"+as_name+"_"+r).data("color","red");
+			}else{
+	    			cy.$("#"+as_name+"_"+r).data("color","gray");
+			}
+		}
+    	}
+
 	var attack_flag=0;
     	if (global_speed/1000000000>27 || filter_on==true){
 		attack_flag=1;
@@ -205,11 +214,11 @@ function auto_detection(){
 		if (attack_flag==1){
 			if (monitoring_rules[key]["contribution"]<=threshold){
 				contribution_map[key]=monitoring_rules[key]["contribution"];
-				console.log("Under Attack "+key+" Old traffic "+monitoring_rules[key]["contribution"]+" New "+contribution);
+				//console.log("Under Attack "+key+" Old traffic "+monitoring_rules[key]["contribution"]+" New "+contribution);
 			}
 		}else{
 			monitoring_rules[key]["contribution"]=contribution;
-			console.log("No attack "+monitoring_rules[key]["contribution"]+" "+key+" Speed "+as_speed);
+			//console.log("No attack "+monitoring_rules[key]["contribution"]+" "+key+" Speed "+as_speed);
 		}
    	}
 	var new_contribution_map = Object.keys(contribution_map).map(function(key) {
@@ -229,7 +238,7 @@ function auto_detection(){
 			canBlock.push(new_contribution_map[i][0]);
 		}
    	}
-   	console.log("Can Block "+canBlock+" Total "+legit_loss+" Threshold "+threshold);
+   	//console.log("Can Block "+canBlock+" Total "+legit_loss+" Threshold "+threshold);
    	for (var rowID in monitoring_rules){
 		var monitor_id=monitoring_rules[rowID]["monitor_id"];
 		var as_name=monitoring_rules[rowID]["as_name"];
@@ -292,7 +301,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
 		     //"<td id='packet-count-" + random + "'></td>"+
 		     "<td id='speed-" + random + "'></td></tr>;"
     	$("#table-monitor").append(markup);
-    	$("#remove-filter-" + random).hide();
     	var timer = setInterval(function () {
         	if (Math.floor(Date.now() / 1000) > as_monitor_info.end_time) {
             		clearInterval(timer);
@@ -330,6 +338,7 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
     	var src_ip=as_monitor_info.match.ipv4_src.split(".")[3];
     	monitoring_rules[random]["src_ip"]=Number(src_ip);
 	monitoring_rules[random]["can_block"]=false;
+	console.log("At poll stats");
 }
 
 
@@ -366,15 +375,6 @@ function senss_nodes() {
     	$("#current-nodes").html(storednodes+"%");
     	//console.log("Stored Nodes "+storednodes);
     	random_nodes=getRandom(Math.floor(Number(storednodes)*myConstClass.number_of_nodes/100));
-    	for(var as_name in sum_array){
-		for(var r=1;r<=myConstClass.number_of_nodes;r++){
-			if (random_nodes.indexOf(r)>-1){
-	    			cy.$("#"+as_name+"_"+r).data("color","red");
-			}else{
-	    			cy.$("#"+as_name+"_"+r).data("color","gray");
-			}
-		}
-    	}
 }
 
 
@@ -434,16 +434,11 @@ function add_initial_rules(){
 
 $(document).ready(function () {
 	//console.log("NODES "+myConstClass.number_of_nodes);
-    	includeJs("js/jsnetworkx.js");
+    	//includeJs("js/jsnetworkx.js");
     	//console.log("GRAPH ELEMENTS "+graph_elements);
     	add_initial_rules();
     	set_threshold();
     	senss_nodes();
-    	//console.log("Sivaram CY"+cy.elements);
-
-
-     	//console.log("SIVARAM Monitor IDS - "+monitor_ids_available);
-	
     
     	$("#set-threshold").click(function () {
         	$("#set-threshold-modal").modal('show');
