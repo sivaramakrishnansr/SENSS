@@ -33,7 +33,7 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="ddos_with_sig.php">DDoS with Signature</a>
+            <a class="navbar-brand" href="ddos_with_sig.php">DDoS with Signature and Proxy</a>
         </div>
     </div>
 </nav>

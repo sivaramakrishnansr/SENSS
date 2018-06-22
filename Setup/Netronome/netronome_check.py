@@ -280,6 +280,9 @@ def configure_nodes():
 		node_type=line.strip().split(" ")[2]
 		asn=line.strip().split(" ")[3]
 		server_url=line.strip().split(" ")[4]
+		if node_type=="proxy":
+			proxy_ip='"'+server_url+'?"'
+			continue
 		links_to=line.strip().split(" ")[5]
 		self=int(line.strip().split(" ")[6])
 		if attack_type=="alpha":
@@ -314,7 +317,8 @@ def configure_nodes():
 		ssh.connect(node,username="satyaman", password=password, timeout=3)
 		ip_1,ip_2,first_octet=return_ips(node)
 		controller_ip=socket.gethostbyname(node)
-		#if node!="hpc052" and node!="hpc057":
+		#if node!="hpc057":
+		# and node!="hpc056" and node!="hpc052":
 		#	continue
 		print "Node: ",node," ",controller_ip,node in two_ports
 
@@ -338,11 +342,11 @@ def configure_nodes():
 		#Resetting database to the address
 		if install["add_client_entries"]=="yes":
 			if nodes[node]["node_type"]=="client":
-				for node,values in nodes.iteritems():
+				for node_1,values in nodes.iteritems():
 					self="0"
 					if values["node_type"]=="client":
 						self="1"
-					print "Addding",values["asn"],values["server_url"],values["links_to"],self
+					#print "Addding",values["asn"],values["server_url"],values["links_to"],self
 					add_client_entries(ssh,values["asn"],values["server_url"],values["links_to"],self)
 				print "Added client entries"
 
@@ -366,7 +370,7 @@ def configure_nodes():
 			#Add IP address to interface_1
 			stdin, stdout, stderr = ssh.exec_command("sudo python /opt/netronome/libexec/dpdk_nic_bind.py -b nfp_netvf 08:08.0")
 			data=stdout.readlines()
-			print data
+			#print data
 			interface_1=get_interface(ssh,"08:08.0")
 			dummy_ip="200.0.0.1"
 			stdin, stdout, stderr = ssh.exec_command("sudo ifconfig "+interface_1+" "+dummy_ip)
@@ -440,10 +444,32 @@ def configure_nodes():
 		data=stdout.readlines()
 		stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Server/constants.php")
 		data=stdout.readlines()
+		if nodes[node]["node_type"]=="proxy":
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Proxy/constants.php")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Proxy/constants.php")
+			data=stdout.readlines()
+			
+
 		if attack_type=="alpha" and nodes[node]["node_type"]=="client":
 			string_to_write="const myConstClass = {\n"
         		string_to_write=string_to_write+"number_of_nodes:"+str(nodes[node]["total_nodes"])+"\n"
 			string_to_write=string_to_write+"}"
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Client/js/constants.js")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Client/js/constants.js")
+			data=stdout.readlines()
+
+		print "PROXY",proxy_ip,attack_type,nodes[node]["node_type"],node
+		if attack_type=="proxy" and nodes[node]["node_type"]=="client":
+			print proxy_ip
+			string_to_write="const myConstClass = {\n"
+        		string_to_write=string_to_write+"proxy_ip:"+str(proxy_ip)+"\n"
+			string_to_write=string_to_write+"}"
+			stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Client/js/constants.js")
+			data=stdout.readlines()
+			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Client/js/constants.js")
+			data=stdout.readlines()
 					
 			
 

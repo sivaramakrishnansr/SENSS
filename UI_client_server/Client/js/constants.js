@@ -1,3 +1,3 @@
 const myConstClass = {
-	number_of_nodes:4
+proxy_ip:"http://56.0.0.1/SENSS/UI_client_server/Server/api.php?"
 }

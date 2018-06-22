@@ -54,7 +54,6 @@ def eth_addr (a) :
  
 #function to parse a packet
 def parse_packet(packet) :
-     
     #parse ethernet header
     eth_length = 14
     global counter

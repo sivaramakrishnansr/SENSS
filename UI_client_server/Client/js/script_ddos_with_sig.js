@@ -11,12 +11,14 @@ var global_speed=0;
 var monitor_ids_available=false;
 
 function populateMonitoringValues(rowId, as_name, data) {
+
         if (data.speed=="Not reachable"){
                 sum_array[as_name]=0;
                 $("#packet-count-" + rowId).html("N/A");
                 $("#speed-" + rowId).html("N/A");
                 cy.$("#root_" + as_name).data("name", "N/A").style("line-color", "#996300");
                 proxy_counter=proxy_counter+1;
+		console.log("Sivaram: Not reachable "+proxy_counter);
                 if (proxy_counter==5){
                         if (proxy_flag==0){
                                 proxy_flag=1;
@@ -104,13 +106,15 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                         type: "GET",
                         error: function () {
                                 var error_data={packet_count:"Not reachable",speed:"Not reachable"};
-                                var error_data={packet_count:0,speed:0};
                                 populateMonitoringValues(random, as_name, error_data);
+				console.log("TImEOUT");
                         },
                         success: function (result) {
-                                if (typeof result !== 'undefined') {
-                                        console.log(result);
-                        }
+				//console.log("SIVARAM Proxy: "+result);
+
+                                //if (typeof result != 'undefined') {
+                                //        console.log(result);
+                        	//}
                         var resultParsed = JSON.parse(result);
                         if (resultParsed.success) {
                                 populateMonitoringValues(random, as_name, resultParsed.data);
