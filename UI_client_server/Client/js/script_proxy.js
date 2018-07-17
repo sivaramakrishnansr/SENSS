@@ -1,4 +1,6 @@
 var threshold = 0;
+var proxy_counter = 1;
+var proxy_flag=0;
 var sum_array={"hpc039":{},"hpc041":{},"hpc042":{},"hpc043":{},"hpc044":{},"hpc046":{},"hpc047":{},"hpc048":{},"hpc049":{},"hpc050":{},"hpc052":{},"hpc054":{},"hpc056":{},"hpc057":{}}
 var monitor_ids={};
 var global_speed=0;
@@ -6,19 +8,44 @@ var monitor_ids_available=false;
 
 //Populating current traffic rate at the client
 function populateMonitoringValues(rowId, as_name, data) {
-	if (!(rowId in sum_array[as_name])){
-        	sum_array[as_name][rowId]=0;
-	}
-	sum_array[as_name][rowId]=data.speed;
-	$("#speed-" + rowId).html(display_threshold(data.speed));
-	var as_speed=0;
-	for (var key in sum_array[as_name]){
-        	as_speed=as_speed+Number(sum_array[as_name][key]);
-	}
-	if (parseInt(data.speed) >= 35*1000*1000*1000) {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "red");
-       	} else {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "green");
+        //SENSS server is not reachable, therefore there is no traffic rate data available
+        //Client counts(proxy_counter) the number of times the SENSS servers are not reachable
+        //If the value of proxy_counter exceeds a threshold of 5, SENSS client communicates with the SENSS Proxy to take over
+        if (data.speed=="Not reachable"){
+                if (!(rowId in sum_array[as_name])){
+                        sum_array[as_name][rowId]=0;
+                }
+                $("#speed-" + rowId).html("N/A");
+                cy.$("#root_" + as_name).data("name", "N/A").style("line-color", "#996300");
+                proxy_counter=proxy_counter+1;
+                if (proxy_counter>=5){
+                        if (proxy_flag==0){
+                                $.ajax({
+                                        url: BASE_URI + "send_proxy_info",
+                                        type: "GET",
+                                        success: function (result) {
+		                                proxy_flag=1;
+                                        }
+                                });
+                        }
+                }
+
+        }
+        else{
+                if (!(rowId in sum_array[as_name])){
+                        sum_array[as_name][rowId]=0;
+                }
+                sum_array[as_name][rowId]=data.speed;
+                $("#speed-" + rowId).html(display_threshold(data.speed));
+                var as_speed=0;
+                for (var key in sum_array[as_name]){
+                        as_speed=as_speed+Number(sum_array[as_name][key]);
+                }
+                if (parseInt(data.speed) >= 35*1000*1000*1000) {
+                        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "red");
+                } else {
+                        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "green");
+                }
         }
         var all_speed=0;
         var all_byte_count=0;
@@ -27,9 +54,10 @@ function populateMonitoringValues(rowId, as_name, data) {
                         all_speed=all_speed+Number(sum_array[key1][key2]);
                 }
         }
-   	global_speed=all_speed;
-    	$("#all_speed").html(display_threshold(all_speed));
+    global_speed=all_speed;
+    $("#all_speed").html(display_threshold(all_speed));
 }
+
 
 function filter(as_name,monitor_id){
         var data = {"as_name":as_name};
@@ -45,13 +73,14 @@ function filter(as_name,monitor_id){
                                         contentType: "application/json",
                                         dataType: "json",
                                         success: function (result) {
-                                                console.log("SENSS: Added rules "+as_name);
+                                                console.log("SIVARAM: Added rules "+as_name);
                                         }
                                 });
                         }
                 }
         });
 }
+
 
 //Polls the SENSS servers for traffic rates on flows based on monitoring rules which are added
 function poll_stats(as_name, monitor_id, as_monitor_info) {
@@ -66,6 +95,7 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         $("#table-monitor").append(markup);
         $("#remove-filter-" + random).hide();
         //Polling is done for the specified limit
+        //When the request fails, the packet counts and traffic rate(spped) are marked as Not reachable
         //When the request suceeds, the packet counts and traffic rates are updated
         //The current packet counts and traffic rates are sent to populateMOnitoringValues
         var timer = setInterval(function () {
@@ -76,15 +106,16 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                         url: BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
                         type: "GET",
                         error: function () {
-				console.log("Request timed out. Attempting Again..");
+                                var error_data={packet_count:"Not reachable",speed:"Not reachable"};
+                                populateMonitoringValues(random, as_name, error_data);
                         },
                         success: function (result) {
 	                        var resultParsed = JSON.parse(result);
         	                if (resultParsed.success) {
                 	                populateMonitoringValues(random, as_name, resultParsed.data);
                         	}
-                },
-                 timeout: 2000
+                	},
+                 	timeout: 2000
                 });
         }, (parseInt(as_monitor_info.frequency) + 2) * 1000);
 
@@ -170,7 +201,7 @@ $(document).ready(function () {
                 $("#add-monitor-modal").modal('show');
         });
 
-        //Adds all filters when the SENSS client user clicks on the Add Filter All button
+	//Adds all filters when the SENSS client user clicks on the Add Filter All button
         $("#add-filter-all").click(function () {
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("GET", BASE_URI+"add_filter_all", true);
@@ -178,7 +209,7 @@ $(document).ready(function () {
                 xhttp.send();
         });
 
-        //Removes all filters when the SENSS client user clicks on the Remove Filter All button
+	//Removes all filters when the SENSS client user clicks on the Remove Filter All button
         $("#remove-filter-all").click(function () {
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("GET", BASE_URI+"remove_filter_all", true);
@@ -186,7 +217,7 @@ $(document).ready(function () {
                 xhttp.send();
         });
 
-        //Obtaines flow level information for adding monitoring rules
+	//Obtaines flow level information for adding monitoring rules
         $("#add-monitor-rule").click(function () {
                 var data = {
                 	as_name: $("#as_name").val(),
@@ -201,6 +232,7 @@ $(document).ready(function () {
                 	monitor_frequency: parseInt($("#monitor_freq").val()),
                 	monitor_duration: parseInt($("#monitor_duration").val())
         	};
+
         	$.ajax({
                 	url: BASE_URI + "add_monitor",
                 	type: "POST",

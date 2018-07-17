@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src="js/jsnetworkx.js"></script>
-    <script src="js/constants.js"></script>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/cytoscape.min.js"></script>
@@ -65,10 +64,10 @@
         <tr>
             <th>AS Name</th>
             <th>Match</th>
-            <th>Packet Count</th>
+            <!--<th>Packet Count</th>-->
             <!--<th>Byte Count</th>-->
             <th>Speed</th>
-            <!--<th>Action</th>-->
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>
@@ -179,5 +178,5 @@
 </div>
 </body>
 <script src="js/render_network_ddos_with_sig.js"></script>
-<script src="js/script_ddos_with_sig.js"></script>
+<script src="js/script_proxy.js"></script>
 </html>

@@ -1,24 +1,55 @@
+//var thresholdRateMultiplier = 1;
+var thresholdRateMultiplier =1000 * 1000 * 1000 * 1000;
 var threshold = 0;
+var proxy_counter = 0;
+var proxy_flag=0;
+//var sum_array={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
 var sum_array={"hpc039":{},"hpc041":{},"hpc042":{},"hpc043":{},"hpc044":{},"hpc046":{},"hpc047":{},"hpc048":{},"hpc049":{},"hpc050":{},"hpc052":{},"hpc054":{},"hpc056":{},"hpc057":{}}
+var traffic_contribution={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
 var monitor_ids={};
 var global_speed=0;
 var monitor_ids_available=false;
 
-//Populating current traffic rate at the client
 function populateMonitoringValues(rowId, as_name, data) {
-	if (!(rowId in sum_array[as_name])){
-        	sum_array[as_name][rowId]=0;
-	}
-	sum_array[as_name][rowId]=data.speed;
-	$("#speed-" + rowId).html(display_threshold(data.speed));
-	var as_speed=0;
-	for (var key in sum_array[as_name]){
-        	as_speed=as_speed+Number(sum_array[as_name][key]);
-	}
-	if (parseInt(data.speed) >= 35*1000*1000*1000) {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "red");
-       	} else {
-        	cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "green");
+
+        if (data.speed=="Not reachable"){
+                //sum_array[as_name]=0;
+                //$("#packet-count-" + rowId).html("N/A");
+                $("#speed-" + rowId).html("N/A");
+                cy.$("#root_" + as_name).data("name", "N/A").style("line-color", "#996300");
+                proxy_counter=proxy_counter+1;
+		console.log("Sivaram: Not reachable "+proxy_counter);
+                if (proxy_counter==5){
+                        if (proxy_flag==0){
+                                proxy_flag=1;
+                                $.ajax({
+                                        url: BASE_URI + "send_proxy_info",
+                                        type: "GET",
+                                        success: function (result) {
+                                                console.log(as_name+" not reachable. Sent information to proxy");
+                                        }
+                                });
+                        }
+                }
+
+        }
+        else{
+                if (!(rowId in sum_array[as_name])){
+                        sum_array[as_name][rowId]=0;
+                }
+                sum_array[as_name][rowId]=data.speed;
+                //$("#packet-count-" + rowId).html(data.packet_count);
+                $("#speed-" + rowId).html(display_threshold(data.speed));
+
+                var as_speed=0;
+                for (var key in sum_array[as_name]){
+                        as_speed=as_speed+Number(sum_array[as_name][key]);
+                }
+                if (parseInt(data.speed) >= 35*1000*1000*1000) {
+                        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "red");
+                } else {
+                        cy.$("#root_" + as_name).data("name", display_threshold(parseInt(as_speed))).style("line-color", "green");
+                }
         }
         var all_speed=0;
         var all_byte_count=0;
@@ -27,8 +58,9 @@ function populateMonitoringValues(rowId, as_name, data) {
                         all_speed=all_speed+Number(sum_array[key1][key2]);
                 }
         }
-   	global_speed=all_speed;
-    	$("#all_speed").html(display_threshold(all_speed));
+    global_speed=all_speed;
+    $("#all_speed").html(display_threshold(all_speed));
+    //console.log("Speed "+all_speed);
 }
 
 function filter(as_name,monitor_id){
@@ -45,7 +77,7 @@ function filter(as_name,monitor_id){
                                         contentType: "application/json",
                                         dataType: "json",
                                         success: function (result) {
-                                                console.log("SENSS: Added rules "+as_name);
+                                                console.log("SIVARAM: Added rules "+as_name);
                                         }
                                 });
                         }
@@ -53,11 +85,12 @@ function filter(as_name,monitor_id){
         });
 }
 
-//Polls the SENSS servers for traffic rates on flows based on monitoring rules which are added
+
 function poll_stats(as_name, monitor_id, as_monitor_info) {
         var random = Math.random().toString(36).substring(7);
         var markup = "<tr id='monitor-row-" + random +"'><td>" + as_name + "</td><td><pre>" + JSON.stringify(as_monitor_info, undefined, 4) +
         "</pre></td>"+
+	//"<td id='packet-count-" + random + "'></td>"+
         "<td id='speed-" + random + "'></td>"+
         "<td><p><button type='button' class='btn btn-default' " +
         "id='remove-monitor-" + random + "'>Remove Monitor</button></p><p><button type='button' class='btn btn-success' " +
@@ -65,9 +98,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         "id='remove-filter-" + random + "'>Remove Filter</button></p></td></tr>";
         $("#table-monitor").append(markup);
         $("#remove-filter-" + random).hide();
-        //Polling is done for the specified limit
-        //When the request suceeds, the packet counts and traffic rates are updated
-        //The current packet counts and traffic rates are sent to populateMOnitoringValues
         var timer = setInterval(function () {
                 if (Math.floor(Date.now() / 1000) > as_monitor_info.end_time) {
                         clearInterval(timer);
@@ -76,20 +106,27 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                         url: BASE_URI + "get_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
                         type: "GET",
                         error: function () {
-				console.log("Request timed out. Attempting Again..");
+                                var error_data={packet_count:"Not reachable",speed:"Not reachable"};
+                                populateMonitoringValues(random, as_name, error_data);
+				console.log("TImEOUT");
                         },
                         success: function (result) {
-	                        var resultParsed = JSON.parse(result);
-        	                if (resultParsed.success) {
-                	                populateMonitoringValues(random, as_name, resultParsed.data);
-                        	}
+				//console.log("SIVARAM Proxy: "+result);
+
+                                //if (typeof result != 'undefined') {
+                                //        console.log(result);
+                        	//}
+                        var resultParsed = JSON.parse(result);
+                        if (resultParsed.success) {
+                                populateMonitoringValues(random, as_name, resultParsed.data);
+                        }
                 },
                  timeout: 2000
                 });
         }, (parseInt(as_monitor_info.frequency) + 2) * 1000);
 
 
-        //Removes the monitoring rule when the SENSS client user clicks on the Remove Monitor button
+
         $("#remove-monitor-" + random).click(function () {
                 $.ajax({
                         url: BASE_URI + "remove_monitor&as_name=" + as_name + "&monitor_id=" + monitor_id,
@@ -101,7 +138,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                 });
         });
 
-        //Adds a traffic filter when the SENSS client user clicks on Add Filter button
         $("#add-filter-" + random).click(function () {
                 $.ajax({
                 url: BASE_URI + "add_filter&as_name=" + as_name + "&monitor_id=" + monitor_id,
@@ -113,7 +149,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
                 });
         });
 
-        //Removes a traffic filter when the SENSS client user clicks on the Remove Filter button
         $("#remove-filter-" + random).click(function () {
                 $.ajax({
                 url: BASE_URI + "remove_filter&as_name=" + as_name + "&monitor_id=" + monitor_id,
@@ -126,7 +161,7 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
         });
 }
 
-//Creates the traffic rates in readable format
+
 function display_threshold(int_threshold) {
         var zeros = parseInt(Math.log(int_threshold) / Math.log(10));
         if (zeros >= 12) {
@@ -151,7 +186,6 @@ function set_threshold() {
         $("#current-threshold").html(threshold+"%");
 }
 
-//Checks if there are existing monitoring rules set by the SENSS client
 function get_monitor_ids(){
         $.ajax({
             url: BASE_URI + "get_monitor_ids",
@@ -170,7 +204,6 @@ $(document).ready(function () {
                 $("#add-monitor-modal").modal('show');
         });
 
-        //Adds all filters when the SENSS client user clicks on the Add Filter All button
         $("#add-filter-all").click(function () {
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("GET", BASE_URI+"add_filter_all", true);
@@ -178,7 +211,6 @@ $(document).ready(function () {
                 xhttp.send();
         });
 
-        //Removes all filters when the SENSS client user clicks on the Remove Filter All button
         $("#remove-filter-all").click(function () {
                 var xhttp = new XMLHttpRequest();
                 xhttp.open("GET", BASE_URI+"remove_filter_all", true);
@@ -186,7 +218,6 @@ $(document).ready(function () {
                 xhttp.send();
         });
 
-        //Obtaines flow level information for adding monitoring rules
         $("#add-monitor-rule").click(function () {
                 var data = {
                 	as_name: $("#as_name").val(),
@@ -201,6 +232,7 @@ $(document).ready(function () {
                 	monitor_frequency: parseInt($("#monitor_freq").val()),
                 	monitor_duration: parseInt($("#monitor_duration").val())
         	};
+		console.log(data.monitor_frequency+" All the data");
         	$.ajax({
                 	url: BASE_URI + "add_monitor",
                 	type: "POST",
@@ -212,6 +244,7 @@ $(document).ready(function () {
                         	poll_stats(as_name_id.as_name, as_name_id.monitor_id, result.match);
                         	});
                 		$('#add-monitor-modal').modal('toggle');
+				console.log("TOGGLE MODAL");
                 	},
                         error: function (xhr, status, error) {
 				console.log("ERROR "+xhr.responseText);

@@ -1,10 +1,7 @@
 <?php
 
-//$server_base_url = "http://hpc057/SENSS/UI_client_server/Server/api.php";
-$proxy_base_url = "http://hpc056/SENSS/UI_client_server/Proxy/api.php";
 
 function generate_request_headers() {
-    ///var/www/html/SENSS/UI_client_server/Client/cert
     $clientcert = file_get_contents('/var/www/html/SENSS/UI_client_server/Client/cert/clientcert.pem');
     $clientcert = base64_encode($clientcert);
     return array(
@@ -15,7 +12,6 @@ function generate_request_headers() {
 
 
 if(isset($_GET['check'])){
-//if(1){
     require_once "db_conf.php";
     $sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
     $result = $conn->query($sql);
@@ -246,11 +242,10 @@ if (isset($_GET['add_monitor'])) {
     $sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
     $result = $conn->query($sql);
     while ($row = $result->fetch_assoc()) {
-	echo $row["server_url"]."\n";
         $url = $row['server_url'] . "?action=add_monitor";
 	$temp=$row['as_name'];
-	$as_name_temp=str_replace("hpc0","",$temp);
-	$input['match']['ipv4_src']=$as_name_temp.".0.0.1";
+	//$as_name_temp=str_replace("hpc0","",$temp);
+	//$input['match']['ipv4_src']=$as_name_temp.".0.0.1";
 	if ($input['match']['tcp_src']!=NULL || $input['match']['tcp_dst']!=NULL){
 		$input['match']['ip_proto']=6;
 	}
@@ -295,38 +290,22 @@ if (isset($_GET['add_monitor'])) {
             $conn->query($sql);
         }
 
-	//Sending proxy data
-	$proxy_data=array(
-		'as_name'=>$row['as_name'],
-		'match_field'=>$data_string,
-		'frequency'=>$input['monitor_frequency'],
-		'end_time'=>$monitoring_end_time,
-		'monitor_id'=>$add_monitor_response['monitor_id']
-	);
-    	$data_string = json_encode($proxy_data);
-        $options = array(
-            'http' => array(
-                'method' => 'POST',
-                'header' => generate_request_headers(),
-                'content' => $data_string
-            )
-        );
-        $url = $proxy_base_url . "?action=add_monitor";
-        $context = stream_context_create($options);
-        $add_monitor_response = file_get_contents($url, false, $context);
 
     }
     $conn->commit();
     $response = array(
+	'success' => true,
         'as_name_id' => $success_as_name_id,
         'match' => $data_to_send
     );
 
-    echo json_encode($response, true);
+   //plsmark
+    http_response_code(200);
+    echo json_encode($response);
+    return;
 
 }
 
-//plsmark
 if (isset($_GET['get_monitor_ids'])) {
     require_once "db_conf.php";
     $sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
@@ -534,6 +513,7 @@ if(isset($_GET['remove_filter'])) {
 
 if(isset($_GET['send_proxy_info'])) {
 	require_once "db_conf.php";
+	require_once "constants.php";
     	$sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
     	$result = $conn->query($sql);
     	$all_urls=array();
@@ -545,7 +525,7 @@ if(isset($_GET['send_proxy_info'])) {
 		array_push($all_urls,$temp);
    	}
 	print_r($all_urls);
-    	$url = "http://hpc056/SENSS/UI_client_server/Proxy/api.php?action=proxy_info";
+    	//$url = "http://50.0.0.1/SENSS/UI_client_server/Proxy/api.php?action=proxy_info";
         $data_string = json_encode($all_urls,true);
 
         $context = stream_context_create($options);
@@ -559,7 +539,7 @@ if(isset($_GET['send_proxy_info'])) {
         );
 	print_r($options);
         $context = stream_context_create($options);
-        $add_monitor_response = file_get_contents($url, false, $context);
+        $add_monitor_response = file_get_contents(PROXY_URL, false, $context);
 	echo $add_monitor_response."\n";
         $add_monitor_response = json_decode($add_monitor_response, true);
 	print "Got response\n";

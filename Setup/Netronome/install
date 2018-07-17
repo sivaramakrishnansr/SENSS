@@ -4,10 +4,10 @@ init_database,yes
 add_client_entries,yes
 start_monitor_flows,yes
 start_ovs,no
-assign_ip,no
+assign_ip,yes
 copy_files,no
-copy_certificates,yes
+copy_certificates,no
 configure_pktgen_nodes,no
 apache_restart,yes
 ovs_setup,yes
-configure_bgp,no
+configure_bgp,yes

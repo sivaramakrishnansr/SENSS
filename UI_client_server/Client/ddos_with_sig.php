@@ -65,10 +65,10 @@
         <tr>
             <th>AS Name</th>
             <th>Match</th>
-            <th>Packet Count</th>
+            <!--<th>Packet Count</th>-->
             <!--<th>Byte Count</th>-->
             <th>Speed</th>
-            <!--<th>Action</th>-->
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>

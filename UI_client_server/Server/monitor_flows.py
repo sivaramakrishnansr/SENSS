@@ -16,6 +16,7 @@ cur=db.cursor()
 cur.execute("USE SENSS")
 local_packet_count=0
 multiply=int(sys.argv[1])
+legit_traffic=sys.argv[2]
 #filter_1="ipv4,nw_src=39.0.0.1,nw_dst=57.0.0.1"
 #filter_2="ipv4,nw_src=39.0.0.1,nw_dst=57.0.0.2"
 #filter_1=sys.argv[2]
@@ -100,22 +101,28 @@ while True:
 				if key in derived_fields:
 					if key=="ipv4_src" or key=="ipv4_dst":
 						if IPNetwork(value) == IPNetwork(derived_fields[key]):
-							found=found+1		
+							found=found+1
 						continue
 					if value==derived_fields[key]:
 						found=found+1
-
+					
+			if "ipv4_dst" in derived_fields:
+				if IPNetwork(legit_traffic) in IPNetwork(derived_fields["ipv4_dst"]):
+					if id not in byte_counts:
+						byte_counts[id]=0
+					byte_counts[id]=byte_counts[id]+int(derived_fields["bytes"])
+					#print colored( "ADDING "+str(byte_counts[id])+" "+str(derived_fields[key]+" "+str(legit_traffic)),"red")
 			current_time=time.time()
 			if found==total:
 				if id not in byte_counts:
 					byte_counts[id]=0
-				print colored(dump,"yellow")
+				print colored("Byte Count "+str(byte_counts[id]),"yellow")
 				new_byte_count=int(derived_fields["bytes"])
 				if "actions" in derived_fields:
 					if derived_fields["actions"]=="drop":
 						print "HERE to DROP"
 						new_byte_count=0
-				print "HERE",new_byte_count
+				#print "HERE",new_byte_count
 				byte_counts[id]=byte_counts[id]+new_byte_count
 		if id not in last_time:
 			last_time[id]=time.time()
@@ -143,7 +150,7 @@ while True:
 		print colored("Total time "+str(total_time)+" Diff "+str(new_byte_count-old_byte_count),"red")
 		print	
 		completed_ids.add(id)
-		#time.sleep(2)	
+		#time.sleep(3)	
 	remaining_ids=all_ids-completed_ids
 	for id in remaining_ids:
 		new_byte_count=0

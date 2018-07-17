@@ -11,17 +11,18 @@ def start_attack():
         nodes={}
         two_ports=[]
 	if type=="proxy":
-	        f=open("nodes","r")
+	        f=open("nodes_proxy","r")
 	if type=="ddos":
-	        f=open("nodes_1","r")
+	        f=open("nodes_ddos_with_sig","r")
 	if type=="alpha":
-		f=open("nodes_alpha","r")
+		f=open("nodes_ddos_without_sig","r")
 
         for line in f:
 		if len(line.strip())==0:
 			continue
                 if "#" in line:
                         continue
+			
 		if type=="proxy" or type=="ddos":
 	                node=line.strip().split(" ")[0]
         	        number_of_ports=int(line.strip().split(" ")[1])
@@ -37,8 +38,12 @@ def start_attack():
 			server_ip=line.strip().split(" ")[11]
 			legit_traffic=line.strip().split(" ")[12]
 			legit_traffic_rate=line.strip().split(" ")[13]
+			legit_traffic_duration=line.strip().split(" ")[14]
+			legit_address=line.strip().split(" ")[15]
 			if node_type=="client":
 				attack_ip=node.replace("hpc0","")+".0.0.1"
+				continue
+			if node_type=="proxy":
 				continue
 	                nodes[node]={}
         	        nodes[node]["node_type"]=node_type
@@ -53,6 +58,8 @@ def start_attack():
 			nodes[node]["server_ip"]=server_ip
 			nodes[node]["legit_traffic"]=legit_traffic
 			nodes[node]["legit_traffic_rate"]=legit_traffic_rate
+			nodes[node]["legit_traffic_duration"]=legit_traffic_duration
+			nodes[node]["legit_address"]=legit_address
 
 		if type=="alpha":
 	                node=line.strip().split(" ")[0]
@@ -90,7 +97,8 @@ def start_attack():
 
 
         f.close()
-	password=getpass.getpass()
+	#password=getpass.getpass()
+	password="kru!1dalahomora"
 	for node in nodes:
                 print "Node: ",node," "
 		#if node =="hpc054" or node=="hpc039" or node=="hpc043":
@@ -101,8 +109,8 @@ def start_attack():
         	        ssh.connect(node,username="satyaman", password=password, timeout=3)
                 	#Patching netronome
 			if type=="proxy" or type=="ddos":
-				stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"])
-				print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]
+				stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]+" "+nodes[node]["legit_address"]) 
+				print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]+" "+nodes[node]["legit_address"]
 			if type=="alpha":
 				stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+nodes[node]["asn"]+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+ nodes[node]["server_mac"]+" "+nodes[node]["legit_sources"]+" "+nodes[node]["attack_sources"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"])
 				print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+nodes[node]["asn"]+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+ nodes[node]["server_mac"]+" "+nodes[node]["legit_sources"]+" "+nodes[node]["attack_sources"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]

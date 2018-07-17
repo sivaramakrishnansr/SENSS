@@ -8,7 +8,7 @@ import sys
 #Command line arguments
 number_of_ports=1
 type=sys.argv[1]
-if type=="proxy" or type=="ddos":
+if type=="ddos" or type=="proxy":
 	attack_ip=sys.argv[2]
 	attack_duration=int(sys.argv[3])
 	attack_rate=sys.argv[4]
@@ -17,6 +17,8 @@ if type=="proxy" or type=="ddos":
 	source_ip=sys.argv[7]
 	legit_traffic=int(sys.argv[8])
 	legit_traffic_rate=sys.argv[9]
+	legit_duration=int(sys.argv[10])
+	legit_address=sys.argv[11]
 
 if type=="alpha":
 	as_name=sys.argv[2].split(".")[0].replace("hpc0","")
@@ -118,7 +120,7 @@ if type=="proxy" or type=="ddos":
 	child.sendline('set 0 proto udp')
 
 	child.sendline('set 1 src ip '+source_ip)
-	child.sendline('set 1 dst ip 57.0.0.5')
+	child.sendline('set 1 dst ip '+legit_address)
 	child.sendline('set 1 src mac '+server_mac)
 	child.sendline('set 1 dst mac '+switch_mac)
 	child.sendline('set 1 size 1500')
@@ -128,7 +130,7 @@ if type=="proxy" or type=="ddos":
 	if legit_traffic==1:
 		child.sendline('start 1')
 		print "SLEEEPING *******"
-	time.sleep(3)
+	time.sleep(legit_duration)
 	print "Starting attack"	
 	child.sendline('start 0')
 	time.sleep(attack_duration)

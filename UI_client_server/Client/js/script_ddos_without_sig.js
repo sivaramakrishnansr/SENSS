@@ -1,13 +1,9 @@
-//var thresholdRateMultiplier = 1;
-var thresholdRateMultiplier =1000 * 1000 * 1000 * 1000;
 var threshold = 0;
 var storednodes=0;
 var proxy_counter = 0;
 var proxy_flag=0;
-//var sum_array={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
 var sum_array={"hpc039":{},"hpc041":{},"hpc042":{},"hpc043":{},"hpc044":{},"hpc046":{},"hpc047":{},"hpc048":{},"hpc049":{},"hpc050":{},"hpc052":{},"hpc054":{},"hpc056":{},"hpc057":{}}
 var traffic_contribution={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0,"hpc046":0,"hpc047":0,"hpc048":0,"hpc049":0,"hpc050":0,"hpc052":0,"hpc054":0,"hpc056":0,"hpc057":0}
-//var graph_elements={};
 var monitoring_rules={};
 var monitor_ids={};
 var global_speed=0;
@@ -23,6 +19,7 @@ function includeJs(jsFilePath) {
 	document.body.appendChild(js);
 }
 
+//Generates random SENSS nodes based on client specifications
 function getRandom(n) {
 	var arr = [];
 	for (var i = 1; i <= myConstClass.number_of_nodes; i++) {
@@ -41,28 +38,10 @@ function getRandom(n) {
     	return result;
 }
 
-
+//Populating current traffic rate at the client
 function populateMonitoringValues(rowId, as_name, data) {
 	if (data.speed=="Not reachable"){
-		sum_array[as_name]=0;
-	    	$("#packet-count-" + rowId).html("N/A");
-    	    	$("#speed-" + rowId).html("N/A");
-            	cy.$("#root_" + as_name).data("name", "N/A").style("line-color", "#996300");
-		proxy_counter=proxy_counter+1;
-		if (proxy_counter==5)
-		{
-			if (proxy_flag==0){
-				proxy_flag=1;
-	        		$.ajax({
-		 			url: BASE_URI + "send_proxy_info",
-            	 			type: "GET",
-           	 			success: function (result) {
-						console.log("Sent information to proxy");
-	            				}
-        				});
-				}
-			}
-    		}
+		console.log("SENSS: SENSS server not reachable");
     	else{
 		if (!(rowId in sum_array[as_name])){
 			sum_array[as_name][rowId]=0;
@@ -82,15 +61,13 @@ function populateMonitoringValues(rowId, as_name, data) {
 		for (var as_name in sum_array){
 			for (var row in sum_array[as_name]){
 				monitoring_rules[row]["speed"]=sum_array[as_name][row];
-				//console.log("AS "+as_name+" row "+row+" speed "+sum_array[as_name][row]+" "+monitoring_rules[row]["speed"]);
 			}
 		}
+
+		//Calculates the shortest path from nodes to SENSS client and estimates the amount of traffic sent to them
 		var edge_speeds={};
 		for (var as_name in graph_elements){
 			edge_speeds[as_name]={};
-			//if (as_name!="hpc052"){
-			//	continue;
-			//}
 			var nodes=graph_elements[as_name].nodes();
 			for(var n=0;n<nodes.length;n++){
 				var node=nodes[n];
@@ -98,10 +75,6 @@ function populateMonitoringValues(rowId, as_name, data) {
 					continue;
 				}
 				var shortest_path=jsnx.bidirectionalShortestPath(graph_elements[as_name],0,node);
-				//if(as_name=="hpc052"){
-				//	console.log("Random: "+as_name+" "+random_nodes);
-				//	console.log("Shortest path 0 and "+node+" "+shortest_path);
-				//}
 				var exists=0;
 				for (var i=0;i<shortest_path.length;i++){
 					var in_node=shortest_path[i];
@@ -109,15 +82,12 @@ function populateMonitoringValues(rowId, as_name, data) {
 						exists=exists+1;
 					}
 				}
-				
 				for(var rid in monitoring_rules){
 					if(monitoring_rules[rid]["src_ip"]==Number(node) && monitoring_rules[rid]["as_name"]==as_name){
 						if(exists>=1){
 							monitoring_rules[rid]["can_block"]=true;
 						}
-						//if(monitoring_rules[rid]["filter"]==false){
 						var node_speed=monitoring_rules[rid]["speed"];
-						//}
 					}
 				}
 				for(var i=0;i<shortest_path.length;i++){
@@ -143,10 +113,9 @@ function populateMonitoringValues(rowId, as_name, data) {
 				}
 			}
 		}
-
 			
-			//Exists 
 
+		//Updates the traffic rates on the edges 
 		for (var as_name in graph_elements){
 			var all_edges=graph_elements[as_name].edges();
 			for (var i=0;i<all_edges.length;i++){
@@ -189,6 +158,8 @@ function populateMonitoringValues(rowId, as_name, data) {
     	$("#all_speed").html(display_threshold(all_speed));
 }
 
+//Detects the signature change in traffic and add filter rules based on the threshold of traffic which the SENSS client is willing to loose
+//By default, an attack is triggered when the threshold of incoming traffic is exceeded beyong 10Gbps. But this could be altered for different testing scenarios
 function auto_detection(){
     	for(var as_name in sum_array){
 		for(var r=1;r<=myConstClass.number_of_nodes;r++){
@@ -201,7 +172,7 @@ function auto_detection(){
     	}
 
 	var attack_flag=0;
-    	if (global_speed/1000000000>27 || filter_on==true){
+    	if (global_speed/1000000000>100 || filter_on==true){
 		attack_flag=1;
     	}
     	else{
@@ -214,11 +185,9 @@ function auto_detection(){
 		if (attack_flag==1){
 			if (monitoring_rules[key]["contribution"]<=threshold){
 				contribution_map[key]=monitoring_rules[key]["contribution"];
-				//console.log("Under Attack "+key+" Old traffic "+monitoring_rules[key]["contribution"]+" New "+contribution);
 			}
 		}else{
 			monitoring_rules[key]["contribution"]=contribution;
-			//console.log("No attack "+monitoring_rules[key]["contribution"]+" "+key+" Speed "+as_speed);
 		}
    	}
 	var new_contribution_map = Object.keys(contribution_map).map(function(key) {
@@ -238,7 +207,6 @@ function auto_detection(){
 			canBlock.push(new_contribution_map[i][0]);
 		}
    	}
-   	//console.log("Can Block "+canBlock+" Total "+legit_loss+" Threshold "+threshold);
    	for (var rowID in monitoring_rules){
 		var monitor_id=monitoring_rules[rowID]["monitor_id"];
 		var as_name=monitoring_rules[rowID]["as_name"];
@@ -254,21 +222,18 @@ function auto_detection(){
             				type: "GET",
             				success: function (result) {
 						monitoring_rules[rowID]["filter"]=false;
-						console.log("Remove filter");
             				}
 				});
 			}
 		}
 		if(canBlock.indexOf(rowID)>-1){
 			if(has_filter==false && can_block_flag==true){
-				//Check if the randomly allocated senss nodes have path to monitoring_rules[rowID][src_ip]
 		        	$.ajax({
 					'async': false,
             				url: BASE_URI + "add_filter&as_name=" + as_name + "&monitor_id=" + monitor_id,
             				type: "GET",
             				success: function (result) {
 						monitoring_rules[rowID]["filter"]=true;
-						console.log("Add filter");
             				}
 				});
 			}
@@ -286,7 +251,7 @@ function auto_detection(){
    	}
 }
 
-
+//Polls the SENSS servers for traffic rates on flows based on monitoring rules which are added
 function poll_stats(as_name, monitor_id, as_monitor_info) {
     	monitoring_rules[random]={};
     	monitoring_rules[random]["as_name"]=as_name;
@@ -298,7 +263,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
 
 	var random = Math.random().toString(36).substring(7);
     	var markup = "<tr id='monitor-row-" + random +"'><td>" + as_name+ "_"+src_ip+"</td>"+
-		     //"<td id='packet-count-" + random + "'></td>"+
 		     "<td id='speed-" + random + "'></td></tr>;"
     	$("#table-monitor").append(markup);
     	var timer = setInterval(function () {
@@ -315,7 +279,6 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
             		},
             		success: function (result) {
 				if (typeof result !== 'undefined') {
-					//console.log(result);
 					var iii=0;
 				}
                 		var resultParsed = JSON.parse(result);
@@ -338,10 +301,9 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
     	var src_ip=as_monitor_info.match.ipv4_src.split(".")[3];
     	monitoring_rules[random]["src_ip"]=Number(src_ip);
 	monitoring_rules[random]["can_block"]=false;
-	console.log("At poll stats");
 }
 
-
+//Creates the traffic rates in readable format
 function display_threshold(int_threshold) {
 	var zeros = parseInt(Math.log(int_threshold) / Math.log(10));
     	if (zeros >= 12) {
@@ -363,7 +325,6 @@ function set_threshold() {
     	if (storedThreshold != null) {
         	threshold = parseInt(storedThreshold);
     	}
-    	//$("#current-threshold").html(display_threshold(threshold));
     	$("#current-threshold").html(threshold+"%");
 }
 
@@ -373,25 +334,20 @@ function senss_nodes() {
         	storednodes = parseInt(storednodes1);
     	}
     	$("#current-nodes").html(storednodes+"%");
-    	//console.log("Stored Nodes "+storednodes);
     	random_nodes=getRandom(Math.floor(Number(storednodes)*myConstClass.number_of_nodes/100));
 }
 
-
+//Adds initial rules for monitoring when the SENSS Client is loaded. Does not add monitoring rules if monitoring rules are already present
 function add_initial_rules(){
 	$.ajax({
         	url: BASE_URI + "get_monitor_ids",
             	type: "GET",
             	success: function (result) {
 			if (result== "{}"){
-				console.log("SIVARAM:Adding rules for the first time")
 				monitor_ids_available=false;
 			        for (var key in sum_array){
 					for (i = 1; i <=myConstClass.number_of_nodes; i++) {
 				                var as_int=key.replace("hpc0","");
-						//if (key!="hpc052"){
-						//	continue;
-						//}
 						var key_array=[key];
                 				var data = {
                         				as_name: key_array,
@@ -406,7 +362,6 @@ function add_initial_rules(){
         	            				monitor_frequency: 1,
 				                    	monitor_duration: 10000
 				                };
-
 				                $.ajax({
                        		 			url: BASE_URI + "add_monitor",
 				                        type: "POST",
@@ -426,24 +381,22 @@ function add_initial_rules(){
 			else{
 				monitor_ids=JSON.parse(result);
 				monitor_ids_available=true;
-				console.log("Skipping to add rules")
 			}
             }
         });
 }
 
 $(document).ready(function () {
-	//console.log("NODES "+myConstClass.number_of_nodes);
-    	//includeJs("js/jsnetworkx.js");
-    	//console.log("GRAPH ELEMENTS "+graph_elements);
     	add_initial_rules();
     	set_threshold();
     	senss_nodes();
     
+	//Sets the threshold of traffic which the SENSS client is willing to loose
     	$("#set-threshold").click(function () {
         	$("#set-threshold-modal").modal('show');
     	});
 
+	//Sets the number of SENSS servers in the experiment
     	$("#set-nodes").click(function () {
         	$("#set-nodes-modal").modal('show');
     	});
