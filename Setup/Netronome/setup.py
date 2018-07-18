@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2016 University of Southern California.
+# Copyright (C) 2018 University of Southern California.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License,
@@ -48,7 +48,7 @@ def install_dependencies(ssh):
 	data=stdout.readlines()
 	stdin, stdout, stderr = ssh.exec_command("/proj/SENSS/SENSS_git/SENSS/Setup/Netronome/install_dependencies.sh")
 	data=stdout.readlines()
-	stdin, stdout, stderr = ssh.exec_command("cd /users/satyaman/ryu/ryu-master; sudo python /users/satyaman/ryu/ryu-master/setup.py install")
+	stdin, stdout, stderr = ssh.exec_command("cd /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ryu/ryu-master; sudo python /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/ryu/ryu-master/setup.py install")
 	data=stdout.readlines()	
 	print "Installed dependencies"
 
@@ -238,9 +238,9 @@ def configure_nodes():
 	two_ports=[]
 	if attack_type=="proxy":
 		f=open("nodes_proxy","r")
-	if attack_type=="ddos":
+	if attack_type=="ddos_with_sig":
 		f=open("nodes_ddos_with_sig","r")
-	if attack_type=="alpha":
+	if attack_type=="ddos_without_sig":
 		f=open("nodes_ddos_without_sig","r")
 		
 	#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self
@@ -257,7 +257,7 @@ def configure_nodes():
 			proxy_ip=line.strip().split(" ")[11]
 		links_to=str(line.strip().split(" ")[5])
 		self=int(line.strip().split(" ")[6])
-		if attack_type=="alpha":
+		if attack_type=="ddos_without_sig":
 			legit_nodes=int(line.strip().split(" ")[11])
 			attack_nodes=int(line.strip().split(" ")[12])
 			total_nodes=legit_nodes+attack_nodes
@@ -268,14 +268,15 @@ def configure_nodes():
 		nodes[node]["links_to"]=links_to
 		nodes[node]["self"]=self
 		nodes[node]["legit_address"]=legit_address
-		if attack_type=="alpha":
+		if attack_type=="ddos_without_sig":
 			nodes[node]["total_nodes"]=total_nodes
 		if number_of_ports==2:
 			two_ports.append(node)
-		if attack_type=="alpha":
+		if attack_type=="ddos_without_sig":
 			nodes[node]["legit_address"]=1
 	f.close()
 
+	user=raw_input("Usename: ").strip()
 	password=getpass.getpass()
 	install={}
 
@@ -289,7 +290,7 @@ def configure_nodes():
 	for node in nodes:
 		ssh = paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-		ssh.connect(node,username="satyaman", password=password, timeout=3)
+		ssh.connect(node,username=user, password=password, timeout=3)
 		ip_1,ip_2,first_octet=return_ips(node)
 		controller_ip=socket.gethostbyname(node)
 		#if node!="hpc057":
@@ -418,7 +419,7 @@ def configure_nodes():
 			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Proxy/constants.php")
 			data=stdout.readlines()
 
-		if attack_type=="alpha" and nodes[node]["node_type"]=="client":
+		if attack_type=="ddos_without_sig" and nodes[node]["node_type"]=="client":
 			string_to_write="const myConstClass = {\n"
         		string_to_write=string_to_write+"number_of_nodes:"+str(nodes[node]["total_nodes"])+"\n"
 			string_to_write=string_to_write+"}"

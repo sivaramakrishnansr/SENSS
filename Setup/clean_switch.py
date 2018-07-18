@@ -1,6 +1,6 @@
 
 #
-# Copyright (C) 2016 University of Southern California.
+# Copyright (C) 2018 University of Southern California.
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License,
