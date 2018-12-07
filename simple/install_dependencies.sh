@@ -19,9 +19,4 @@ sudo apt-get install python-pexpect --assume-yes
 sudo apt-get install python-dateutil --assume-yes
 sudo apt-get install python-termcolor --assume-yes
 sudo apt-get install nload --assume-yes
-sudo pip install /users/satyaman/ryu_dependencies/eventlet-0.15.2-py2.py3-none-any.whl
-sudo pip install /users/satyaman/ryu_dependencies/six-1.9.0-py2.py3-none-any.whl
-sudo dpkg -i /users/satyaman/ryu_dependencies/python-pbr_0.8.2-0ubuntu1_all.deb
-sudo pip install /users/satyaman/ryu_dependencies/netaddr-0.7.18-py2.py3-none-any.whl
-sudo pip install /users/satyaman/ryu_dependencies/stevedore-1.1.0-py2.py3-none-any.whl
-sudo pip install /users/satyaman/ryu_dependencies/oslo.config-1.7.0-py2.py3-none-any.whl
+sudo service apache2 restart

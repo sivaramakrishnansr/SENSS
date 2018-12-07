@@ -16,7 +16,6 @@
 #
 import sys
 import json
-import paramiko
 import getpass
 import socket
 import urllib2
