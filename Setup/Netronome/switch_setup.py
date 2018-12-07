@@ -60,7 +60,7 @@ except:
 
 #Lets set the speed for all ports
 for i in range(1,32):
-	continue
+	#continue
 	#if i!=3:
 	#	continue
 	interface="1/"+str(i)
@@ -103,8 +103,8 @@ for i in range(1,32):
 
 #Lets set the ip address on each interface
 for interface,data in port_mapping.iteritems():
-	if interface!="1/1":
-		continue
+	#if interface!="1/1":
+	#	continue
 	print interface
 	vlan=data["vlan"]
 	switch_ip=data["switch_ip"]
@@ -165,8 +165,8 @@ except:
 	time.sleep(0.75)
 
 for interface,data in port_mapping.iteritems():
-	if interface!="1/1":
-		continue
+	#if interface!="1/1":
+	#	continue
 	print interface
 	asn=data["asn"]
 	server_ip=data["server_ip"]

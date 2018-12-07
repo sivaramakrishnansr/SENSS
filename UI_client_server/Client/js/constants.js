@@ -1,3 +1,3 @@
 const myConstClass = {
-proxy_ip:"50.0.0.1"
+number_of_nodes:4
 }

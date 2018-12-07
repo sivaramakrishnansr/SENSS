@@ -1,19 +1,3 @@
-//
-// Copyright (C) 2018 University of Southern California.
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License,
-// version 2, as published by the Free Software Foundation.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License along
-// with this program; if not, write to the Free Software Foundation, Inc.,
-// 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-//
 
 var threshold = 0;
 var sum_array={"hpc039":{},"hpc041":{},"hpc042":{},"hpc043":{},"hpc044":{},"hpc046":{},"hpc047":{},"hpc048":{},"hpc049":{},"hpc050":{},"hpc052":{},"hpc054":{},"hpc056":{},"hpc057":{}}
@@ -23,11 +7,16 @@ var monitor_ids_available=false;
 
 //Populating current traffic rate at the client
 function populateMonitoringValues(rowId, as_name, data) {
+	if (data=="SENSS not connected"){
+		$("#speed-" + rowId).html("Connection to SENSS \n server not established");
+		return;
+	}
+
+	$("#speed-" + rowId).html(display_threshold(data.speed));
 	if (!(rowId in sum_array[as_name])){
         	sum_array[as_name][rowId]=0;
 	}
 	sum_array[as_name][rowId]=data.speed;
-	$("#speed-" + rowId).html(display_threshold(data.speed));
 	var as_speed=0;
 	for (var key in sum_array[as_name]){
         	as_speed=as_speed+Number(sum_array[as_name][key]);
@@ -96,10 +85,17 @@ function poll_stats(as_name, monitor_id, as_monitor_info) {
 				console.log("Request timed out. Attempting Again..");
                         },
                         success: function (result) {
-	                        var resultParsed = JSON.parse(result);
-        	                if (resultParsed.success) {
-                	                populateMonitoringValues(random, as_name, resultParsed.data);
-                        	}
+				try{
+	                        	var resultParsed = JSON.parse(result);
+        	                	if (resultParsed.success) {
+                	                	populateMonitoringValues(random, as_name, resultParsed.data);				
+
+                        		}
+				}
+				catch{
+                	                	populateMonitoringValues(random, as_name, "SENSS not connected");				
+
+				}
                 },
                  timeout: 2000
                 });

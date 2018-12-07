@@ -25,3 +25,4 @@ sudo dpkg -i /users/satyaman/ryu_dependencies/python-pbr_0.8.2-0ubuntu1_all.deb
 sudo pip install /users/satyaman/ryu_dependencies/netaddr-0.7.18-py2.py3-none-any.whl
 sudo pip install /users/satyaman/ryu_dependencies/stevedore-1.1.0-py2.py3-none-any.whl
 sudo pip install /users/satyaman/ryu_dependencies/oslo.config-1.7.0-py2.py3-none-any.whl
+sudo service apache2 restart

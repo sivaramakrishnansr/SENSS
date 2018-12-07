@@ -60,7 +60,7 @@ def start_ryu(ssh):
 	print "Started RYU controller"
 
 def start_monitor_flows(ssh,multiply,legit_address):
-	stdin, stdout, stderr = ssh.exec_command("screen -d -m sudo python /var/www/html/SENSS/UI_client_server/Server/monitor_flows.py "+str(multiply)+" "+legit_address)
+	stdin, stdout, stderr = ssh.exec_command("screen -d -m sudo python /var/www/html/SENSS/UI_client_server/Server/monitor_flows.py "+str(multiply)+" "+str(legit_address))
 	data=stdout.readlines()
 	print "Started Monitoring flows controller"
 
@@ -248,6 +248,8 @@ def configure_nodes():
 		if "#" in line:
 			continue
 		node=line.strip().split(" ")[0]
+		#if node!="hpc041":
+		#	continue
 		number_of_ports=int(line.strip().split(" ")[1])
 		node_type=line.strip().split(" ")[2]
 		asn=line.strip().split(" ")[3]

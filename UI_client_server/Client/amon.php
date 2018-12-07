@@ -33,7 +33,7 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="client_alpha.php">SENSS-Direct Floods without Signature</a>
+            <a class="navbar-brand" href="client_alpha.php">AMON-SENSS</a>
         </div>
     </div>
 </nav>
@@ -46,12 +46,12 @@
     	<div class="col-sm-4">
         	<h3>Monitoring Table</h3>
     	</div>
-    	<div class="col-sm-4">
+    	<!--<div class="col-sm-4">
 		<br>
      		<p><b>Traffic Threshold: </b><span id="current-threshold"></span> <span class="pull-right">
      		<button type="button" class="btn btn-primary btn-small" name="submit" id="set-threshold">Edit</button></span></p>
      		<br>
-	</div>
+	</div>-->
     	<div class="col-sm-4">
 		<br>
         	<p><b>SENSS nodes: </b><span id="current-nodes"></span> <span class="pull-right"><br>
@@ -121,8 +121,8 @@
     </div>
 </div>
 </body>
-<script src="js/render_network_ddos_without_sig.js"></script>
-<script src="js/script_ddos_without_sig.js"></script>
+<script src="js/render_network_amon.js"></script>
+<script src="js/script_amon.js"></script>
 
 
 </html>

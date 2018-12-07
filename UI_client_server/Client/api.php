@@ -1,22 +1,3 @@
-<!--
-#
-# Copyright (C) 2018 University of Southern California.
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License,
-# version 2, as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-#
--->
-
 <?php
 function generate_request_headers() {
     $clientcert = file_get_contents('/var/www/html/SENSS/UI_client_server/Client/cert/clientcert.pem');
@@ -25,6 +6,25 @@ function generate_request_headers() {
         "Content-Type: application/json",
         "X-Client-Cert: " . $clientcert
     );
+}
+
+//Adding the topology
+//Add filter all used by DDoS with Signature to add filters to all monitoring nodes
+if (isset($_GET["add_topo"])){
+    	$input = file_get_contents("php://input");
+    	$input = json_decode($input, true);
+//if (1){
+/*	$input=array(
+		"as_name"=>"H",
+		"server_url"=>"html",
+		"links_to"=>"asdasd",
+		"self"=>1
+	);*/
+	require_once "db_conf.php";
+	$sql = sprintf("INSERT INTO AS_URLS (as_name, server_url, links_to, self) VALUES ('%s', '%s', '%s', %d)", $input['as_name'], $input['server_url'], $input['links_to'], $input['self']);
+	$conn->query($sql);
+	$conn->commit();
+	return;
 }
 
 //Function used for testing purpose
@@ -273,6 +273,19 @@ if (isset($_GET['add_monitor'])) {
     		}
     		$data_string = json_encode($data_to_send,true);
 
+		//Checking for Sanity
+            	array_push($success_as_name_id, array(
+                	"as_name" => $row['as_name'],
+                	"monitor_id" => $add_monitor_response['monitor_id'],
+			"threshold" => $add_monitor_response['threshold'],
+			"count" => $add_monitor_response['count'])
+            	);
+            	$sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id) VALUES ('%s', '%s', %d, %d, %d)",
+                	$row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id']);
+            	$conn->query($sql);
+		//End checking for sanity
+
+
         	$options = array(
             		'http' => array(
                 	'method' => 'POST',
@@ -283,7 +296,7 @@ if (isset($_GET['add_monitor'])) {
         	$context = stream_context_create($options);
        	 	$add_monitor_response = file_get_contents($url, false, $context);
         	$add_monitor_response = json_decode($add_monitor_response, true);
-        	if ($add_monitor_response['success']) {
+        	/*if ($add_monitor_response['success']) {
             		array_push($success_as_name_id, array(
                 		"as_name" => $row['as_name'],
                 		"monitor_id" => $add_monitor_response['monitor_id'],
@@ -293,7 +306,7 @@ if (isset($_GET['add_monitor'])) {
             		$sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id) VALUES ('%s', '%s', %d, %d, %d)",
                 		$row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id']);
             		$conn->query($sql);
-        	}
+        	}*/
 
     	}
     	$conn->commit();
@@ -514,16 +527,82 @@ if(isset($_GET['remove_filter'])) {
 if(isset($_GET['send_proxy_info'])) {
 	require_once "db_conf.php";
 	require_once "constants.php";
+	$to_do=array();
+	$fh = fopen('filename.txt','r');
+	while ($line = fgets($fh)) {
+		$buffer = str_replace(array("\r", "\n"), '', $line);
+		array_push($to_do,$buffer);
+	}
+	fclose($fh);
+
+
     	$sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
     	$result = $conn->query($sql);
     	$all_urls=array();
    	while ($row = $result->fetch_assoc()) {
 		print_r($row)."\n";
-       	 	$as_name=$row["as_name"];
-        	$monitor_id=$row["monitor_id"];
-		$temp=array($as_name=>$monitor_id);
-		array_push($all_urls,$temp);
+		if (in_array($row["as_name"], $to_do)) {
+       	 		$as_name=$row["as_name"];
+        		$monitor_id=$row["monitor_id"];
+			$temp=array($as_name=>$monitor_id);
+			array_push($all_urls,$temp);
+		}
    	}
+	print_r($all_urls);
+       /* $data_string = json_encode($all_urls,true);
+
+        $context = stream_context_create($options);
+        $response = file_get_contents($url, false, $context);
+        $options = array(
+            'http' => array(
+                'method' => 'GET',
+                'header' => generate_request_headers(),
+		'content' => $data_string
+            )
+        );
+	print_r($options);
+        $context = stream_context_create($options);
+        $add_monitor_response = file_get_contents(PROXY_URL, false, $context);
+	echo $add_monitor_response."\n";
+        $add_monitor_response = json_decode($add_monitor_response, true);
+	print "Got response\n";
+	print_r($add_monitor_response);*/
+	return;
+}
+
+
+
+//Sends information to SENSS proxy when SENSS proxy is not reachable
+if(isset($_GET['send_proxy_info_amon'])) {
+        require_once "db_conf.php";
+        require_once "constants.php";
+        $to_do=array();
+        $fh = fopen('alerts.txt','r');
+        while ($line = fgets($fh)) {
+                $buffer = str_replace(array("\r", "\n"), '', $line);
+                array_push($to_do,$buffer);
+        }
+        fclose($fh);
+
+
+        $sql = "SELECT as_name,monitor_id,match_field FROM MONITORING_RULES";
+        $result = $conn->query($sql);
+        $all_urls=array();
+        while ($row = $result->fetch_assoc()) {
+                        $as_name=$row["as_name"];
+                        $monitor_id=$row["monitor_id"];
+                        foreach($to_do as $src_ip) {
+                                echo $src_ip." ".$row["match_field"]."\n";
+                                if (strpos($row["match_field"], $src_ip) !== false)
+                                {
+                                        $temp=array($as_name=>$monitor_id);
+                                        array_push($all_urls,$temp);
+                                }
+                        }
+        }
+        print_r($all_urls);
+        echo "\n";
+        print_r($to_do);
 	print_r($all_urls);
         $data_string = json_encode($all_urls,true);
 

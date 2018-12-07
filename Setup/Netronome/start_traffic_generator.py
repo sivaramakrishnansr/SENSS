@@ -80,6 +80,8 @@ def start_attack():
 
 		if type=="ddos_without_sig":
 	                node=line.strip().split(" ")[0]
+			if node!="hpc057" and node!="hpc050":
+				continue
         	        number_of_ports=int(line.strip().split(" ")[1])
                 	node_type=line.strip().split(" ")[2]
                 	asn=line.strip().split(" ")[3]
@@ -122,18 +124,20 @@ def start_attack():
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         	ssh.connect(node,username=user, password=password, timeout=3)
 		if type=="proxy" or type=="ddos_with_sig":
+			print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]+" "+nodes[node]["legit_address"]
 			stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]+" "+nodes[node]["legit_address"]) 
-			#print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+nodes[node]["server_mac"]+" "+nodes[node]["server_ip"]+" "+nodes[node]["legit_traffic"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]+" "+nodes[node]["legit_address"]
 			print "Attack IP: ",attack_ip
 			print "Attack Duration: ",nodes[node]["attack_duration"]
 			print "Attack Rate: ",nodes[node]["attack_rate"]
 			print
 		if type=="ddos_without_sig":
+			print "sudo /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+nodes[node]["asn"]+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+ nodes[node]["server_mac"]+" "+nodes[node]["legit_sources"]+" "+nodes[node]["attack_sources"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]
 			stdin,stdout,stderr = ssh.exec_command("sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+nodes[node]["asn"]+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+ nodes[node]["server_mac"]+" "+nodes[node]["legit_sources"]+" "+nodes[node]["attack_sources"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"])
-			#print "sudo -b /proj/SENSS/SENSS_git/SENSS/Setup/Netronome/trafgen.py "+type+" "+nodes[node]["asn"]+" "+attack_ip+" "+str(nodes[node]["attack_duration"])+" "+nodes[node]["attack_rate"]+" "+nodes[node]["switch_mac"]+" "+ nodes[node]["server_mac"]+" "+nodes[node]["legit_sources"]+" "+nodes[node]["attack_sources"]+" "+nodes[node]["legit_traffic_rate"]+" "+nodes[node]["legit_traffic_duration"]
 			print "Attack IP: ",attack_ip
+			print "Source IP: ",node
 			print "Attack Duration: ",nodes[node]["attack_duration"]
 			print "Attack Rate: ",nodes[node]["attack_rate"]
+
 			print
 
 if __name__ == '__main__':
