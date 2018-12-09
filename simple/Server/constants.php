@@ -1,0 +1,5 @@
+<?php
+const CONTROLLER_BASE_URL = "http://hpc052:8080",
+SWITCH_DPID = 91487349082,
+SENSS_AS = "hpc052";
+

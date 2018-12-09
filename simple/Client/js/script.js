@@ -1,4 +1,4 @@
-
+BASE_URI = "api.php?";
 //var thresholdRateMultiplier = 1;
 var thresholdRateMultiplier =1000 * 1000 * 1000 * 1000;
 var threshold = 0;
@@ -10,6 +10,44 @@ var traffic_contribution={"hpc039":0,"hpc041":0,"hpc042":0,"hpc043":0,"hpc044":0
 var monitor_ids={};
 var global_speed=0;
 var monitor_ids_available=false;
+
+
+function populatelogValues(data,rowId,match) {
+        //$("#as-name-" + rowId).html(data.as_name);
+        $("#request-type-" + rowId).html(data.request_type);
+        $("#match-" + rowId).html(data.match_field);
+        $("#request-count-" + rowId).html(data.count_request_type);
+}
+
+function get_log_stats() {
+        var check_random=[];
+        var timer = setInterval(function () {
+                $.ajax({
+                        url: "api.php?get_client_logs",
+                        type: "GET",
+                        success: function (result) {
+                                var resultParsed = JSON.parse(result);
+				console.log(resultParsed);
+                                if (resultParsed.success) {
+                                        for (var i = 0; i < resultParsed.data.length; i++) {
+                                                 var random = resultParsed.data[i].as_name+"_"+resultParsed.data[i].request_type.replace(/\s/g, '');
+                                                 if (check_random.indexOf(random)==-1){
+                                                        check_random.push(random);
+                                                         var markup = "<tr id='monitor-row-" + random +"'>" +
+                                                                //"<td id='as-name-" + random + "'></td>" +
+                                                                "<td id='request-type-" + random + "'></td>" +
+                                                                "<td id='match-" + random + "'><pre></pre></td>" +
+                                                                "<td id='request-count-" + random + "'><pre></pre></td>";
+                                                        $("#table-monitor").append(markup);
+                                                }
+                                                populatelogValues(resultParsed.data[i],random);
+                                        }
+                                }
+                        }
+                });
+        }, (1* 1000)); // rule[2] is actual frequency with which the backend system will update the database/
+}
+
 
 function populateMonitoringValues(rowId, as_name, data) {
     if (data.speed=="Not reachable"){
@@ -263,6 +301,7 @@ function get_monitor_ids(){
 $(document).ready(function () {
     get_monitor_ids();
     set_threshold();
+    get_log_stats();
     $("#add-monitoring-rule").click(function () {
         $("#add-monitor-modal").modal('show');
     });

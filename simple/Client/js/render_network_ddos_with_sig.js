@@ -125,7 +125,6 @@ function renderInitialTopology(topology) {
             monitor_id: rule["monitor_id"]
         };
 
-        //poll_stats(rule[0], rule[4], JSON.parse(rule[1]));
         poll_stats(rule["as_name"], rule["monitor_id"], JSON.parse(rule["match_field"]));
 
         /*var random = Math.random().toString(36).substring(7);

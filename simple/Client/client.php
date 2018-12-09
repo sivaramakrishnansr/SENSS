@@ -33,8 +33,9 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="client.php">Add topo</a>
+            <a class="navbar-brand" href="client.php">Setup</a>
             <a class="navbar-brand" href="ddos_with_sig.php">SENSS Client</a>
+            <a class="navbar-brand" href="logs.php">Logs</a>
         </div>
     </div>
 </nav>
@@ -42,17 +43,33 @@
 
 <body>
 
-<div id="network-canvas" style="height: 500px; width: 1080px; margin: 0 auto; border: 1px solid black;"></div>
 
 <br />
 <br />
 <br />
 <div class="container inner-container">
+    <h2> Add Topo</h2>
+    <div class="row">
+	    <div id="network-canvas" style="height: 500px; width: 1080px; margin: 0 auto; border: 1px solid black;"></div>
+	</div>
+    <br />
     <div class="row">
     	<div class="col-sm-4">
-     		<button type="button" class="btn btn-primary btn-small" name="submit" id="add-nodes">Add node</button></span></p>
+     		<button type="button" class="btn btn-primary btn-small" name="submit" id="add-nodes">Add new SENSS server</button></span></p>
 	</div>
     </div>
+    <h2> Upload client certificate</h2>
+    <div class="row">
+    	<div class="col-sm-4">
+		<form action="upload.php" method="post" enctype="multipart/form-data">
+			<br />
+    				<input type="file" class="custom-file-input" name="fileToUpload" id="fileToUpload">
+				<br />
+    				<button type="submit" class="btn btn-primary btn-small" value="Upload Image" name="submit">Upload</button>
+		</form>
+	</div>
+</div>
+
 </div>
 
 <div id="set-threshold-modal" class="modal fade" role="dialog" aria-hidden="true">
@@ -60,7 +77,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Add Node</h4>
+                <h4 class="modal-title">Add new SENSS server</h4>
             </div>
 
             <div class="modal-body" style="height:400px;">

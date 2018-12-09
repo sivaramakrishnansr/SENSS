@@ -34,8 +34,9 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="client.php">Add topo</a>
+            <a class="navbar-brand" href="client.php">Setup</a>
             <a class="navbar-brand" href="ddos_with_sig.php">SENSS Client</a>
+            <a class="navbar-brand" href="logs.php">Logs</a>
         </div>
     </div>
 </nav>

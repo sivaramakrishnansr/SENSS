@@ -39,6 +39,8 @@
 </nav>
 <body>
 
+
+
 <div id="network-canvas" style="height: 500px; width: 1080px; margin: 0 auto; border: 1px solid black;"></div>
 
 <div class="container inner-container">
@@ -47,6 +49,13 @@
      		<button type="button" class="btn btn-primary btn-small" name="submit" id="add-nodes">Add node</button></span></p>
 	</div>
     </div>
+
+<form action="upload.php" method="post" enctype="multipart/form-data">
+    Select image to upload:
+    <input type="file" name="fileToUpload" id="fileToUpload">
+    <input type="submit" value="Upload Image" name="submit">
+</form>
+
 </div>
 
 <div id="set-threshold-modal" class="modal fade" role="dialog" aria-hidden="true">

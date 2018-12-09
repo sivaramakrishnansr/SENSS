@@ -63,6 +63,13 @@ if(isset($_GET['check'])){
 }
 
 
+if (isset($_GET['get_client_logs'])) {
+                require_once "get_client_logs.php";
+                $data = get_server_logs();
+                http_response_code(200);
+                echo json_encode($data, true);
+                return;
+}
 if (isset($_GET['topology'])) {
 	$topology = array(
         	'self' => array(),
@@ -172,16 +179,25 @@ if (isset($_GET["add_filter_all"])){
             		);
 		}
     	}
+
     	foreach ($added_filters as $as_name){
 		$sql = "UPDATE MONITORING_RULES SET filter='add_filter' WHERE as_name = '" . $as_name . "'";
     	    	$result = $conn->query($sql);
             	$conn->commit();
+
+		$request_type="Add filter all";
+        	$sql = sprintf("INSERT INTO CLIENT_LOGS (as_name,request_type) VALUES
+                	  ('%s','%s')",$as_name,$request_type);
+        	$conn->query($sql);
+        	$conn->commit();
+
 	}
 
     	$responses=array();
     	$responses["sucess"] = $success_as_name_id;
     	$responses["failed"] = $failed_as_name_id;
     	echo json_encode($responses, true);
+
 
     	return;
 }
@@ -272,6 +288,11 @@ if (isset($_GET['add_monitor'])) {
         		}
     		}
     		$data_string = json_encode($data_to_send,true);
+
+
+		$request_type="Add monitor";
+        	$sql = sprintf("INSERT INTO CLIENT_LOGS (as_name,request_type,match_field) VALUES ('%s','%s','%s')",$row['as_name'],$request_type,$data_string);
+        	$conn->query($sql);
 
 		//Checking for Sanity
             	array_push($success_as_name_id, array(
@@ -373,6 +394,10 @@ if(isset($_GET['remove_monitor'])) {
     	$conn->query($sql);
     	$conn->commit();
 
+		$request_type="Remove monitor";
+        	$sql = sprintf("INSERT INTO CLIENT_LOGS (as_name,request_type) VALUES ('%s','%s')",$as_name,$request_type);
+        	$conn->query($sql);
+
     	$response = file_get_contents($url, false, $context);
     	$httpcode = http_response_code();
     	if ($httpcode == 200) {
@@ -464,6 +489,12 @@ if(isset($_GET['add_filter'])) {
 		"threshold" => $response["threshold"],
 		"count" => $response["count"]
 	),true);
+
+	$request_type="Add filter";
+        $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name,request_type) VALUES('%s','%s')",$as_name,$request_type);
+        $conn->query($sql);
+        $conn->commit();
+
     	return;
 }
 
@@ -519,6 +550,11 @@ if(isset($_GET['remove_filter'])) {
 		"success" => true,
 		"as_name" => $response["as_name"]
 	),true);
+
+	$request_type="Remove filter";
+        $sql = sprintf("INSERT INTO CLIENT_LOGS (as_name,request_type) VALUES ('%s','%s')",$as_name,$request_type);
+        $conn->query($sql);
+        $conn->commit();
 
     	return;
 }
