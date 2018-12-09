@@ -110,7 +110,7 @@
             </div>
 
             <div class="modal-footer">
-                <div id="add-nodes-button" class="btn btn-success">Add node</div>
+                <div id="add-nodes-button" class="btn btn-success">Add</div>
             </div>
         </div>
     </div>
