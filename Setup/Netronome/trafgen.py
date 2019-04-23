@@ -8,7 +8,7 @@ import sys
 #Command line arguments
 number_of_ports=1
 type=sys.argv[1]
-if type=="ddos_with_sig" or type=="proxy":
+if type=="ddos_with_sig" or type=="proxy" or type=="amon_proxy":
 	attack_ip=sys.argv[2]
 	attack_duration=int(sys.argv[3])
 	attack_rate=sys.argv[4]
@@ -129,6 +129,47 @@ if type=="proxy" or type=="ddos_with_sig":
 
 
 
+if type=="amon_proxy":
+	#range 0 src ip 52.0.0.1 52.0.0.1 52.0.0.3 0.0.0.1
+
+	#child.sendline('range 1 src ip '+legit_traffic_start+' '+source_ip+' '+legit_traffic_end+' 0.0.0.1')
+	child.sendline('range 0 src ip '+source_ip+' '+source_ip+' '+source_ip+' 0.0.0.0')
+	print 'range 0 src ip '+source_ip+' '+source_ip+' '+source_ip+' 0.0.0.0'
+
+	#range 0 dst ip 57.0.0.1 57.0.0.1 57.0.0.1 0.0.0.0
+	child.sendline('range 0 dst ip '+attack_ip+" "+attack_ip+" "+attack_ip+" 0.0.0.0")
+	print 'range 0 dst ip '+attack_ip+" "+attack_ip+" "+attack_ip+" 0.0.0.0"
+	#range 0 src mac fa:07:ad:ad:84:fc fa:07:ad:ad:84:fc fa:07:ad:ad:84:fc 00:00:00:00:00:00
+	child.sendline('range 0 src mac '+server_mac+" "+server_mac+" "+server_mac+" 00:00:00:00:00:00")
+	print 'range 0 src mac '+server_mac+" "+server_mac+" "+server_mac+" 00:00:00:00:00:00"
+	#range 0 dst mac 7c:fe:90:f3:a1:41 7c:fe:90:f3:a1:41 7c:fe:90:f3:a1:41 00:00:00:00:00:00
+	child.sendline('range 0 dst mac '+switch_mac+" "+switch_mac+" "+switch_mac+" 00:00:00:00:00:00")
+	print 'range 0 dst mac '+switch_mac+" "+switch_mac+" "+switch_mac+" 00:00:00:00:00:00"
+	#range 0 size  1500 1500 1500 0
+
+	child.sendline('range 0 size 1500 1500 1500 0')	
+	print 'range 0 size 1500 1500 1500 0'
+	child.sendline('range 0 src port 1 1 256 1')
+	print 'range 0 src port 1 1 256 1'
+	child.sendline('range 0 dst port 15713 15713 15713 0')
+	print 'range 0 dst port 15713 15713 15713 0'
+	child.sendline('set 0 rate '+str(attack_rate))
+	print 'set 0 rate '+str(attack_rate)
+	#child.sendline('set 0 rate '+str(attack_rate))
+	child.sendline('range 0 proto udp')
+	print 'range 0 proto udp'
+	child.sendline('enable 0 range')
+	print 'enable 0 range'
+	print "Starting attack"
+	child.sendline('start 0')
+	time.sleep(attack_duration)
+	#time.sleep(1000)
+	child.sendline('stop 0')
+	#if legit_sources>=1:
+	#	child.sendline('stop 1')
+	child.sendline('quit')
+
+
 
 if type=="ddos_without_sig":
 	#range 0 src ip 52.0.0.1 52.0.0.1 52.0.0.3 0.0.0.1
@@ -150,9 +191,9 @@ if type=="ddos_without_sig":
 	#range 0 size  1500 1500 1500 0
 
 	child.sendline('range 0,1 size 1500 1500 1500 0')	
-	child.sendline('range 0 src port 11 11 11 0')
+	child.sendline('range 0 src port 1 256 1 1')
 	child.sendline('range 0 dst port 15713 15713 15713 0')
-	child.sendline('range 1 src port 11 11 11 0')
+	child.sendline('range 1 src port 1 256 1 1')
 	child.sendline('range 1 dst port 15713 15713 15713 0')
 	print "Legit traffic rate",legit_traffic_rate,"Attack rate",attack_rate
 	child.sendline('set 0 rate '+str(attack_rate))

@@ -1,3 +1,3 @@
 const myConstClass = {
-number_of_nodes:4
+number_of_nodes:7
 }

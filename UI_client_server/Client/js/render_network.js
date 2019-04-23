@@ -1,6 +1,11 @@
 
 BASE_URI = "api.php?";
 var graph_elements={};
+var node_names=["AboveNet", "AGIS", "ANS", "Bandcon", "BBNplanet", "Bestel", "BTN", "Claranet" ,"Cogent", "DT", "Epoch", "GetNet", "IBM", "iSTAR", "Netrail", "OTEGlobe", "PalmettoNet", "Quest", "Sprint", "Tinet", "ESnet", "Heanet", "LATNET", "NSF", "Zamren"]
+var node_index_counter=0;
+var node_mapper={};
+var node_name;
+var root_name;
 
 function populateMonitoringTable(nodes) {
     var selectOptionsMarkup = "";
@@ -36,11 +41,27 @@ function renderInitialTopology(topology) {
     topology.nodes.forEach(function (node) {
 	//console.log(node);
         if (topology.self.indexOf(node) > -1) {
+	    if (!(node in node_mapper)){
+			node_mapper[node]=node_names[node_index_counter];
+			node_index_counter++;
+	    }
+	    node_name=node_mapper[node];
             nodes.push({data: {id: node, color: 'yellow', border: 'black'}});
+            //nodes.push({data: {id: node_name, color: 'yellow', border: 'black'}});
         } 
 	else {
+	    if (!(node in node_mapper)){
+			node_mapper[node]=node_names[node_index_counter];
+			node_index_counter++;
+	    }
+	    node_name=node_mapper[node];
+	    
             nodes.push({data: {id: node, color: 'gray', border: 'black'}});
+            //nodes.push({data: {id: node_name, color: 'gray', border: 'black'}});
+
 	    var G = jsnx.binomialGraph(myConstClass.number_of_nodes+1,0.3);
+	    console.log("Geeting the graph items");
+	    console.log(G);
             for(var i=1;i<=myConstClass.number_of_nodes;i++){
             	if(jsnx.hasPath(G, {source: 0, target: i})==false){
                 	G.addEdge(0,i);
@@ -50,10 +71,19 @@ function renderInitialTopology(topology) {
 	    var all_nodes=G.nodes();
 	    for (var i=0;i<all_nodes.length;i++){
 		    var sub_node=node+"_"+all_nodes[i];
+		    if (!(sub_node in node_mapper)){
+			node_mapper[sub_node]=node_names[node_index_counter];
+			node_index_counter++;
+	    	     }
+		    node_name=node_mapper[sub_node];
 	            nodes.push({data: {id: sub_node, color: 'gray', border: 'black'}});
+	            //nodes.push({data: {id: node_name, color: 'gray', border: 'black'}});
 	    }
             topology.self.forEach(function (root) {
+		root_name=node_mapper[root];
+		node_name=node_mapper[node];		
                 edges.push({data: {id: "root_" + node, name: "", source: root, target: node}});
+                //edges.push({data: {id: "root_" + node, name: "", source: root_name, target: node_name}});
             });
 	    var all_edges=G.edges();
 	    for (var i=0;i<all_edges.length;i++){
@@ -68,9 +98,15 @@ function renderInitialTopology(topology) {
 				max_edge=sub_edge[1];
 				min_edge=sub_edge[0];
 			}
+			root_name=node_mapper[node+"_"+min_edge];
+			node_name=node_mapper[node+"_"+max_edge];
 	                edges.push({data: {id: node+"_"+min_edge+"_"+max_edge, name: "", source: node+"_"+min_edge, target: node+"_"+max_edge}});
+	                //edges.push({data: {id: node+"_"+min_edge+"_"+max_edge, name: "", source: root_name, target: node_name}});
 	    }
+	    root_name=node_mapper[node+"_"+0];
+	    node_name=node_mapper[node];
 	    edges.push({data: {id: node+"_"+node+"_"+0, name: "", source: node+"_"+0, target: node}});
+	    //edges.push({data: {id: node+"_"+node+"_"+0, name: "", source: root_name, target: node_name}});
 
         }
     });

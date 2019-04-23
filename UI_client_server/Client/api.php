@@ -1,4 +1,19 @@
 <?php
+function display_threshold($int_threshold) {
+        $zeros = log($int_threshold) / log(10);
+        if ($zeros >= 12) {
+                return round($int_threshold / pow(10, 12),2)." TBps";
+        } else if ($zeros >= 9) {
+                return round($int_threshold / pow(10, 9),2)." GBps";
+        } else if ($zeros >= 6) {
+                return round($int_threshold / pow(10, 6),2)." MBps";
+        } else if ($zeros >= 3) {
+                return round($int_threshold / pow(10, 3),2)." KBps";
+        } else {
+                return $int_threshold." Bps";
+        }
+}
+
 function generate_request_headers() {
     $clientcert = file_get_contents('/var/www/html/SENSS/UI_client_server/Client/cert/clientcert.pem');
     $clientcert = base64_encode($clientcert);
@@ -28,23 +43,22 @@ if (isset($_GET["add_topo"])){
 }
 
 //Function used for testing purpose
-if(isset($_GET['check'])){
+//if(isset($_GET['check'])){
+if(1){
     	require_once "db_conf.php";
     	$sql = "SELECT as_name,monitor_id FROM MONITORING_RULES";
     	$result = $conn->query($sql);
     	$all_urls=array();
     	while ($row = $result->fetch_assoc()) {
-		print_r($row)."\n";
        	 	$as_name=$row["as_name"];
         	$monitor_id=$row["monitor_id"];
 		$temp=array($as_name=>$monitor_id);
 		array_push($all_urls,$temp);
    	}
-	print_r($all_urls);
     	$url = "http://56.0.0.1/SENSS/UI_client_server/Proxy/api.php?action=proxy_info";
+    	$url = "http://56.0.0.1/SENSS/UI_client_server/Proxy/api.php?action=get_nonce";
         $data_string = json_encode($all_urls,true);
 
-        $context = stream_context_create($options);
         $response = file_get_contents($url, false, $context);
         $options = array(
             'http' => array(
@@ -53,7 +67,6 @@ if(isset($_GET['check'])){
 		'content' => $data_string
             )
         );
-	print_r($options);
         $context = stream_context_create($options);
         $add_monitor_response = file_get_contents($url, false, $context);
 	echo $add_monitor_response."\n";
@@ -74,12 +87,12 @@ if (isset($_GET['topology'])) {
     	require_once "db_conf.php";
     	$sql = "SELECT as_name, links_to, self from AS_URLS";
     	$result = $conn->query($sql);
+
     	while ($row = $result->fetch_assoc()) {
         	if ($row['self'] == 1) {
             		array_push($topology['self'], $row['as_name']);
       		 }
         	array_push($topology['nodes'], $row['as_name']);
-
       	  	if ($row['links_to'] == "") {
             		continue;
         	}
@@ -250,11 +263,12 @@ if (isset($_GET['add_monitor'])) {
     	$success_as_name_id = array();
     	require_once "db_conf.php";
 
-    	$sql = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
-    	$result = $conn->query($sql);
+    	$sql_1 = "SELECT as_name, server_url FROM AS_URLS WHERE as_name in ('" . join("','", $input['as_name']) . "')";
+    	$result = $conn->query($sql_1);
+	$reached=0;
     	while ($row = $result->fetch_assoc()) {
         	$url = $row['server_url'] . "?action=add_monitor";
-		$temp=$row['as_name'];
+		$as_name=$row['as_name'];
 		if ($input['match']['tcp_src']!=NULL || $input['match']['tcp_dst']!=NULL){
 			$input['match']['ip_proto']=6;
 		}
@@ -264,28 +278,17 @@ if (isset($_GET['add_monitor'])) {
 		$data_to_send = array(
         		'frequency' => $input['monitor_frequency'],
         		'end_time' =>$monitoring_end_time,
-        		'match' => array()
+        		'match' => array(),
+			'priority' => $input['priority']
     		);
     		foreach ($input['match'] as $key => $value) {
         		if ($value != "") {
             			$data_to_send['match'][$key] = $value;
         		}
     		}
+		//Note for priority
+		$match_to_send=$data_to_send["match"];
     		$data_string = json_encode($data_to_send,true);
-
-		//Checking for Sanity
-            	array_push($success_as_name_id, array(
-                	"as_name" => $row['as_name'],
-                	"monitor_id" => $add_monitor_response['monitor_id'],
-			"threshold" => $add_monitor_response['threshold'],
-			"count" => $add_monitor_response['count'])
-            	);
-            	$sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id) VALUES ('%s', '%s', %d, %d, %d)",
-                	$row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id']);
-            	$conn->query($sql);
-		//End checking for sanity
-
-
         	$options = array(
             		'http' => array(
                 	'method' => 'POST',
@@ -296,25 +299,36 @@ if (isset($_GET['add_monitor'])) {
         	$context = stream_context_create($options);
        	 	$add_monitor_response = file_get_contents($url, false, $context);
         	$add_monitor_response = json_decode($add_monitor_response, true);
-        	/*if ($add_monitor_response['success']) {
+        	if ($add_monitor_response['success']) {
+			$reached=1;
             		array_push($success_as_name_id, array(
                 		"as_name" => $row['as_name'],
                 		"monitor_id" => $add_monitor_response['monitor_id'],
 				"threshold" => $add_monitor_response['threshold'],
 				"count" => $add_monitor_response['count'])
             		);
-            		$sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id) VALUES ('%s', '%s', %d, %d, %d)",
-                		$row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id']);
+			$monitor_type=$input["monitor_type"];
+            		$sql = sprintf("INSERT INTO MONITORING_RULES (as_name, match_field, frequency, end_time, monitor_id, type) VALUES ('%s', '%s', %d, %d, %d, '%s')",
+                		$row['as_name'], $data_string, $input['monitor_frequency'], $monitoring_end_time, $add_monitor_response['monitor_id'], $monitor_type);
             		$conn->query($sql);
-        	}*/
 
+			$request_type="Monitoring rule";
+			$current_time=date("D M d, Y G:i");
+			$sql = sprintf("INSERT INTO CLIENT_LOGS (request_type, as_name, match_field, time, monitor_id) VALUES ('%s', '%s', '%s', '%s', %d)",
+					$request_type, $as_name, $data_string, $current_time, $add_monitor_response['monitor_id']);
+			$conn->query($sql);
+        	}
     	}
     	$conn->commit();
-    	$response = array(
+	$response = array(
 		'success' => true,
-        	'as_name_id' => $success_as_name_id,
-        	'match' => $data_to_send
-    	);
+		'as_name_id' => $success_as_name_id,
+		'match' => $data_to_send,
+		'reached' =>$reached,
+		'response' => $add_monitor_response['success'],
+		'type' => $monitor_type,
+		'sql' => $match_to_send
+	);
 
     	http_response_code(200);
     	echo json_encode($response);
@@ -331,7 +345,10 @@ if (isset($_GET['get_monitor_ids'])) {
     	while ($row = $result->fetch_assoc()) {
 		$as_name=$row["as_name"];
 		$monitor_id=$row["monitor_id"];
-		$data_to_send[$as_name]=$monitor_id;
+		$monitor_type=$row["monitor_type"];
+		$data_to_send[$as_name]=array();
+		$data_to_send[$as_name]["monitor_id"]=$monitor_id;
+		$data_to_send[$as_name]["monitor_type"]=$monitor_type;
     	}
     	if (empty($data_to_send)) {
 		echo "{}";
@@ -340,6 +357,55 @@ if (isset($_GET['get_monitor_ids'])) {
     	echo json_encode($data_to_send,true);
     	return;
 }
+
+//Returns AMON SENSS data
+if (isset($_GET['get_amon_data'])) {
+    	require_once "db_conf.php";
+    	$sql = "SELECT id,as_name,match_field,frequency,monitor_duration from AMON_SENSS WHERE type not like 'done'";
+    	$result = $conn->query($sql);
+    	$data_to_send=array();
+	$counter=0;
+    	while ($row = $result->fetch_assoc()) {
+		$id=$row["id"];
+		$as_name=$row["as_name"];
+		$match_field=$row["match_field"];
+		$frequency=$row["frequency"];
+		$monitor_duration=$row["monitor_duration"];
+		$data_to_send[$counter]=array();
+		$data_to_send[$counter]["id"]=$id;
+		$data_to_send[$counter]["as_name"]=$as_name;
+		$data_to_send[$counter]["match_field"]=$match_field;
+		$data_to_send[$counter]["frequency"]=$frequency;
+		$data_to_send[$counter]["monitor_duration"]=$monitor_duration;
+		$counter=$counter+1;
+    	}
+    	if (empty($data_to_send)) {
+		echo "{}";
+		return;
+    	}
+    	echo json_encode($data_to_send,true);
+    	return;
+}
+
+if (isset($_GET['update_amon'])) {
+    	require_once "db_conf.php";
+    	$input = file_get_contents("php://input");
+    	$input = json_decode($input, true);
+	if($input["table"]=="MONITORING_RULES"){
+		$sql = sprintf("UPDATE MONITORING_RULES SET message='%s' WHERE monitor_id=%d AND as_name='%s'",$input["message"],(int)$input["id"],$input["as_name"]);
+	    	$result = $conn->query($sql);
+	}
+	if($input["table"]=="AMON_SENSS"){
+		$sql = sprintf("UPDATE AMON_SENSS SET type='done' WHERE as_name='%s'",$input["as_name"]);
+	    	$result = $conn->query($sql);
+	}
+	$conn->commit();
+	$response=array();
+	$response["Done"]=$sql;
+    	echo json_encode($response);
+    	return;
+}
+
 
 
 //Removes monitoring rule
@@ -406,13 +472,77 @@ if (isset($_GET['get_monitor'])) {
         	)
     	);
 
+
     	$context = stream_context_create($options);
     	$response = file_get_contents($url, false, $context);
+	$response = json_decode($response, true);
+    	//$sql = "SELECT message FROM MONITORING_RULES WHERE monitor_id = '" . $monitor_id . "' AND as_name='".$as_name."'";
+    	//$result = $conn->query($sql);
+	//$message= $result->fetch_assoc()["message"];
+
+	$response= json_encode($response,true);
     	$httpcode = http_response_code();
     	if ($httpcode == 200) {
         	echo $response;
+		$response = json_decode($response, true);
+		$request_type="Monitoring stats";
+		$current_time=date("D M d, Y G:i");
+		$speed=display_threshold($response["data"]["speed"]);
+		$sql = sprintf("INSERT INTO CLIENT_LOGS (request_type, as_name, time, monitor_id, speed) VALUES ('%s', '%s', '%s', %d, '%s')",
+			$request_type, $as_name, $current_time, $monitor_id, $speed);
+		$conn->query($sql);
     	}
 }
+
+if(isset($_GET['get_messages'])) {
+    	require_once "db_conf.php";
+    	$sql = "SELECT as_name,message FROM MONITORING_RULES WHERE type='user'";
+    	$result = $conn->query($sql);
+	$response=array();
+   	while ($row = $result->fetch_assoc()) {
+       	 	$as_name=$row["as_name"];
+        	$message=$row["message"];
+		$response[$as_name]=$message;
+   	}
+	$response=json_encode($response,true);
+	echo $response;
+
+}
+
+//markhere
+if(isset($_GET['get_monitor_id_on_filter'])) {
+	//$check=array(2048, "57.0.0.1", "52.0.0.2");
+        require_once "db_conf.php";
+        require_once "constants.php";
+    	$input = file_get_contents("php://input");
+    	$input = json_decode($input, true);
+	$check=$input["matches"];
+        $sql = "SELECT as_name,monitor_id,match_field FROM MONITORING_RULES";
+        $result = $conn->query($sql);
+	$counter=0;
+        $all_urls=array();
+        while ($row = $result->fetch_assoc()) {
+		$counter=$counter+1;
+		$all_url[$counter]=$row;
+		$as_name=$row["as_name"];
+		$monitor_id=$row["monitor_id"];
+		$match_field=json_decode($row["match_field"],true);
+		$match=$match_field["match"];
+		$total=0;
+		foreach($match as $key){
+			if (in_array($key,$check)){
+				$total=$total+1;
+			}
+		}
+		if($total==count($check)){
+			$all_urls[$as_name]=$monitor_id;
+		}
+        }
+	echo json_encode($all_urls,true);
+}
+
+
+
 
 //Adds traffic filter on existing monitoring rule
 if(isset($_GET['add_filter'])) {
@@ -439,7 +569,6 @@ if(isset($_GET['add_filter'])) {
     	);
     	$context = stream_context_create($options);
     	$response = file_get_contents($url, false, $context);
-    	echo $response."\n";
     	$response = json_decode($response,true);
     	$httpcode = http_response_code();
     	http_response_code($httpcode);
@@ -456,6 +585,13 @@ if(isset($_GET['add_filter'])) {
 
    	$sql = "UPDATE MONITORING_RULES SET filter='add_filter' WHERE as_name = '" . $as_name . "'";
     	$result = $conn->query($sql);
+
+	$request_type="Add filter";
+	$current_time=date("D M d, Y G:i");
+	$sql = sprintf("INSERT INTO CLIENT_LOGS (request_type, as_name, time) VALUES ('%s', '%s', '%s')",
+			$request_type, $as_name, $current_time);
+	$conn->query($sql);
+
     	$conn->commit();
 
     	echo json_encode(array(
@@ -514,6 +650,13 @@ if(isset($_GET['remove_filter'])) {
     	$sql = "UPDATE MONITORING_RULES SET filter='None' WHERE as_name = '" . $as_name . "'";
     	$result = $conn->query($sql);
     	$conn->commit();
+
+	$request_type="Remove filter";
+	$current_time=date("D M d, Y G:i");
+	$sql = sprintf("INSERT INTO CLIENT_LOGS (request_type, as_name, time) VALUES ('%s', '%s', '%s')",
+			$request_type, $as_name, $current_time);
+	$conn->query($sql);
+
 
     	echo json_encode(array(
 		"success" => true,
@@ -574,53 +717,63 @@ if(isset($_GET['send_proxy_info'])) {
 
 //Sends information to SENSS proxy when SENSS proxy is not reachable
 if(isset($_GET['send_proxy_info_amon'])) {
+//if (1){
         require_once "db_conf.php";
         require_once "constants.php";
-        $to_do=array();
-        $fh = fopen('alerts.txt','r');
-        while ($line = fgets($fh)) {
-                $buffer = str_replace(array("\r", "\n"), '', $line);
-                array_push($to_do,$buffer);
-        }
-        fclose($fh);
-
-
-        $sql = "SELECT as_name,monitor_id,match_field FROM MONITORING_RULES";
-        $result = $conn->query($sql);
-        $all_urls=array();
-        while ($row = $result->fetch_assoc()) {
-                        $as_name=$row["as_name"];
-                        $monitor_id=$row["monitor_id"];
-                        foreach($to_do as $src_ip) {
-                                echo $src_ip." ".$row["match_field"]."\n";
-                                if (strpos($row["match_field"], $src_ip) !== false)
-                                {
-                                        $temp=array($as_name=>$monitor_id);
-                                        array_push($all_urls,$temp);
-                                }
-                        }
-        }
-        print_r($all_urls);
-        echo "\n";
-        print_r($to_do);
-	print_r($all_urls);
-        $data_string = json_encode($all_urls,true);
-
-        $context = stream_context_create($options);
-        $response = file_get_contents($url, false, $context);
+        $input = file_get_contents("php://input");
+        $input = json_decode($input, true);
+        $data_string = json_encode($input,true);
         $options = array(
-            'http' => array(
+                'http' => array(
                 'method' => 'GET',
                 'header' => generate_request_headers(),
-		'content' => $data_string
-            )
+                'content' => $data_string,
+                'timeout' =>3)
         );
-	print_r($options);
         $context = stream_context_create($options);
         $add_monitor_response = file_get_contents(PROXY_URL, false, $context);
-	echo $add_monitor_response."\n";
         $add_monitor_response = json_decode($add_monitor_response, true);
-	print "Got response\n";
-	print_r($add_monitor_response);
+        echo json_encode($add_monitor_response,true);
 	return;
 }
+
+if(isset($_GET['get_client_logs'])) {
+//if(1){
+    	if (!isset($_GET['type'])) {
+        	http_response_code(400);
+        	return;
+    	}
+	//$type="add_monitor";
+	$type=$_GET['type'];
+        require_once "db_conf.php";
+	switch($type){
+		case "add_filter":
+	        	$sql="SELECT as_name,time from CLIENT_LOGS where request_type='Add filter'";
+			break;
+		case "add_monitor":
+	        	$sql="SELECT as_name,match_field,time from CLIENT_LOGS where request_type='Monitoring rule'";
+			break;
+		case "monitor_stats":
+	        	$sql="SELECT as_name,match_field,time,speed from CLIENT_LOGS where request_type='Monitoring stats'";
+			break;
+	}
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+                $return_array=array();
+                while ($row = $result->fetch_assoc()) {
+                        array_push($return_array,$row);
+                }
+		echo json_encode(array(
+                        "success" => true,
+                        "data" => $return_array
+                ),true);
+		return;
+        }
+        echo json_encode(array(
+                "success" => false,
+                "error" => 400
+        ),true);
+	return;
+}
+
+

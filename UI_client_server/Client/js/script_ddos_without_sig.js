@@ -362,7 +362,8 @@ function add_initial_rules(){
                         					udp_dst: 0
 	        		            		},
         	            				monitor_frequency: 1,
-				                    	monitor_duration: 10000
+				                    	monitor_duration: 10000,
+							monitor_type: "init"
 				                };
 				                $.ajax({
                        		 			url: BASE_URI + "add_monitor",

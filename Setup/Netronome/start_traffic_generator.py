@@ -33,6 +33,10 @@ def start_attack():
 	        f=open("nodes_ddos_with_sig","r")
 	if type=="ddos_without_sig":
 		f=open("nodes_ddos_without_sig","r")
+	if type=="amon":
+		f=open("nodes_amon","r")
+	if type=="amon_proxy":
+		f=open("nodes_amon_proxy","r")
 
         for line in f:
 		if len(line.strip())==0:
@@ -116,8 +120,10 @@ def start_attack():
 
 
         f.close()
-	user=raw_input("Username: ").strip()
-	password=getpass.getpass()
+	#user=raw_input("Username: ").strip()
+	user="satyaman"
+	#password=getpass.getpass()
+	password="&5h$19tZrunu"
 	for node in nodes:
                 print "Node: ",node," "
 	        ssh = paramiko.SSHClient()

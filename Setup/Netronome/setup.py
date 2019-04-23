@@ -122,7 +122,7 @@ def get_dpid(controller_ip):
         	data = json.loads(connection.read())
 		for item in data:
 			dpid=item
-		print dpid
+		print dpid,data
 		if dpid!=0:
 			break
 		time.sleep(3)
@@ -242,6 +242,10 @@ def configure_nodes():
 		f=open("nodes_ddos_with_sig","r")
 	if attack_type=="ddos_without_sig":
 		f=open("nodes_ddos_without_sig","r")
+	if attack_type=="amon":
+		f=open("nodes_amon","r")
+	if attack_type=="amon_proxy":
+		f=open("nodes_amon_proxy","r")
 		
 	#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self
 	for line in f:
@@ -257,9 +261,10 @@ def configure_nodes():
 		legit_address=line.strip().split(" ")[-1]
 		if node_type=="proxy":
 			proxy_ip=line.strip().split(" ")[11]
+			proxy_ip="56.0.0.1"
 		links_to=str(line.strip().split(" ")[5])
 		self=int(line.strip().split(" ")[6])
-		if attack_type=="ddos_without_sig":
+		if attack_type=="ddos_without_sig" or attack_type=="amon" or attack_type=="amon_proxy":
 			legit_nodes=int(line.strip().split(" ")[11])
 			attack_nodes=int(line.strip().split(" ")[12])
 			total_nodes=legit_nodes+attack_nodes
@@ -270,16 +275,18 @@ def configure_nodes():
 		nodes[node]["links_to"]=links_to
 		nodes[node]["self"]=self
 		nodes[node]["legit_address"]=legit_address
-		if attack_type=="ddos_without_sig":
+		if attack_type=="ddos_without_sig" or attack_type=="amon" or attack_type=="amon_proxy":
 			nodes[node]["total_nodes"]=total_nodes
 		if number_of_ports==2:
 			two_ports.append(node)
-		if attack_type=="ddos_without_sig":
+		if attack_type=="ddos_without_sig" or attack_type=="amon" or attack_type=="amon_proxy":
 			nodes[node]["legit_address"]=1
 	f.close()
 
-	user=raw_input("Usename: ").strip()
-	password=getpass.getpass()
+	#user=raw_input("Usename: ").strip()
+	user="satyaman"
+	#password=getpass.getpass()
+	password="&5h$19tZrunu"
 	install={}
 
 	f=open("install","r")
@@ -421,7 +428,7 @@ def configure_nodes():
 			stdin, stdout, stderr = ssh.exec_command("echo '"+string_to_write+"' | sudo tee -a /var/www/html/SENSS/UI_client_server/Proxy/constants.php")
 			data=stdout.readlines()
 
-		if attack_type=="ddos_without_sig" and nodes[node]["node_type"]=="client":
+		if (attack_type=="ddos_without_sig" or attack_type=="amon" or attack_type=="amon_proxy" ) and nodes[node]["node_type"]=="client":
 			string_to_write="const myConstClass = {\n"
         		string_to_write=string_to_write+"number_of_nodes:"+str(nodes[node]["total_nodes"])+"\n"
 			string_to_write=string_to_write+"}"
@@ -477,7 +484,7 @@ def configure_nodes():
 			data=stdout.readlines()
 			print "Configured Quagga"
 			print
-		if nodes[node]["node_type"]=="client" and attack_type=="proxy":
+		if nodes[node]["node_type"]=="client" and (attack_type=="proxy" or attack_type=="amon_proxy"):
 			stdin, stdout, stderr = ssh.exec_command("sudo rm /var/www/html/SENSS/UI_client_server/Client/constants.php")
 			data=stdout.readlines()
 			string_to_write="<?php\n"

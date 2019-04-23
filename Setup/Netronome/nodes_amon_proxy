@@ -1,0 +1,6 @@
+#Deter node name/Number of netronome ports connected/node type/AS name/server url/links to/self/rate of traffic/duration/server mac/switch mac/number of legit sources/number of attack sources/legit rate/legit traffic duration
+hpc050 1 server hpc050 http://hpc050/SENSS/UI_client_server/Server/api.php hpc057 0 100 40 f6:73:c8:61:b2:6c 7c:fe:90:f3:a1:41 2 2 1 0
+hpc052 1 server hpc052 http://hpc052/SENSS/UI_client_server/Server/api.php hpc057 0 0 40 fa:07:ad:ad:84:fc 7c:fe:90:f3:a1:41 2 2 1 20
+hpc054 1 server hpc054 http://hpc054/SENSS/UI_client_server/Server/api.php hpc057 0 100 40 42:3a:2e:83:0c:03 7c:fe:90:f3:a1:41 2 2 1 20
+hpc056 1 proxy hpc056 http://hpc056/SENSS/UI_client_server/Server/api.php None 0 0 0 5e:5b:8e:47:0c:71 7c:fe:90:f3:a1:41 0 0 0 0
+hpc057 1 client hpc057 http://hpc057/SENSS/UI_client_server/Server/api.php hpc050,hpc052,hpc054,hpc056 0 0 0 1e:cc:05:f0:92:35 7c:fe:90:f3:a1:41 2 2 0.1 30

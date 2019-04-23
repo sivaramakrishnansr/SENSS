@@ -212,7 +212,8 @@ $(document).ready(function () {
                         	udp_dst: $("#udp_dst").val()
                 	},
                 	monitor_frequency: parseInt($("#monitor_freq").val()),
-                	monitor_duration: parseInt($("#monitor_duration").val())
+                	monitor_duration: parseInt($("#monitor_duration").val()),	
+			monitor_type: "user"
         	};
         	$.ajax({
                 	url: BASE_URI + "add_monitor",

@@ -33,7 +33,7 @@
 <nav class="navbar navbar-inverse navbar-static-top">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="client_alpha.php">AMON-SENSS</a>
+            <a class="navbar-brand" href="amon.php">AMON-SENSS</a>
         </div>
     </div>
 </nav>
@@ -43,31 +43,25 @@
 
 <div class="container inner-container">
     <div class="row">
-    	<div class="col-sm-4">
-        	<h3>Monitoring Table</h3>
+    	<div class="col-md-8">
+        	<h3>AMON-SENSS Monitoring Table</h3>
     	</div>
-    	<!--<div class="col-sm-4">
-		<br>
-     		<p><b>Traffic Threshold: </b><span id="current-threshold"></span> <span class="pull-right">
-     		<button type="button" class="btn btn-primary btn-small" name="submit" id="set-threshold">Edit</button></span></p>
-     		<br>
-	</div>-->
-    	<div class="col-sm-4">
-		<br>
-        	<p><b>SENSS nodes: </b><span id="current-nodes"></span> <span class="pull-right"><br>
-     		<button type="button" class="btn btn-primary btn-small" name="submit" id="set-nodes">Edit</button></span></p>
-		<br>
-	</div>
     </div>
 
     <div class="col-md-8">
 	<h4>Total traffic: <span id="all_speed">0</span></h4>
     </div>
+
+    <div class="col-md-8">
+	<h4>Proxy Reachable: <span id="proxy_tag"></span></h4>
+    </div>
+
     <table id="table-monitor" class="table table-bordered table-striped">
         <thead>
         <tr>
-            <th>AS Name</th>
-            <th>Speed</th>
+            <th>SENSS server</th>
+            <th>Recommended filter</th>
+	    <th>Status</th>
         </tr>
         </thead>
         <tbody>
@@ -75,51 +69,7 @@
     </table>
 </div>
 
-<div id="set-threshold-modal" class="modal fade" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Set Threshold</h4>
-            </div>
-            <div class="modal-body" style="height:200px;">
-                <table class="table">
-                    <tr>
-                        <td><input type="text" class="form-control" id="threshold-value"></td>
-			<td>%</td>
-                    </tr>
-                </table>
-            </div>
 
-            <div class="modal-footer">
-                <div id="set-threshold-button" class="btn btn-success">Set Threshold</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="set-nodes-modal" class="modal fade" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h4 class="modal-title">Set Percentage of SENSS nodes</h4>
-            </div>
-            <div class="modal-body" style="height:200px;">
-                <table class="table">
-                    <tr>
-                        <td><input type="text" class="form-control" id="nodes-value"></td>
-			<td>%</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="modal-footer">
-                <div id="set-nodes-button" class="btn btn-success">Set</div>
-            </div>
-        </div>
-    </div>
-</div>
 </body>
 <script src="js/render_network_amon.js"></script>
 <script src="js/script_amon.js"></script>

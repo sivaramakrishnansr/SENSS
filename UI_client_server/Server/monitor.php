@@ -9,12 +9,12 @@ function add_monitor($client_info, $data)
 
     	$frequency = (int)$data['frequency'];
     	$end_time = (int)$data['end_time'];
-
+	$priority = (int)$data['priority'];
 
     	require_once "constants.php";
     	$add_rule_data = array(
         	"dpid" => SWITCH_DPID,
-        	"priority" => 11111,
+        	"priority" => $priority,
         	"match" => $data['match'],
         	"actions" => array(
             		array(
