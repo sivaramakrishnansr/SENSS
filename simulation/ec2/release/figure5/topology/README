@@ -1,0 +1,8 @@
+This document contains descriptions of files
+in this directory
+
+run.sh - main script to run
+20170501.as-rel.txt - file downloaded from CAIDA http://data.caida.org/datasets/as-relationships/serial-1/20170501.as-rel.txt.bz2
+convertcaida.pl - script that converts CAIDA topology format into our format
+hier0501.all - output of that conversion
+

@@ -1,0 +1,9 @@
+perl processresults.pl topsig.out > topsig
+perl processresults.pl realsig.out > rtopsig
+perl processresults.pl randomsig.out > randomsig
+perl processresults.pl topnosig.out > topnosig
+perl processresults.pl realnosig.out > rtopnosig
+perl processresults.pl randomnosig.out > randomnosig
+perl processresults.pl topcross.out > topcross
+perl processresults.pl realcross.out > rtopcross
+perl processresults.pl randomcross.out > randomcross

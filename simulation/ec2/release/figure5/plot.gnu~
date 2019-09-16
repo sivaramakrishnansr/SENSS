@@ -1,0 +1,23 @@
+#/usr/local/bin/gnuplot
+set terminal pdfcairo size 5,3.5 font ",18"
+set output "5a.pdf"
+set logscale x
+set yrange [0:101]
+set xlabel "\% transit ASes deploying SENSS"
+set ylabel "\% attack filtered"
+set grid
+set key above
+plot "< grep ^1 topsig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 1 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 1 title "uni-dir-single", "< grep ^1 realsig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 1 title "real-dir-single",  "< grep ^2 topsig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 2 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 2 title "uni-dir-multi", "< grep ^2 realsig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 2 title "real-dir-multi",  "< grep ^3 topsig" u (($2+$2/5)/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 3 title "uni-remote",   "< grep ^3 realsig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 3 title "real-remote"
+set output "5b.pdf"
+plot "< grep ^1 topnosig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 1 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 1 title "uni-dir-single", "< grep ^1 realnosig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 1 title "real-dir-single",  "< grep ^2 topnosig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 2 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 2 title "uni-dir-multi", "< grep ^2 realnosig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 2 title "real-dir-multi",  "< grep ^3 topnosig" u (($2+$2/5)/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 3 title "uni-remote",   "< grep ^3 realnosig" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 3 title "real-remote"
+set output "5c.pdf"
+plot "< grep ^3 topcross" u ($2/131.23):($4*100) w l lw 5 lc 3 title "uni-all", "" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1, "< grep ^3 realcross" u ($2/131.23):($4*100) w l dashtype 2 lw 1 lc 3 title "real-all"
+set output "5d.pdf"
+plot "< grep ^1 randomsig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 1 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 1 title "dir-single",  "< grep ^2 randomsig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 2 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 2 title "dir-multi",  "< grep ^3 randomsig" u (($2+$2/5)/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 3 title "remote"
+set output "5e.pdf"
+plot "< grep ^1 randomnosig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 1 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 1 title "dir-single",  "< grep ^2 randomnosig" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 2 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 2 title "dir-multi",  "< grep ^3 randomnosig" u (($2+$2/5)/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1, '' u ($2/131.23):($4*100) w l lw 5 lc 3 title "remote"
+set output "5f.pdf"
+plot "< grep ^3 randomcross" u ($2/131.23):($4*100) w l lw 5 lc 3 title "all", "" u ($2/131.23):($4*100):($3*100):($5*100) w errorbars notitle lc 3 ps -1
+set ylabel "\% polluted routes fixed"
+
+

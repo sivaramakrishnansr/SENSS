@@ -1,0 +1,1 @@
+perl convertcaida.pl 20170501.as-rel.txt > hier0501.all
