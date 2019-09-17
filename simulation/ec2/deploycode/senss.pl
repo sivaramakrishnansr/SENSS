@@ -47,7 +47,7 @@ our $LEG=1000;
 our $ATT=100000;
 our $ENOUGH=1000;
 @tiered=();
-load_topology('topology/hier0501.all');
+load_topology('topology/hier050117.all');
 $t1=scalar(keys %{$tier{1}});
 $t2=scalar(keys %{$tier{2}});
 $t3=scalar(keys %{$tier{3}});
@@ -124,7 +124,7 @@ for $t (1)
 		%all=();
 		select_deployment($type);
 		$class = 0;
-		for $victims (\%all)
+		for $victims (\%single, \%multi, \%all)
 		{
 		    $i = 0;
 		    $class++;

@@ -2,7 +2,7 @@
 $|=1;
 $precision=0.01;
 $ITERS=10; 
-$usage="$0 type startlimit senss|art|cloud top|random [alpha|cloudfile]\n";
+$usage="$0 type startlimit senss|art|cloud top|random|ixp [alpha|cloudfile]\n";
 %dsts = ();
 
 sub customers;
@@ -47,14 +47,14 @@ our $LEG=1000;
 our $ATT=100000;
 our $ENOUGH=1000;
 @tiered=();
-load_topology('topology/hier0501.all');
+load_topology('enriched070119.all');
 $t1=scalar(keys %{$tier{1}});
 $t2=scalar(keys %{$tier{2}});
 $t3=scalar(keys %{$tier{3}});
 print "T1 $t1 T2 $t2 T3 $t3 leaves " . scalar(keys %leaves) . " short " . scalar(keys %short) . "\n";
 for $i (@tiered)
 {
-#    print "$i CUST " . customers($i) . "\n";
+    print "$i CUST " . customers($i) . "\n";
 }
 # Generate scenarios
 # Just keep t=1
@@ -124,7 +124,7 @@ for $t (1)
 		%all=();
 		select_deployment($type);
 		$class = 0;
-		for $victims (\%all)
+		for $victims (\%single, \%multi, \%all)
 		{
 		    $i = 0;
 		    $class++;
