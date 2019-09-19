@@ -2,7 +2,7 @@
 $|=1;
 $precision=0.01;
 $ITERS=10; 
-$usage="$0 type startlimit senss|art|cloud top|random|ixp [alpha|cloudfile]\n";
+$usage="$0 type startlimit senss|art|cloud top|random|topixp|randomixp [alpha|cloudfile]\n";
 %dsts = ();
 
 sub customers;
@@ -39,7 +39,7 @@ if ($#ARGV > 3)
 }
 
 print "Type $type limit $startlimit defense $defense selection $selection cloud " . scalar(keys %cloud) . "\n";
-our %as, %leaves, %short, %rt, %tier, %parent, %shadow, %ts;
+our %as, %leaves, %short, %rt, %tier, %parent, %shadow, %ts, %ixps;
 our $NUMLEG=1000;
 our $NUMATT=1000;
 our $MINCUST=100;
@@ -52,18 +52,25 @@ $t1=scalar(keys %{$tier{1}});
 $t2=scalar(keys %{$tier{2}});
 $t3=scalar(keys %{$tier{3}});
 print "T1 $t1 T2 $t2 T3 $t3 leaves " . scalar(keys %leaves) . " short " . scalar(keys %short) . "\n";
-for $i (@tiered)
+if ($selection =~ /ixp/)
 {
-    print "$i CUST " . customers($i) . "\n";
+    $fh = new IO::File("ixps.txt");
+    for (<$fh>)
+    {
+	@items = split /\s+/, $_;
+	$ixps{$items[0]}{$items[1]} = 1;
+    }
 }
 # Generate scenarios
 # Just keep t=1
+@sortedi = sort {scalar(keys %{$ixps{$b}}) <=> scalar(keys %{$ixps{$a}})} keys %ixps, %senssixps;
 for $t (1)
 {
     @limits=(1,2,5,10,20,50,100,200,500,1000, 2000,5000,10000);
 	
 
-    our %senss, %single, %multi, %all, %rt, %src, %att, %original, %demote, %rtcand, %popular, %polluted;
+    our %senss, %own, %single, %multi, %all, %rt, %src, %att, %original, %demote, %rtcand, %popular, %polluted, %opath, %npath;
+    our $totalsenss;
     for $l (@limits)
     {
 	print "Limit $l\n";
@@ -88,6 +95,7 @@ for $t (1)
 			$senss{$tiered[$i]} = 1;
 			$i++;
 		    }
+		    $totalsenss = scalar(keys %senss);
 		}
 		elsif($selection eq "random")
 		{
@@ -101,6 +109,58 @@ for $t (1)
 			    $senss{$a} = 1;
 			}
 		    }
+		    $totalsenss = scalar(keys %senss);
+		}
+		elsif($selection eq "topixp")
+		{
+		    $i = 0;
+		    $totalsenss = 0;
+		    while ($i < $l)
+		    {
+			$ixp = $sortedi[$i];
+			if (exists($senssixps{$ixp}))
+			{
+			    next;
+			}
+			$senssixps{$ixp} = 1;
+			print "Deploying SENSS at IXP $ixp\n";
+			for $a (keys %{$ixps{$ixp}})
+			{
+			    if (exists($short{$a}))
+			    {
+				$senss{$a} = 1;
+				$totalsenss++;
+			    }
+			}
+			$i++;
+		    }
+		    print "Deployed $totalsenss SENSS nodes\n";
+		}
+		elsif($selection eq "randomixp")
+		{
+		    $i = 0;
+		    $totalsenss = 0;
+		    while ($i < $l)
+		    {
+			$r = rand(scalar(@sortedi));
+			$ixp = $sortedi[$r]; 
+			if (exists($senssixps{$ixp}))
+			{
+			    next;
+			}
+			$senssixps{$ixp} = 1;
+			print "Deploying SENSS at IXP $ixp\n";
+			for $a (keys %{$ixps{$ixp}})
+			{
+			    if (exists($short{$a}))
+			    {
+				$senss{$a} = 1;
+				$totalsenss++;
+			    }
+			}
+			$i++;
+		    }
+		    print "Deployed $totalsenss SENSS nodes\n";
 		}
 		else
 		{
@@ -112,6 +172,7 @@ for $t (1)
 			    $senss{$c} = 1;
 			}
 		    }
+		    $totalsenss = scalar(keys %senss);
 		}
 	
 		for $s (sort {$a <=> $b} keys %senss)
@@ -119,12 +180,13 @@ for $t (1)
 		    print "SENSS $s\n";
 		}
 		# select single, multi and all
+		%own=();
 		%single=();
 		%multi=();
 		%all=();
-		select_deployment($type);
-		$class = 0;
-		for $victims (\%single, \%multi, \%all)
+		select_deployment($type, $selection);
+		$class = -1;
+		for $victims (\%own,\%single, \%multi, \%all)
 		{
 		    $i = 0;
 		    $class++;
@@ -188,7 +250,7 @@ for $t (1)
 				$start = $at;
 				$found = 0;
 				$hops = 0;
-				while($start != $victim && $hops < 20)
+				while($start != $victim && hops < 20)
 				{
 				    if (exists($senss{$start}))
 				    {
@@ -207,15 +269,15 @@ for $t (1)
 				$time=time();
 				if ($class == 1)
 				{
-				    print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r\n";
+				    print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r\n";
 				}
 				elsif($class == 2)
 				{
-				    print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r\n";
+				    print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r\n";
 				}
 				else
 				{
-				    print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r\n";
+				    print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r\n";
 				}
 				push (@{$results{$class}}, $r);
 			    }
@@ -407,15 +469,15 @@ for $t (1)
 			    $time=time();
 			    if ($class == 1)
 			    {
-				print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r cd $lr\n";
+				print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r cd $lr\n";
 			    }
 			    elsif($class == 2)
 			    {
-				print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r cd $lr\n";
+				print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r cd $lr\n";
 			    }
 			    else
 			    {
-				print "$time class $class tier $t limit $l attack $attack dropped $dropped r $r cd $lr\n";
+				print "$time class $class tier $t senss $totalsenss limit $l attack $attack dropped $dropped r $r cd $lr\n";
 			    }
 			    push (@{$results{$class}}, $r);
 			    push (@{$cdresults{$class}}, $lr);
@@ -481,15 +543,15 @@ for $t (1)
 			    $time=time();
 			    if ($class == 1)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    elsif($class == 2)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    else
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    push (@{$results{$class}}, $r);
 			}
@@ -554,6 +616,13 @@ for $t (1)
 			    {
 				readvertise($victim,$liar); # do ARTEMIS solution
 			    }
+			    for $a (keys %short)
+			    {
+				if (exists($rt{$a}{$victim}))
+				{
+				    $npath{$a} = $rt{$a}{$victim}{'path'};
+				}
+			    }
 			    $na = 0;
 			    for $l (keys %src)
 			    {
@@ -571,7 +640,18 @@ for $t (1)
 			    }
 			    $na /= scalar(keys %src);
 
-			    print "$liar $victim: initial " . scalar(keys %initial) . " original " . scalar(keys %original) . " still polluted " . scalar(keys %polluted) . " demoted " . scalar(keys %demote) . " liar $liar old path length $oa new $na \n";
+			    $pc = 0;
+			    $pall = 0;
+			    for $a (keys %npath)
+			    {
+				if (exists($opath{$a}) && $opath{$a} ne $npath{$a})
+				{
+				    $pc++;
+				}
+				$pall++;
+			    }
+
+			    print "$liar $victim: initial " . scalar(keys %initial) . " original " . scalar(keys %original) . " still polluted " . scalar(keys %polluted) . " demoted " . scalar(keys %demote) . " liar $liar old path length $oa new $na paths changed $pc out of $pall\n";
 
 			    if (scalar(keys %original) == 0)
 			    {
@@ -582,15 +662,15 @@ for $t (1)
 			    $time=time();
 			    if ($class == 1)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    elsif($class == 2)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    else
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    push (@{$results{$class}}, $r);
 			}
@@ -640,6 +720,7 @@ for $t (1)
 				}
 			    }
 			    print "Liar $liar is leaf " . exists($leaves{$liar}) . " neighbors " . scalar(keys %{$short{$liar}}) . "\n";
+			    collect_initial_paths($victim, $liar);
 			    # Save old routing at liar
 			    %shadow=();
 			    $shadow{$liar}{$victim}{'next'} = $rt{$liar}{$victim}{'next'};
@@ -673,8 +754,13 @@ for $t (1)
 			    {
 				readvertise($victim,$liar); # do ARTEMIS solution
 			    }
-
-
+			    for $a (keys %short)
+			    {
+				if (exists($rt{$a}{$victim}))
+				{
+				    $npath{$a} = $rt{$a}{$victim}{'path'};
+				}
+			    }
 			    $na = 0;
 			    for $l (keys %src)
 			    {
@@ -692,7 +778,20 @@ for $t (1)
 			    }
 			    $na /= scalar(keys %src);
 
-			    print "$liar $victim: initial " . scalar(keys %initial) . " original " . scalar(keys %original) . " still polluted " . scalar(keys %polluted) . " demoted " . scalar(keys %demote) . " liar $liar old path length $oa new $na \n";
+
+			    $pc = 0;
+			    $pall = 0;
+			    for $a (keys %npath)
+			    {
+				if (exists($opath{$a}) && $opath{$a} ne $npath{$a})
+				{
+				    $pc++;
+				}
+				$pall++;
+			    }
+
+
+			    print "$liar $victim: initial " . scalar(keys %initial) . " original " . scalar(keys %original) . " still polluted " . scalar(keys %polluted) . " demoted " . scalar(keys %demote) . " liar $liar old path length $oa new $na changed $pc out of $pall\n";
 
 			    if (scalar(keys %original) == 0)
 			    {
@@ -702,15 +801,15 @@ for $t (1)
 			    $time=time();
 			    if ($class == 1)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    elsif($class == 2)
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    else
 			    {
-				print "$time class $class tier $t limit $l fixed $r\n";
+				print "$time class $class tier $t senss $totalsenss limit $l fixed $r\n";
 			    }
 			    push (@{$results{$class}}, $r);
 			}
@@ -1128,15 +1227,19 @@ sub collect_original_paths
 
 sub collect_initial_paths
 {
+
     ($victim,$bneck) = @_;
     %initial=();
-
+    %opath = ();
+    %npath = ();
+    
     for $a (keys %short)
     {
 	if (exists($rt{$a}{$victim}))
 	{
 	    $path = $rt{$a}{$victim}{'path'};
-	    #print "From $a to $victim path $path bneck $bneck\n";
+	    $opath{$a} = $path;
+	    print "From $a to $victim path " . $opath{$a} . " bneck $bneck\n";
 	    if ($path =~ /\s$bneck\s/)
 	    {
 		$initial{$a} = 1;
@@ -1223,11 +1326,12 @@ sub make_up_traffic
 
 sub select_deployment
 {
-    $type = shift;
-    if ($type =~ /sig/)
-    {
+    ($type,$selection) = @_;
+#    if ($type =~ /sig/)
+#    {
 	for $a (keys %senss)
 	{
+	    $own{$a} = 1;
 	    for $b (keys %{$short{$a}})
 	    {
 		if ($short{$a}{$b} == 1)
@@ -1251,10 +1355,10 @@ sub select_deployment
 		}
 	    }	   
 	}
-    }
+ #   }
     for $a (keys %short)
     {
-	if (!exists($senss{$a}) && !exists($single{$a})  && !exists($multi{$a}))
+	if (!exists($own{$a}) && !exists($single{$a})  && !exists($multi{$a}))
 	{
 	    $all{$a} = 1;
 	}

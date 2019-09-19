@@ -55,7 +55,7 @@ for $x (sort {$a <=> $b} keys %as)
 {
     for $y (sort {$a <=> $b} keys %{$as{$x}})
     {
-	print "$x $y " . $as{$x}{$y};
+	print "$x $y " . $as{$x}{$y} . "\n";
     }
 }
 open(my $oh, '>', "ixps.txt") or die "Could not open file ixps.txt $!";
